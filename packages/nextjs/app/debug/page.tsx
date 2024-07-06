@@ -1,6 +1,8 @@
 import { DebugContracts } from "./_components/DebugContracts";
 import type { NextPage } from "next";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
+//solo para probar
+import { CrearContratoAlquiler } from "./CrearContratoAlquiler";
 
 export const metadata = getMetadata({
   title: "Debug Contracts",
@@ -20,6 +22,10 @@ const Debug: NextPage = () => {
             packages / nextjs / app / debug / page.tsx
           </code>{" "}
         </p>
+      </div>
+
+      <div>
+        <CrearContratoAlquiler></CrearContratoAlquiler>
       </div>
     </>
   );

@@ -7,103 +7,112 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
       abi: [
         {
           inputs: [
             {
               internalType: "address",
-              name: "_owner",
+              name: "_Owner",
               type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "monto",
+              type: "uint256",
             },
           ],
           stateMutability: "nonpayable",
           type: "constructor",
         },
         {
-          anonymous: false,
           inputs: [
             {
-              indexed: true,
               internalType: "address",
-              name: "greetingSetter",
+              name: "_Owner",
               type: "address",
             },
             {
-              indexed: false,
-              internalType: "string",
-              name: "newGreeting",
-              type: "string",
+              internalType: "address",
+              name: "_Lesse",
+              type: "address",
             },
             {
-              indexed: false,
-              internalType: "bool",
-              name: "premium",
-              type: "bool",
-            },
-            {
-              indexed: false,
-              internalType: "bool",
-              name: "ocupado",
-              type: "bool",
-            },
-            {
-              indexed: false,
               internalType: "uint256",
-              name: "value",
+              name: "Monto",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_ID",
               type: "uint256",
             },
           ],
-          name: "GreetingChange",
-          type: "event",
+          name: "CrearContrato",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
         },
         {
-          inputs: [],
-          name: "greeting",
-          outputs: [
+          inputs: [
             {
-              internalType: "string",
-              name: "",
-              type: "string",
+              internalType: "uint256",
+              name: "ID_propiedad",
+              type: "uint256",
             },
           ],
+          name: "GetContrato",
+          outputs: [],
           stateMutability: "view",
           type: "function",
         },
         {
-          inputs: [],
-          name: "ocupado",
-          outputs: [
+          inputs: [
             {
-              internalType: "bool",
-              name: "",
-              type: "bool",
+              internalType: "uint256",
+              name: "ID_propiedad",
+              type: "uint256",
             },
           ],
-          stateMutability: "view",
+          name: "PagarAlquiler",
+          outputs: [],
+          stateMutability: "payable",
           type: "function",
         },
         {
-          inputs: [],
-          name: "owner",
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "contratosAlquiler",
           outputs: [
+            {
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
             {
               internalType: "address",
-              name: "",
+              name: "Owner",
               type: "address",
             },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "premium",
-          outputs: [
             {
-              internalType: "bool",
-              name: "",
-              type: "bool",
+              internalType: "address",
+              name: "Lesse",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "Monto",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "ID_propiedad",
+              type: "uint256",
             },
           ],
           stateMutability: "view",
@@ -112,14 +121,25 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "string",
-              name: "_newGreeting",
-              type: "string",
+              internalType: "uint256",
+              name: "ID_Propiedad",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_Owner",
+              type: "address",
             },
           ],
-          name: "setGreeting",
-          outputs: [],
-          stateMutability: "payable",
+          name: "isOwner",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -138,32 +158,15 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "userGreetingCounter",
-          outputs: [
-            {
               internalType: "uint256",
-              name: "",
+              name: "ID_propiedad",
               type: "uint256",
             },
           ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "withdraw",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
-        },
-        {
-          stateMutability: "payable",
-          type: "receive",
         },
       ],
       inheritedFunctions: {},

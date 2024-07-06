@@ -12,82 +12,58 @@ import "hardhat/console.sol";
  * It also allows the owner to withdraw the Ether in the contract
  * @author BuidlGuidl
  */
+
+//import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+
 contract YourContract {
-	// State Variables
-	address public immutable owner;
-	string public greeting = "FRENESI DE ALQUILERES!!!";
-	bool public premium = false;
-	bool public ocupado = false;
-	uint256 public totalCounter = 0;
-	mapping(address => uint) public userGreetingCounter;
+	mapping(uint256 => ContratoAlquiler) public contratosAlquiler ;
 
-	// Events: a way to emit log statements from smart contract that can be listened to by external parties
-	event GreetingChange(
-		address indexed greetingSetter,
-		string newGreeting,
-		bool premium,
-		bool ocupado,
-		uint256 value
-	);
-
-	// Constructor: Called once on contract deployment
-	// Check packages/hardhat/deploy/00_deploy_your_contract.ts
-	constructor(address _owner) {
-		owner = _owner;
+	struct ContratoAlquiler{
+		uint256 timestamp;
+    	address Owner;
+    	address Lesse; 
+    	uint256 Monto;
+		uint256 ID_propiedad;
 	}
 
-	// Modifier: used to define a set of rules that must be met before or after a function is executed
-	// Check the withdraw() function
-	modifier isOwner() {
-		// msg.sender: predefined variable that represents address of the account that called the current function
-		require(msg.sender == owner, "Not the Owner");
-		_;
+	function CrearContrato(address _Owner, address _Lesse, uint256 Monto, uint256 _ID) public {
+		//TODO VER COMO PONER LESSE MAS TARDE, POR AHORA QUIEN ALQUILA TAMBIEN ES OWNER
+		contratosAlquiler[_ID] = ContratoAlquiler(block.timestamp,_Owner,_Lesse,Monto,_ID);
 	}
 
-	/**
-	 * Function that allows anyone to change the state variable "greeting" of the contract and increase the counters
-	 *
-	 * @param _newGreeting (string memory) - new greeting to save on the contract
-	 */
-	function setGreeting(string memory _newGreeting) public payable {
-		// Print data to the hardhat chain console. Remove when deploying to a live network.
-		console.log(
-			"Setting new greeting '%s' from %s",
-			_newGreeting,
-			msg.sender
-		);
-
-		// Change state variables
-		greeting = _newGreeting;
-		totalCounter += 1;
-		userGreetingCounter[msg.sender] += 1;
-
-		// msg.value: built-in global variable that represents the amount of ether sent with the transaction
-		if (msg.value > 5) {
-			premium = true;
-		} else {
-			premium = false;
+	function isOwner(uint256 ID_Propiedad,address _Owner)view public returns (bool){
+		ContratoAlquiler storage contrato = contratosAlquiler[ID_Propiedad];
+		if(contrato.ID_propiedad == 0){
+			return false;
 		}
-
-		if (totalCounter > 0 && msg.value >= 10000000000000000) {
-			ocupado = true;
+		if(contrato.Owner == _Owner){
+			return true;
 		}
-
-		// emit: keyword used to trigger an event
-		emit GreetingChange(msg.sender, _newGreeting, msg.value > 0, totalCounter > 0, msg.value);
+		return false;
 	}
 
-	/**
-	 * Function that allows the owner to withdraw all the Ether in the contract
-	 * The function can only be called by the owner of the contract as defined by the isOwner modifier
-	 */
-	function withdraw() public isOwner {
-		(bool success, ) = owner.call{ value: address(this).balance }("");
-		require(success, "Failed to send Ether");
+	function GetContrato(uint256 ID_propiedad) view public{
+		console.log("timestamp: %s",contratosAlquiler[ID_propiedad].timestamp);
 	}
 
-	/**
-	 * Function that allows the contract to receive ETH
-	 */
-	receive() external payable {}
+	function PagarAlquiler(uint256 ID_propiedad) payable public{
+		ContratoAlquiler storage contrato = contratosAlquiler[ID_propiedad];
+		require(msg.value == contrato.Monto && msg.sender == contrato.Lesse, "Incorrect Ether amount sent or you are not the lesse");
+	}
+
+	function withdraw(uint256 ID_propiedad) public {
+		if (isOwner(ID_propiedad,msg.sender)){
+			(bool success, ) = msg.sender.call{ value: address(this).balance }("");
+			require(success, "Failed to send Ether");
+			return;
+		}
+		bool success = false;
+		require(success, "Property does not exist");
+	}
+
+
+	constructor(address _Owner, uint256 monto){
+		//transferOwnership(_Owner);
+	}
+
 }
