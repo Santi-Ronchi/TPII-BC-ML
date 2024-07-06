@@ -17,6 +17,7 @@ import "hardhat/console.sol";
 
 contract YourContract {
 	mapping(uint256 => ContratoAlquiler) public contratosAlquiler ;
+	mapping(address => ContratoAlquiler[]) public mapUsuarioContrato;
 
 	struct ContratoAlquiler{
 		uint256 timestamp;
@@ -27,8 +28,10 @@ contract YourContract {
 	}
 
 	function CrearContrato(address _Owner, address _Lesse, uint256 Monto, uint256 _ID) public {
-		//TODO VER COMO PONER LESSE MAS TARDE, POR AHORA QUIEN ALQUILA TAMBIEN ES OWNER
+		//TODO ver si se puede optimizar, se crea el contrato 3 veces
 		contratosAlquiler[_ID] = ContratoAlquiler(block.timestamp,_Owner,_Lesse,Monto,_ID);
+		mapUsuarioContrato[_Owner].push(ContratoAlquiler(block.timestamp,_Owner,_Lesse,Monto,_ID));
+		mapUsuarioContrato[_Lesse].push(ContratoAlquiler(block.timestamp,_Owner,_Lesse,Monto,_ID));
 	}
 
 	function isOwner(uint256 ID_Propiedad,address _Owner)view public returns (bool){
@@ -42,9 +45,10 @@ contract YourContract {
 		return false;
 	}
 
-	function GetContrato(uint256 ID_propiedad) view public{
-		console.log("timestamp: %s",contratosAlquiler[ID_propiedad].timestamp);
+	function obtenerContratos(address usuario) view public returns(ContratoAlquiler[] memory){
+		return mapUsuarioContrato[usuario];
 	}
+
 
 	function PagarAlquiler(uint256 ID_propiedad) payable public{
 		ContratoAlquiler storage contrato = contratosAlquiler[ID_propiedad];
