@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           inputs: [
@@ -51,19 +51,6 @@ const deployedContracts = {
           name: "CrearContrato",
           outputs: [],
           stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "ID_propiedad",
-              type: "uint256",
-            },
-          ],
-          name: "GetContrato",
-          outputs: [],
-          stateMutability: "view",
           type: "function",
         },
         {
@@ -143,13 +130,90 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "totalCounter",
-          outputs: [
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
             {
               internalType: "uint256",
               name: "",
               type: "uint256",
+            },
+          ],
+          name: "mapUsuarioContrato",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "Owner",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "Lesse",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "Monto",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "ID_propiedad",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "usuario",
+              type: "address",
+            },
+          ],
+          name: "obtenerContratos",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "uint256",
+                  name: "timestamp",
+                  type: "uint256",
+                },
+                {
+                  internalType: "address",
+                  name: "Owner",
+                  type: "address",
+                },
+                {
+                  internalType: "address",
+                  name: "Lesse",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "Monto",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "ID_propiedad",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct YourContract.ContratoAlquiler[]",
+              name: "",
+              type: "tuple[]",
             },
           ],
           stateMutability: "view",
