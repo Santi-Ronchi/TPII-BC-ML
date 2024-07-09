@@ -30,7 +30,7 @@ export const CrearContratoAlquiler = () => {
 
 
       <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10">
-        <img src="ARPA.png" alt="logo de ARPA" className="mx-auto imgRounder logo-sm"/>
+        <img src="ARPA-WIDE.png" alt="logo de ARPA" className="mx-auto imgRounder"/>
         <h1 className="text-xl font-bold">Ingresa los datos de tu propiedad:</h1>
         <br /><br />
         <label className="text-md font-bold">Tu Nombre</label>
