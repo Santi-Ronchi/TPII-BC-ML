@@ -29,9 +29,12 @@ export const CrearContratoAlquiler = () => {
     return(
 
 
-      <div>
+      <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10">
+        <label className="text-lg font-bold">Tu Nombre</label>
         <AddressInput onChange={setOwnerAddress} value={ownerAddress} placeholder="Input your owner address" />;
+        <label className="text-lg font-bold">Rentador</label>
         <AddressInput onChange={setLesseAddress} value={lesseAddress} placeholder="Input your lesse address" />;
+        <label className="text-lg font-bold">Direccion</label>
         <IntegerInput
           value={txValue}
           onChange={updatedTxValue => {
@@ -39,6 +42,7 @@ export const CrearContratoAlquiler = () => {
         }}
         placeholder="ID de la propiedad"
         />;
+        <label className="text-lg font-bold">Precio</label>
         <EtherInput value={ethAmount} onChange={amount => setEthAmount(amount)} />;
 
         <button

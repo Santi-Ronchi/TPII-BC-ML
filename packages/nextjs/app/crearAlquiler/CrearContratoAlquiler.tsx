@@ -29,9 +29,17 @@ export const CrearContratoAlquiler = () => {
     return(
 
 
-      <div>
+      <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10">
+        <img src="ARPA.png" alt="logo de ARPA" className="mx-auto imgRounder logo-sm"/>
+        <h1 className="text-xl font-bold">Ingresa los datos de tu propiedad:</h1>
+        <br /><br />
+        <label className="text-md font-bold">Tu Nombre</label>
         <AddressInput onChange={setOwnerAddress} value={ownerAddress} placeholder="Input your owner address" />
+        <br />
+        <label className="text-md font-bold">Rentador</label>
         <AddressInput onChange={setLesseAddress} value={lesseAddress} placeholder="Input your lesse address" />
+        <br />
+        <label className="text-md font-bold">Direccion</label>
         <IntegerInput
           value={txValue}
           onChange={updatedTxValue => {
@@ -39,8 +47,10 @@ export const CrearContratoAlquiler = () => {
         }}
         placeholder="ID de la propiedad"
         />
+        <br />
+        <label className="text-lg font-bold">Precio</label>
         <EtherInput value={ethAmount} onChange={amount => setEthAmount(amount)} />
-
+        <br />
         <button
           className="btn btn-primary"
             onClick={async () => {

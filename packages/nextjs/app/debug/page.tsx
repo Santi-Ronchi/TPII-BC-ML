@@ -23,10 +23,6 @@ const Debug: NextPage = () => {
           </code>{" "}
         </p>
       </div>
-
-      <div>
-        <CrearContratoAlquiler></CrearContratoAlquiler>
-      </div>
     </>
   );
 };

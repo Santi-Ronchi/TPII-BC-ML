@@ -31,10 +31,32 @@ p {
   @apply shadow-none;
 }
 
+.navbar {
+  margin-bottom: 30px;
+}
 
-.section {
+.imgRounder {
+  border-radius: 10px;
+}
+
+.logo-sm {
+  height: 300px;
+  width: 300px;
+}
+
+/*.section {
+  position: relative;
+  width: 100%;
+  height: 70vh;
   width: 70%;
   margin: 20px;
   justify-content: center;
   align-items: center;
-}
+}/*
+
+/*.centered {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -0%);
+}*/
