@@ -4,14 +4,17 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 import { CrearContratoAlquiler } from "./CrearContratoAlquiler";
 
 export const metadata = getMetadata({
-  title: "Debug Contracts",
-  description: "Debug your deployed 🏗 Scaffold-ETH 2 contracts in an easy way",
+  title: "Crear Alquiler",
+  description: "Ingresa los datos de tu propiedad para ponerla en alquiler.",
 });
 
 const CrearAlquiler: NextPage = () => {
   return (
     <>
-      <CrearContratoAlquiler/>
+      <div className="section">
+        <CrearContratoAlquiler/>
+      </div>
+      
 
       <div className="text-center mt-8 bg-secondary p-10">
         <h1 className="text-4xl my-0">Dale, ponelo en alquiler</h1>

@@ -30,3 +30,11 @@ p {
 .btn.btn-ghost {
   @apply shadow-none;
 }
+
+
+.section {
+  width: 70%;
+  margin: 20px;
+  justify-content: center;
+  align-items: center;
+}
