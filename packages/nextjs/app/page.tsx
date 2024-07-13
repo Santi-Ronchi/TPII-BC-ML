@@ -60,14 +60,27 @@ const Home: NextPage = () => {
               </div>
             </div>
             <div>
-              <h2 className="text-lg font-bold justify-center text-center items-center">Inquilinos, que estan esperando?</h2>
+              <h2 className="text-lg font-bold justify-center text-center items-center">Inquilinos, ¿qué están esperando?</h2>
               <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
                 <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
                 <p>
-                  Explorá que propiedades están disponibles con <strong>MaLe</strong>, nuestro{" "}
+                  Explorá qué propiedades están disponibles con <strong>MaLe</strong>, nuestro{" "}
                   <Link href="/blockexplorer" passHref className="link">
                     Buscador inteligente (WIP)
                   </Link>{" "}
+                </p>
+              </div>
+            </div>
+            <div>
+              <h2 className="text-lg font-bold justify-center text-center items-center">¿No sabés el valor de tu alquiler?</h2>
+              <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
+                <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
+                <p>
+                  Calculá el{" "} 
+                  <Link href="/predecirPrecio" passHref className="link">
+                     precio de tu alquiler
+                  </Link>{" "}
+                   acorde al mercado {" "}
                 </p>
               </div>
             </div>

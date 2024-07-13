@@ -33,7 +33,7 @@ export const CrearContratoAlquiler = () => {
         <img src="ARPA-WIDE.png" alt="logo de ARPA" className="mx-auto imgRounder"/>
         <h1 className="text-xl font-bold">Ingresa los datos de tu propiedad:</h1>
         <br /><br />
-        <label className="text-md font-bold">Tu Nombre</label>
+        <label className="text-md font-bold">Tu Billetera</label>
         <AddressInput onChange={setOwnerAddress} value={ownerAddress} placeholder="Input your owner address" />
         <br />
         <label className="text-md font-bold">Rentador</label>
