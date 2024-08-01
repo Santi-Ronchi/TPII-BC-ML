@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import time
 
 def obtener_datos(url):
-    service = Service(ChromeDriverManager().install())
+    service = start_driver()
     driver = webdriver.Chrome(service=service)
 
     driver.get(url)
@@ -151,9 +151,9 @@ def get_features(soup):
 
 def clean_feature(text):
     if " tot." in text:
-        return text.split(" ")[0][:2]
+        return text.split(" ")[0]
     elif " cub." in text:
-        return text.split(" ")[0][:2]
+        return text.split(" ")[0]
     elif " amb." in text:
         return text.split(" ")[0]
     elif " dorm." in text:
@@ -189,10 +189,31 @@ def escribir_diccionario_a_csv(diccionario):
 
 url_base = "https://www.zonaprop.com.ar"
 
-def get_links(url):
+def start_driver():
+    # Esto ponia el path de forma automatica pero a mi me esta fallando y no logro arreglarlo.
     service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service)
 
+    # Lo hago de forma manual. 
+    # Tuve que buscar el archivo chromedriver.exe y moverlo a una carpeta accesible
+    # Luego lo agregue a el PATH de las variables de entorno desde el panel de control y funciono
+    
+    # PATH AGUS
+    #driver_path = "C:\\chromedriver\\chromedriver.exe"
+    # PATH SANTI
+    #driver_path = "C:\\chromedriver\\chromedriver.exe"
+    # PATH TOMI
+    #driver_path = "C:\\chromedriver\\chromedriver.exe"
+    # PATH JO
+    #driver_path = "C:\\chromedriver\\chromedriver.exe"
+
+    #service = Service(driver_path)
+    return service
+
+def get_links(url):
+    
+    service = start_driver()
+
+    driver = webdriver.Chrome(service=service)
     driver.get(url)
 
     time.sleep(3) 
@@ -230,7 +251,7 @@ def crear_csv():
 
 
 inicio = 1
-fin = 5
+fin = 200
 crear_csv()
 for i in range(inicio,fin): 
     url = ""
