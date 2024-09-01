@@ -7,8 +7,8 @@ import { IntegerInput } from "~~/components/scaffold-eth";
 export const PredecirPrecio = () => {
   const [superficie_total, setSuperficie_total] = useState<string>("");
   const [superficie_cubierta, setSuperficie_cubierta] = useState<string>("");
-  const [precio_medio_localidad, setPrecio_medio_localidad] = useState<string>("");
-  const [precio_m2, setPrecio_m2] = useState<string>("");
+  const [cantidad_dormitorios, setCantidad_dormitorios] = useState<string>("");
+  const [cantidad_baños, setCantidadBaños] = useState<string>("");
   const [prediction, setPrediction] = useState<number | null>(null);
   const [provincias, setProvincias] = useState<any[]>([]);
   const [selectedProvincia, setSelectedProvincia] = useState<string>("");
@@ -23,12 +23,12 @@ export const PredecirPrecio = () => {
     setSuperficie_cubierta(String(value));
   };
 
-  const handlePrecioMedioLocalidadChange = (value: string | bigint) => {
-    setPrecio_medio_localidad(String(value));
+  const handleCantidadDormitoriosChange = (value: string | bigint) => {
+    setCantidad_dormitorios(String(value));
   };
 
-  const handlePrecioM2Change = (value: string | bigint) => {
-    setPrecio_m2(String(value));
+  const handleCantidadBañosChange = (value: string | bigint) => {
+    setCantidadBaños(String(value));
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -38,14 +38,16 @@ export const PredecirPrecio = () => {
     console.log('Localidad seleccionada:', selectedLocalidad);
     console.log('Superficie Total:', superficie_total);
     console.log('Superficie Cubierta:', superficie_cubierta);
-    console.log('Precio Medio Localidad:', precio_medio_localidad);
-    console.log('Precio m²:', precio_m2);
+    console.log('Cantidad de dormitorios:', cantidad_dormitorios);
+    console.log('Cantidad de baños:', cantidad_baños);
       
     axios.post('http://localhost:5000/predict', {
       superficie_total: parseFloat(superficie_total),
       superficie_cubierta: parseFloat(superficie_cubierta),
-      precio_medio_localidad: parseFloat(precio_medio_localidad),
-      precio_m2: parseFloat(precio_m2),
+      cantidad_dormitorios: parseFloat(cantidad_dormitorios),
+      cantidad_baños: parseFloat(cantidad_baños),
+      provincia: selectedProvincia,
+      localidad: selectedLocalidad
     })
     .then(response => {
       setPrediction(response.data.prediction);
@@ -137,13 +139,13 @@ export const PredecirPrecio = () => {
         </div>
         <br />
         <div>
-          <label className="text-md font-bold">Precio Medio Localidad</label>
-          <IntegerInput value={precio_medio_localidad} onChange={handlePrecioMedioLocalidadChange} placeholder="Ingresar precio medio localidad" />
+          <label className="text-md font-bold">Cantidad de dormitorios</label>
+          <IntegerInput value={cantidad_dormitorios} onChange={handleCantidadDormitoriosChange} placeholder="Ingresar la cantidad de dormitorios" />
         </div>
         <br />
         <div>
-          <label className="text-md font-bold">Precio m²</label>
-          <IntegerInput value={precio_m2} onChange={handlePrecioM2Change} placeholder="Ingresar precio m²" />
+          <label className="text-md font-bold">Cantidad de baños</label>
+          <IntegerInput value={cantidad_baños} onChange={handleCantidadBañosChange} placeholder="Ingresar cantidad de baños" />
         </div>
         <br />
         <button type="submit" className="btn btn-primary">Predecir</button>

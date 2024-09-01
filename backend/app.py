@@ -4,11 +4,9 @@ from flask_cors import CORS
 import joblib
 import pandas as pd
 
+
 app = Flask(__name__)
 CORS(app)  # Habilitar CORS para todos los endpoints
-
-# Cargar el modelo
-#model = joblib.load('model.pkl')
 
 # Cargar el DataFrame del CSV al inicio
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,23 +14,31 @@ data_dir = 'data'
 filename = 'precios_por_localidad_bs_as.csv'
 filepath = os.path.join(current_dir, data_dir, filename)
 
+# Cargar el modelo
+model_path = os.path.join(current_dir, 'modelo_filtrado.pkl')
+model = joblib.load(model_path)
+
 df_localidades = pd.read_csv(filepath)
 
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
+    print(data)
     # Obtener los datos del cuerpo de la solicitud POST
     superficie_total = data['superficie_total']
-    precio_m2_medio_localidad = data['precio_m2_medio_localidad']
-    precio_medio_localidad = data['precio_medio_localidad']
-    precio_m2 = data['precio_m2']
+    superficie_cubierta = data['superficie_cubierta']
+    cantidad_dormitorios = data['cantidad_dormitorios']
+    cantidad_baños = data['cantidad_baños']
 
-    # Realizar la predicción con el modelo cargado
- #   prediction = model.predict([[superficie_total, precio_m2_medio_localidad, precio_medio_localidad, precio_m2]])
+    localidad = df_localidades[df_localidades['localidad'] == data['localidad']]
+    datos_entrada = [[superficie_total, superficie_cubierta, cantidad_baños, cantidad_dormitorios, 1000, localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0]]]
 
+    print(datos_entrada)
+
+    prediction = model.predict(datos_entrada)
+    print(prediction)
     # Devolver la predicción como JSON
-#    return jsonify({'prediction': prediction.tolist()})
-    return 199
+    return jsonify({'prediction': prediction.tolist()})
 
 @app.route('/api/provincias', methods=['GET'])
 def get_provincias():
