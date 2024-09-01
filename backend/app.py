@@ -4,7 +4,6 @@ from flask_cors import CORS
 import joblib
 import pandas as pd
 
-
 app = Flask(__name__)
 CORS(app)  # Habilitar CORS para todos los endpoints
 
@@ -14,9 +13,10 @@ data_dir = 'data'
 filename = 'precios_por_localidad_bs_as.csv'
 filepath = os.path.join(current_dir, data_dir, filename)
 
-# Cargar el modelo
 model_path = os.path.join(current_dir, 'modelo_filtrado.pkl')
+scaler_path = os.path.join(current_dir, 'scaler.joblib')
 model = joblib.load(model_path)
+scaler = joblib.load(scaler_path)
 
 df_localidades = pd.read_csv(filepath)
 
@@ -31,11 +31,12 @@ def predict():
     cantidad_baños = data['cantidad_baños']
 
     localidad = df_localidades[df_localidades['localidad'] == data['localidad']]
-    datos_entrada = [[superficie_total, superficie_cubierta, cantidad_baños, cantidad_dormitorios, 1000, localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0]]]
+    datos_entrada = [[superficie_total, superficie_cubierta, cantidad_baños, cantidad_dormitorios, localidad["precio_m2_medio"].values[0], localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0]]]
 
-    print(datos_entrada)
+    datos_entrada_escalados = scaler.transform(datos_entrada)
+    print("Datos escalados:", datos_entrada_escalados)
 
-    prediction = model.predict(datos_entrada)
+    prediction = model.predict(datos_entrada_escalados)
     print(prediction)
     # Devolver la predicción como JSON
     return jsonify({'prediction': prediction.tolist()})
@@ -61,7 +62,6 @@ def get_localidades():
         localidades = df_localidades.to_dict(orient='records')
 
     return jsonify(localidades)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
