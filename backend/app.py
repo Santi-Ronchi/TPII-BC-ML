@@ -29,6 +29,7 @@ def predict():
     superficie_cubierta = data['superficie_cubierta']
     cantidad_dormitorios = data['cantidad_dormitorios']
     cantidad_baños = data['cantidad_baños']
+    
 
     localidad = df_localidades[df_localidades['localidad'] == data['localidad']]
     datos_entrada = [[superficie_total, superficie_cubierta, cantidad_baños, cantidad_dormitorios, localidad["precio_m2_medio"].values[0], localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0]]]
