@@ -7,14 +7,13 @@ import pandas as pd
 app = Flask(__name__)
 CORS(app)  # Habilitar CORS para todos los endpoints
 
-# Cargar el DataFrame del CSV al inicio
 current_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = 'data'
-filename = 'precios_por_localidad_bs_as.csv'
+filename = 'precios_por_localidad.csv'
 filepath = os.path.join(current_dir, data_dir, filename)
 
-model_path = os.path.join(current_dir, 'modelo_filtrado.pkl')
-scaler_path = os.path.join(current_dir, 'scaler.joblib')
+model_path = os.path.join(current_dir, 'modelo_filtrado_v2.pkl')
+scaler_path = os.path.join(current_dir, 'scaler_v2.joblib')
 model = joblib.load(model_path)
 scaler = joblib.load(scaler_path)
 
@@ -24,42 +23,47 @@ df_localidades = pd.read_csv(filepath)
 def predict():
     data = request.get_json()
     print(data)
-    # Obtener los datos del cuerpo de la solicitud POST
+    
     superficie_total = data['superficie_total']
     superficie_cubierta = data['superficie_cubierta']
     cantidad_dormitorios = data['cantidad_dormitorios']
     cantidad_baños = data['cantidad_baños']
-    
+    cantidad_ambientes = data['cantidad_ambientes']
+
 
     localidad = df_localidades[df_localidades['localidad'] == data['localidad']]
-    datos_entrada = [[superficie_total, superficie_cubierta, cantidad_baños, cantidad_dormitorios, localidad["precio_m2_medio"].values[0], localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0]]]
+
+
+#   Me parece que es mas razonable la prediccion de V1
+
+#   v1 --> sup_total, sup_cubierta, cant_baños, cant_dorm, precio_m2, precio_m2_medio_localidad, precio_medio_localidad
+#    datos_entrada = [[superficie_total, superficie_cubierta, cantidad_baños, cantidad_dormitorios, localidad["precio_m2_medio"].values[0], localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0]]]
+
+#   v2 --> sup_total, precio_m2, precio_m2_medio_localidad, precio_medio_localidad, sup_cubierta, cant_dorm, cant_baños, cant_ambientes
+    datos_entrada = [[superficie_total, localidad["precio_m2_medio"].values[0], localidad["precio_m2_medio"].values[0], localidad["precio_medio"].values[0], superficie_cubierta, cantidad_dormitorios, cantidad_baños, cantidad_ambientes]]
+
 
     datos_entrada_escalados = scaler.transform(datos_entrada)
     print("Datos escalados:", datos_entrada_escalados)
 
     prediction = model.predict(datos_entrada_escalados)
     print(prediction)
-    # Devolver la predicción como JSON
     return jsonify({'prediction': prediction.tolist()})
 
 @app.route('/api/provincias', methods=['GET'])
 def get_provincias():
-    # Suponiendo que la columna de provincias se llama 'provincia'
     provincias_unicas = df_localidades['provincia'].unique().tolist()
     print(provincias_unicas)
     return jsonify(provincias_unicas)
 
 @app.route('/api/localidades', methods=['GET'])
 def get_localidades():
-    # Obtener el parámetro de consulta 'provincia' de la URL
     provincia_seleccionada = request.args.get('provincia')
 
     if provincia_seleccionada:
-        # Filtrar las localidades en base a la provincia seleccionada
         localidades_filtradas = df_localidades[df_localidades['provincia'] == provincia_seleccionada]
         localidades = localidades_filtradas.to_dict(orient='records')
     else:
-        # Si no se pasa ninguna provincia, devolver todas las localidades
         localidades = df_localidades.to_dict(orient='records')
 
     return jsonify(localidades)

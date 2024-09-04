@@ -9,6 +9,7 @@ export const PredecirPrecio = () => {
   const [superficie_cubierta, setSuperficie_cubierta] = useState<string>("");
   const [cantidad_dormitorios, setCantidad_dormitorios] = useState<string>("");
   const [cantidad_baños, setCantidadBaños] = useState<string>("");
+  const [cantidad_ambientes, setCantidad_ambientes] = useState<string>("");
   const [prediction, setPrediction] = useState<number | null>(null);
   const [provincias, setProvincias] = useState<any[]>([]);
   const [selectedProvincia, setSelectedProvincia] = useState<string>("");
@@ -17,6 +18,10 @@ export const PredecirPrecio = () => {
 
   const handleSuperficieTotalChange = (value: string | bigint) => {
     setSuperficie_total(String(value));
+  };
+
+  const handleCantidadAmbientesChange = (value: string | bigint) => {
+    setCantidad_ambientes(String(value));
   };
 
   const handleSuperficieCubiertaChange = (value: string | bigint) => {
@@ -40,12 +45,14 @@ export const PredecirPrecio = () => {
     console.log('Superficie Cubierta:', superficie_cubierta);
     console.log('Cantidad de dormitorios:', cantidad_dormitorios);
     console.log('Cantidad de baños:', cantidad_baños);
+    console.log('Cantidad de ambientes:', cantidad_ambientes);
       
     axios.post('http://localhost:5000/predict', {
       superficie_total: parseFloat(superficie_total),
       superficie_cubierta: parseFloat(superficie_cubierta),
       cantidad_dormitorios: parseFloat(cantidad_dormitorios),
       cantidad_baños: parseFloat(cantidad_baños),
+      cantidad_ambientes: parseFloat(cantidad_ambientes),
       provincia: selectedProvincia,
       localidad: selectedLocalidad
     })
@@ -136,6 +143,11 @@ export const PredecirPrecio = () => {
         <div>
           <label className="text-md font-bold">Superficie cubierta</label>
           <IntegerInput value={superficie_cubierta} onChange={handleSuperficieCubiertaChange} placeholder="Ingresar superficie cubierta" />
+        </div>
+        <br />
+        <div>
+          <label className="text-md font-bold">Cantidad de Ambientes</label>
+          <IntegerInput value={cantidad_ambientes} onChange={handleCantidadAmbientesChange} placeholder="Ingresar la cantidad de ambientes" />
         </div>
         <br />
         <div>
