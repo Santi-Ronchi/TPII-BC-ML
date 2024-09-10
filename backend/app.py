@@ -11,7 +11,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = 'data'
 #filename = 'precios_por_localidad.csv'
 # PRUEBA CON EL ULTIMO MODELO
-filename = 'precios_por_localidad_prov_v2.csv'
+filename = 'precios_por_localidad.csv'
 filepath = os.path.join(current_dir, data_dir, filename)
 
 df_localidades = pd.read_csv(filepath)
@@ -21,8 +21,8 @@ scaler_path = os.path.join(current_dir, 'scaler_v1.joblib')
 model = joblib.load(model_path)
 scaler = joblib.load(scaler_path)
 
-model_path_prov = os.path.join(current_dir, 'modelo_filtrado_prov_v2.pkl')
-scaler_path_prov = os.path.join(current_dir, 'scaler_prov_v2.joblib')
+model_path_prov = os.path.join(current_dir, 'modelo_filtrado_prov_v3.pkl')
+scaler_path_prov = os.path.join(current_dir, 'scaler_prov_v3.joblib')
 model_prov = joblib.load(model_path_prov)
 scaler_prov = joblib.load(scaler_path_prov)
 
@@ -45,13 +45,7 @@ def predict():
         datos_entrada_escalados = scaler.transform(datos_entrada)
         prediction = model.predict(datos_entrada_escalados)
     else:
-        # ANTERIOR AL ULTIMO modelo_filtrado_prov scaler_prov precios_por_localidad_v1
-        #datos_entrada = [[superficie_cubierta,superficie_total,localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0],cantidad_ambientes,0,cantidad_dormitorios,cantidad_baños]]    
-        #datos_entrada_escalados = scaler_prov.transform(datos_entrada)
-        #prediction = model_prov.predict(datos_entrada_escalados)
-        
-        # ULTIMA PRUEBA
-        datos_entrada = [[superficie_total,superficie_cubierta,localidad["precio_m2_medio"].values[0],localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0]]]    
+        datos_entrada = [[superficie_total,superficie_cubierta,localidad["precio_m2_medio"].values[0],localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0],cantidad_baños]]    
         datos_entrada_escalados = scaler_prov.transform(datos_entrada)
         prediction = model_prov.predict(datos_entrada_escalados)
 
