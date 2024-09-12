@@ -38,7 +38,14 @@ export const PredecirPrecio = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    
+  
+    if (!selectedProvincia || !selectedLocalidad || !superficie_total || !superficie_cubierta || !cantidad_dormitorios || !cantidad_baños || !cantidad_ambientes) {
+      console.error('Faltan campos obligatorios');
+      setPrediction(null);
+      alert('Por favor, completa todos los campos.');
+      return; 
+  }
+
     console.log('Provincia seleccionada:', selectedProvincia);
     console.log('Localidad seleccionada:', selectedLocalidad);
     console.log('Superficie Total:', superficie_total);
@@ -81,7 +88,7 @@ export const PredecirPrecio = () => {
   const handleProvinciaChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedProvincia = e.target.value;
     setSelectedProvincia(selectedProvincia);
-  
+    setSelectedLocalidad('');
     if (selectedProvincia) {
       fetchLocalidades(selectedProvincia);
     }
