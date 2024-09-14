@@ -81,6 +81,9 @@ def predict():
     parrilla = promedio_propiedades_con_parrilla(propiedades_similares)
     print(f"El {parrilla:.2f}% de propiedades similares a la tuya cuentan con parrilla")
 
+    apto_mascota = promedio_propiedades_que_aceptan_mascotas(propiedades_similares)
+    print(f"El {apto_mascota:.2f}% de propiedades similares a la tuya admiten mascotas")
+
     return jsonify({'prediction': prediction.tolist()})
 
 @app.route('/api/provincias', methods=['GET'])
@@ -153,6 +156,10 @@ def promedio_propiedades_con_parrilla(df_propiedades):
     promedio_propiedad_con_parrilla = (len(promedio_propiedad_con_parrilla) / len(df_propiedades)) * 100
     return promedio_propiedad_con_parrilla
 
+def promedio_propiedades_que_aceptan_mascotas(df_propiedades):
+    promedio_propiedad_apto_mascota = df_propiedades[(df_propiedades['permite_mascotas'] > 0)]
+    promedio_propiedad_apto_mascota = (len(promedio_propiedad_apto_mascota) / len(df_propiedades)) * 100
+    return promedio_propiedad_apto_mascota
 
 
 if __name__ == '__main__':
