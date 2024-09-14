@@ -8,9 +8,8 @@ app = Flask(__name__)
 CORS(app) 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-data_dir = 'data'
-filename = 'precios_por_localidad_v5.csv'
-filepath = os.path.join(current_dir, data_dir, filename)
+filename = 'data/precios_por_localidad_v5.csv'
+filepath = os.path.join(current_dir, filename)
 
 df_localidades = pd.read_csv(filepath)
 
@@ -48,6 +47,14 @@ def predict():
         prediction = model_prov.predict(datos_entrada_escalados)
 
     print("Prediccion: ", prediction)
+    propiedades_publicadas = obtener_propiedades_en_localidad(data["provincia"], data["localidad"])
+    print("Hay " + str(propiedades_publicadas.shape[0]) + " propiedades publicadas en la localidad de " + data["localidad"] + ", provincia de " + data["provincia"])
+
+    
+    propiedades_similares = obtener_propiedades_similares(propiedades_publicadas, cantidad_ambientes, cantidad_baños, superficie_total, superficie_cubierta)
+    print("Hay " + str(propiedades_similares.shape[0]) + " propiedades similares publicadas en la localidad de " + data["localidad"] + ", provincia de " + data["provincia"])
+    
+    
     return jsonify({'prediction': prediction.tolist()})
 
 @app.route('/api/provincias', methods=['GET'])
@@ -67,6 +74,32 @@ def get_localidades():
         localidades = df_localidades.to_dict(orient='records')
 
     return jsonify(localidades)
+
+def obtener_propiedades_en_localidad(provincia, localidad):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    print(provincia)
+    if provincia == "Ciudad Autonoma de Buenos Aires":
+        filename = 'data/inmuebles_CABA.csv'
+    else:
+        filename = 'data/inmuebles_sin_CABA.csv'
+    
+    filepath = os.path.join(current_dir, filename)
+    df_propiedades = pd.read_csv(filepath)
+
+    df_propiedades = df_propiedades[(df_propiedades['provincia'] == provincia) & (df_propiedades['localidad'] == localidad)]
+    
+    return df_propiedades
+
+
+def obtener_propiedades_similares(df_propiedades, ambientes, banios, superficie_total, superficie_cubierta):
+    df_propiedades['cantidad_de_ambiente'] = pd.to_numeric(df_propiedades['cantidad_de_ambiente'], errors='coerce')
+    df_propiedades['cantidad_de_banios'] = pd.to_numeric(df_propiedades['cantidad_de_banios'], errors='coerce')
+    df_propiedades['superficie_total'] = pd.to_numeric(df_propiedades['superficie_total'], errors='coerce')
+    df_propiedades['superficie_cubierta'] = pd.to_numeric(df_propiedades['superficie_cubierta'], errors='coerce')
+    
+    df_propiedades = df_propiedades[(df_propiedades['cantidad_de_ambiente'] == ambientes) & (abs(df_propiedades['cantidad_de_banios'] - banios) <= 1)]
+    df_propiedades = df_propiedades[(abs(df_propiedades['superficie_total'] - superficie_total) <= 10) & (abs(df_propiedades['superficie_cubierta'] - superficie_cubierta) <= 10)]
+    return df_propiedades
 
 if __name__ == '__main__':
     app.run(debug=True)
