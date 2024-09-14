@@ -87,7 +87,24 @@ def predict():
     pileta = promedio_propiedades_con_pileta(propiedades_similares)
     print(f"El {pileta:.2f}% de propiedades similares a la tuya cuentan con pileta")
 
-    return jsonify({'prediction': prediction.tolist()})
+    return jsonify({
+    'prediction': prediction.tolist(),
+    'caracteristicas': {
+        'propiedadesPublicadas': str(propiedades_publicadas.shape[0]),
+        'propiedadesSimilares': str(propiedades_similares.shape[0]),
+        'precioPromedio': str(precio_promedio),
+        'precioMinimo': str(precio_minimo),
+        'precioMaximo': str(precio_maximo),
+        'metrosTotalesPromedio': str(m_totales_promedio),
+        'metrosCubiertosPromedio': str(m_cubiertos_promedio),
+        'cocheraPorcentaje': str(cocheras),
+        'seguridadPorcentaje': str(seguridad),
+        'aireLibrePorcentaje': str(aire_libre),
+        'parrillaPorcentaje': str(parrilla),
+        'aptoMascotaPorcentaje': str(apto_mascota),
+        'piletaPorcentaje': str(pileta)
+    }
+    })
 
 @app.route('/api/provincias', methods=['GET'])
 def get_provincias():

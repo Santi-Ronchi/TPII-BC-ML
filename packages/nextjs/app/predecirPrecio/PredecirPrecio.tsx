@@ -5,12 +5,33 @@ import axios from 'axios';
 import { IntegerInput } from "~~/components/scaffold-eth";
 
 export const PredecirPrecio = () => {
+
+  interface PredictionData {
+    prediction: number;
+    caracteristicas: {
+      propiedadesPublicadas: number;
+      propiedadesSimilares: number;
+      precioPromedio: number;
+      precioMinimo: number; 
+      precioMaximo: number; 
+      metrosTotalesPromedio: number; 
+      metrosCubiertosPromedio: number;
+      cocheraPorcentaje: number;
+      seguridadPorcentaje: number;
+      aireLibrePorcentaje: number;
+      parrillaPorcentaje: number;
+      aptoMascotaPorcentaje: number;
+      piletaPorcentaje: number;
+    };
+  };
+
+
   const [superficie_total, setSuperficie_total] = useState<string>("");
   const [superficie_cubierta, setSuperficie_cubierta] = useState<string>("");
   const [cantidad_dormitorios, setCantidad_dormitorios] = useState<string>("");
   const [cantidad_baños, setCantidadBaños] = useState<string>("");
   const [cantidad_ambientes, setCantidad_ambientes] = useState<string>("");
-  const [prediction, setPrediction] = useState<number | null>(null);
+  const [prediction, setPrediction] = useState<PredictionData | null>(null);
   const [provincias, setProvincias] = useState<any[]>([]);
   const [selectedProvincia, setSelectedProvincia] = useState<string>("");
   const [localidades, setLocalidades] = useState<any[]>([]);
@@ -43,9 +64,9 @@ export const PredecirPrecio = () => {
       console.error('Faltan campos obligatorios');
       setPrediction(null);
       alert('Por favor, completa todos los campos.');
-      return; 
-  }
-
+      return;
+    }
+  
     console.log('Provincia seleccionada:', selectedProvincia);
     console.log('Localidad seleccionada:', selectedLocalidad);
     console.log('Superficie Total:', superficie_total);
@@ -53,7 +74,7 @@ export const PredecirPrecio = () => {
     console.log('Cantidad de dormitorios:', cantidad_dormitorios);
     console.log('Cantidad de baños:', cantidad_baños);
     console.log('Cantidad de ambientes:', cantidad_ambientes);
-      
+  
     axios.post('http://localhost:5000/predict', {
       superficie_total: parseFloat(superficie_total),
       superficie_cubierta: parseFloat(superficie_cubierta),
@@ -64,12 +85,18 @@ export const PredecirPrecio = () => {
       localidad: selectedLocalidad
     })
     .then(response => {
-      setPrediction(response.data.prediction);
+      const { prediction, caracteristicas } = response.data;
+      setPrediction({
+        prediction,
+        caracteristicas
+      });
     })
     .catch(error => {
       console.error('There was an error!', error);
     });
   };
+    
+  
 
   const fetchProvincias = async () => {
     try {
@@ -170,10 +197,25 @@ export const PredecirPrecio = () => {
         <button type="submit" className="btn btn-primary">Predecir</button>
       </form>
       {prediction && (
-        <div>
-          <h2 className="text-lg font-bold">Predicción: {prediction}</h2>
-        </div>
-      )}
+      <div>
+        <h2 className="text-lg font-bold">Predicción: {prediction.prediction}</h2>
+        <p>Propiedades publicadas en la localidad: {prediction.caracteristicas.propiedadesPublicadas}</p>
+        <p>Propiedades similares: {prediction.caracteristicas.propiedadesSimilares}</p>
+        <p>Precio promedio: {prediction.caracteristicas.precioPromedio}</p>
+        <p>Precio mínimo: {prediction.caracteristicas.precioMinimo}</p>
+        <p>Precio máximo: {prediction.caracteristicas.precioMaximo}</p>
+        <p>Promedio de metros totales: {prediction.caracteristicas.metrosTotalesPromedio}</p>
+        <p>Promedio de metros cubiertos: {prediction.caracteristicas.metrosCubiertosPromedio}</p>
+        <p>Porcentaje con cochera: {prediction.caracteristicas.cocheraPorcentaje}%</p>
+        <p>Porcentaje con seguridad: {prediction.caracteristicas.seguridadPorcentaje}%</p>
+        <p>Porcentaje con patio, terraza o balcón: {prediction.caracteristicas.aireLibrePorcentaje}%</p>
+        <p>Porcentaje con parrilla: {prediction.caracteristicas.parrillaPorcentaje}%</p>
+        <p>Porcentaje que aceptan mascotas: {prediction.caracteristicas.aptoMascotaPorcentaje}%</p>
+        <p>Porcentaje con pileta: {prediction.caracteristicas.piletaPorcentaje}%</p>
+
+      </div>
+    )}
+
     </div>
   );
 };
