@@ -63,11 +63,18 @@ def predict():
     precio_maximo = obtener_precio_mas_alto(propiedades_similares)
     print("El precio mas alto para departamentos similares es: ", precio_maximo)
     
-    if metros_cubiertos_promedio(propiedades_similares) < superficie_cubierta:
-        print("Su propiedad tiene mayor cantidad de metros cubiertos que el promedio")
+    m_totales_promedio = metros_totales_promedio(propiedades_similares)
+    print("La cantidad promedio de metros cuadrados es: " + str(m_totales_promedio))
 
-    if metros_totales_promedio(propiedades_similares) < superficie_total:
-        print("Su propiedad tiene mayor cantidad de metros que el promedio")
+    m_cubiertos_promedio = metros_cubiertos_promedio(propiedades_similares)
+    print("La cantidad promedio de metros cuadrados cubiertos es: " + str(m_cubiertos_promedio))
+
+    cocheras = promedio_propiedades_con_cochera(propiedades_similares)
+    print(f"El {cocheras:.2f}% de propiedades similares a la tuya cuentan con cochera")
+
+    seguridad = promedio_propiedades_con_seguridad(propiedades_similares)
+    print(f"El {seguridad:.2f}% de propiedades similares a la tuya cuentan con seguridad")
+
 
     return jsonify({'prediction': prediction.tolist()})
 
@@ -102,7 +109,7 @@ def obtener_propiedades_en_localidad(provincia, localidad):
     return df_propiedades
 
 def obtener_propiedades_similares(df_propiedades, ambientes, banios, superficie_total, superficie_cubierta):  
-    df_propiedades = df_propiedades[(df_propiedades['cantidad_de_ambiente'] == ambientes) & (abs(df_propiedades['cantidad_de_banios'] - banios) <= 1)]
+    df_propiedades = df_propiedades[(df_propiedades['cantidad_de_ambiente'] == ambientes) & (abs(df_propiedades['cantidad_de_banios'] + df_propiedades['cantidad_de_toiletes'] - banios) <= 2)]
     #df_propiedades = df_propiedades[(abs(df_propiedades['superficie_total'] - superficie_total) <= 20) & (abs(df_propiedades['superficie_cubierta'] - superficie_cubierta) <= 20)]
     return df_propiedades
 
@@ -120,6 +127,16 @@ def metros_cubiertos_promedio(df_propiedades):
 
 def metros_totales_promedio(df_propiedades):
     return df_propiedades['superficie_total'].mean()
+
+def promedio_propiedades_con_cochera(df_propiedades):
+    propiedades_con_cochera = df_propiedades[df_propiedades['cantidad_de_cocheras'] > 0]
+    porcentaje_con_cochera = (len(propiedades_con_cochera) / len(df_propiedades)) * 100
+    return porcentaje_con_cochera
+
+def promedio_propiedades_con_seguridad(df_propiedades):
+    propiedades_con_seguridad = df_propiedades[(df_propiedades['alarma'] > 0) | (df_propiedades['vigilancia'] > 0)]
+    porcentaje_con_seguridad = (len(propiedades_con_seguridad) / len(df_propiedades)) * 100
+    return porcentaje_con_seguridad
 
 if __name__ == '__main__':
     app.run(debug=True)
