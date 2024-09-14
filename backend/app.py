@@ -5,24 +5,22 @@ import joblib
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app)  # Habilitar CORS para todos los endpoints
+CORS(app) 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = 'data'
-#filename = 'precios_por_localidad.csv'
-# PRUEBA CON EL ULTIMO MODELO
 filename = 'precios_por_localidad_v5.csv'
 filepath = os.path.join(current_dir, data_dir, filename)
 
 df_localidades = pd.read_csv(filepath)
 
-model_path = os.path.join(current_dir, 'modelo_filtrado_v1.pkl')
-scaler_path = os.path.join(current_dir, 'scaler_v1.joblib')
+model_path = os.path.join(current_dir, 'data\modelos\modelo_filtrado_v1.pkl')
+scaler_path = os.path.join(current_dir, 'data\modelos\scaler_v1.joblib')
 model = joblib.load(model_path)
 scaler = joblib.load(scaler_path)
 
-model_path_prov = os.path.join(current_dir, 'modelo_filtrado_prov_v5.pkl')
-scaler_path_prov = os.path.join(current_dir, 'scaler_prov_v5.joblib')
+model_path_prov = os.path.join(current_dir, 'data\modelos\modelo_filtrado_prov_v5.pkl')
+scaler_path_prov = os.path.join(current_dir, 'data\modelos\scaler_prov_v5.joblib')
 model_prov = joblib.load(model_path_prov)
 scaler_prov = joblib.load(scaler_path_prov)
 
@@ -45,15 +43,9 @@ def predict():
         datos_entrada_escalados = scaler.transform(datos_entrada)
         prediction = model.predict(datos_entrada_escalados)
     else:
-        # prov_3
-        #datos_entrada = [[superficie_total,superficie_cubierta,localidad["precio_m2_medio"].values[0],localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0],cantidad_baños]]    
-        
-        # prov_4
         datos_entrada = [[superficie_total,superficie_cubierta,localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0],localidad["precio_m2_medio"].values[0]]]    
         datos_entrada_escalados = scaler_prov.transform(datos_entrada)
         prediction = model_prov.predict(datos_entrada_escalados)
-
-
 
     print("Prediccion: ", prediction)
     return jsonify({'prediction': prediction.tolist()})
