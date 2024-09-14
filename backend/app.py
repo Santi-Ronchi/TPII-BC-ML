@@ -76,8 +76,10 @@ def predict():
     print(f"El {seguridad:.2f}% de propiedades similares a la tuya cuentan con seguridad")
 
     aire_libre = promedio_propiedades_con_patio_o_terraza(propiedades_similares)
-    print(f"El {aire_libre:.2f}% de propiedades similares a la tuya cuentan con patio o terraza")
+    print(f"El {aire_libre:.2f}% de propiedades similares a la tuya cuentan con patio, balcon o terraza")
 
+    parrilla = promedio_propiedades_con_parrilla(propiedades_similares)
+    print(f"El {parrilla:.2f}% de propiedades similares a la tuya cuentan con parrilla")
 
     return jsonify({'prediction': prediction.tolist()})
 
@@ -145,6 +147,12 @@ def promedio_propiedades_con_patio_o_terraza(df_propiedades):
     promedio_propiedad_con_patio_o_terraza = df_propiedades[(df_propiedades['patio'] > 0) | (df_propiedades['jardin'] > 0) | (df_propiedades['terraza'] > 0) | (df_propiedades['balcon'] > 0) | (df_propiedades['quincho'] > 0)]
     promedio_propiedad_con_patio_o_terraza = (len(promedio_propiedad_con_patio_o_terraza) / len(df_propiedades)) * 100
     return promedio_propiedad_con_patio_o_terraza
+
+def promedio_propiedades_con_parrilla(df_propiedades):
+    promedio_propiedad_con_parrilla = df_propiedades[(df_propiedades['parrilla'] > 0)]
+    promedio_propiedad_con_parrilla = (len(promedio_propiedad_con_parrilla) / len(df_propiedades)) * 100
+    return promedio_propiedad_con_parrilla
+
 
 
 if __name__ == '__main__':
