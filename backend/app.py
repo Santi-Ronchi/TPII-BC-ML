@@ -54,13 +54,26 @@ def predict():
     propiedades_similares = obtener_propiedades_similares(propiedades_publicadas, cantidad_ambientes, cantidad_baños, superficie_total, superficie_cubierta)
     print("Hay " + str(propiedades_similares.shape[0]) + " propiedades similares publicadas en la localidad de " + data["localidad"] + ", provincia de " + data["provincia"])
     
+    precio_promedio = obtener_promedio_precios(propiedades_similares)
+    print("El precio promedio para departamentos similares es: ", precio_promedio)
     
+    precio_minimo = obtener_precio_mas_bajo(propiedades_similares)
+    print("El precio mas bajo para departamentos similares es: ", precio_minimo)
+    
+    precio_maximo = obtener_precio_mas_alto(propiedades_similares)
+    print("El precio mas alto para departamentos similares es: ", precio_maximo)
+    
+    if metros_cubiertos_promedio(propiedades_similares) < superficie_cubierta:
+        print("Su propiedad tiene mayor cantidad de metros cubiertos que el promedio")
+
+    if metros_totales_promedio(propiedades_similares) < superficie_total:
+        print("Su propiedad tiene mayor cantidad de metros que el promedio")
+
     return jsonify({'prediction': prediction.tolist()})
 
 @app.route('/api/provincias', methods=['GET'])
 def get_provincias():
     provincias_unicas = df_localidades['provincia'].unique().tolist()
-    print(provincias_unicas)
     return jsonify(provincias_unicas)
 
 @app.route('/api/localidades', methods=['GET'])
@@ -77,29 +90,36 @@ def get_localidades():
 
 def obtener_propiedades_en_localidad(provincia, localidad):
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    print(provincia)
     if provincia == "Ciudad Autonoma de Buenos Aires":
-        filename = 'data/inmuebles_CABA.csv'
+        filename = 'data/inmuebles_CABA_post.csv'
     else:
-        filename = 'data/inmuebles_sin_CABA.csv'
+        filename = 'data/inmuebles_sin_CABA_post.csv'
     
     filepath = os.path.join(current_dir, filename)
     df_propiedades = pd.read_csv(filepath)
-
     df_propiedades = df_propiedades[(df_propiedades['provincia'] == provincia) & (df_propiedades['localidad'] == localidad)]
     
     return df_propiedades
 
-
-def obtener_propiedades_similares(df_propiedades, ambientes, banios, superficie_total, superficie_cubierta):
-    df_propiedades['cantidad_de_ambiente'] = pd.to_numeric(df_propiedades['cantidad_de_ambiente'], errors='coerce')
-    df_propiedades['cantidad_de_banios'] = pd.to_numeric(df_propiedades['cantidad_de_banios'], errors='coerce')
-    df_propiedades['superficie_total'] = pd.to_numeric(df_propiedades['superficie_total'], errors='coerce')
-    df_propiedades['superficie_cubierta'] = pd.to_numeric(df_propiedades['superficie_cubierta'], errors='coerce')
-    
+def obtener_propiedades_similares(df_propiedades, ambientes, banios, superficie_total, superficie_cubierta):  
     df_propiedades = df_propiedades[(df_propiedades['cantidad_de_ambiente'] == ambientes) & (abs(df_propiedades['cantidad_de_banios'] - banios) <= 1)]
-    df_propiedades = df_propiedades[(abs(df_propiedades['superficie_total'] - superficie_total) <= 10) & (abs(df_propiedades['superficie_cubierta'] - superficie_cubierta) <= 10)]
+    #df_propiedades = df_propiedades[(abs(df_propiedades['superficie_total'] - superficie_total) <= 20) & (abs(df_propiedades['superficie_cubierta'] - superficie_cubierta) <= 20)]
     return df_propiedades
+
+def obtener_promedio_precios(df_propiedades):
+    return df_propiedades['precio'].mean()
+
+def obtener_precio_mas_bajo(df_propiedades):
+    return df_propiedades['precio'].min()
+
+def obtener_precio_mas_alto(df_propiedades):
+    return df_propiedades['precio'].max()
+
+def metros_cubiertos_promedio(df_propiedades):
+    return df_propiedades['superficie_cubierta'].mean()
+
+def metros_totales_promedio(df_propiedades):
+    return df_propiedades['superficie_total'].mean()
 
 if __name__ == '__main__':
     app.run(debug=True)
