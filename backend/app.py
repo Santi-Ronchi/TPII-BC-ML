@@ -54,55 +54,22 @@ def predict():
     propiedades_similares = obtener_propiedades_similares(propiedades_publicadas, cantidad_ambientes)
     print("Hay " + str(propiedades_similares.shape[0]) + " propiedades similares publicadas en la localidad de " + data["localidad"] + ", provincia de " + data["provincia"])
 
-    precio_promedio = obtener_promedio(propiedades_similares, "precio")
-    print("El precio promedio para departamentos similares es: ", precio_promedio)
-        
-    precio_minimo = obtener_minimo(propiedades_similares, "precio")
-    print("El precio mas bajo para departamentos similares es: ", precio_minimo)
-        
-    precio_maximo = obtener_maximo(propiedades_similares, "precio")
-    print("El precio mas alto para departamentos similares es: ", precio_maximo)
-        
-    m_totales_promedio = obtener_promedio(propiedades_similares,"superficie_total")
-    print("La cantidad promedio de metros cuadrados es: " + str(m_totales_promedio))
-
-    m_cubiertos_promedio = obtener_promedio(propiedades_similares,"superficie_cubierta")
-    print("La cantidad promedio de metros cuadrados cubiertos es: " + str(m_cubiertos_promedio))
-
-    cocheras = promedio_features_especiales(propiedades_similares,"cantidad_de_cocheras")
-    print(f"El {cocheras:.2f}% de propiedades similares a la tuya cuentan con cochera")
-
-    seguridad = promedio_propiedades_con_seguridad(propiedades_similares)
-    print(f"El {seguridad:.2f}% de propiedades similares a la tuya cuentan con seguridad")
-
-    aire_libre = promedio_propiedades_con_patio_o_terraza(propiedades_similares)
-    print(f"El {aire_libre:.2f}% de propiedades similares a la tuya cuentan con patio, balcon o terraza")
-
-    parrilla = promedio_features_especiales(propiedades_similares,"parrilla")
-    print(f"El {parrilla:.2f}% de propiedades similares a la tuya cuentan con parrilla")
-
-    apto_mascota = promedio_features_especiales(propiedades_similares,"permite_mascotas")
-    print(f"El {apto_mascota:.2f}% de propiedades similares a la tuya admiten mascotas")
-
-    pileta = promedio_features_especiales(propiedades_similares,"pileta")
-    print(f"El {pileta:.2f}% de propiedades similares a la tuya cuentan con pileta")
-
     return jsonify({
     'prediction': prediction.tolist(),
     'caracteristicas': {
         'propiedadesPublicadas': str(propiedades_publicadas.shape[0]),
         'propiedadesSimilares': str(propiedades_similares.shape[0]),
-        'precioPromedio': str(precio_promedio),
-        'precioMinimo': str(precio_minimo),
-        'precioMaximo': str(precio_maximo),
-        'metrosTotalesPromedio': str(m_totales_promedio),
-        'metrosCubiertosPromedio': str(m_cubiertos_promedio),
-        'cocheraPorcentaje': str(cocheras),
-        'seguridadPorcentaje': str(seguridad),
-        'aireLibrePorcentaje': str(aire_libre),
-        'parrillaPorcentaje': str(parrilla),
-        'aptoMascotaPorcentaje': str(apto_mascota),
-        'piletaPorcentaje': str(pileta)
+        'precioPromedio': str(obtener_promedio(propiedades_similares, "precio")),
+        'precioMinimo': str(obtener_minimo(propiedades_similares, "precio")),
+        'precioMaximo': str(obtener_maximo(propiedades_similares, "precio")),
+        'metrosTotalesPromedio': str(obtener_promedio(propiedades_similares,"superficie_total")),
+        'metrosCubiertosPromedio': str(obtener_promedio(propiedades_similares,"superficie_cubierta")),
+        'cocheraPorcentaje': str(promedio_features_especiales(propiedades_similares,"cantidad_de_cocheras")),
+        'seguridadPorcentaje': str(promedio_propiedades_con_seguridad(propiedades_similares)),
+        'aireLibrePorcentaje': str(promedio_propiedades_con_patio_o_terraza(propiedades_similares)),
+        'parrillaPorcentaje': str(promedio_features_especiales(propiedades_similares,"parrilla")),
+        'aptoMascotaPorcentaje': str(promedio_features_especiales(propiedades_similares,"permite_mascotas")),
+        'piletaPorcentaje': str(promedio_features_especiales(propiedades_similares,"pileta"))
     }
     })
 
