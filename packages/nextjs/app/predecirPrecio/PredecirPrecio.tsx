@@ -197,27 +197,32 @@ export const PredecirPrecio = () => {
         <button type="submit" className="btn btn-primary">Predecir</button>
       </form>
       {prediction && (
-      <div>
-        <h2 className="text-lg font-bold">Predicción: {prediction.prediction}</h2>
-        <p>Propiedades publicadas en la localidad: {prediction.caracteristicas.propiedadesPublicadas}</p>
-        <p>Propiedades similares: {prediction.caracteristicas.propiedadesSimilares}</p>
-        <p>Precio promedio: {prediction.caracteristicas.precioPromedio}</p>
-        <p>Precio mínimo: {prediction.caracteristicas.precioMinimo}</p>
-        <p>Precio máximo: {prediction.caracteristicas.precioMaximo}</p>
-        <p>Promedio de metros totales: {prediction.caracteristicas.metrosTotalesPromedio}</p>
-        <p>Promedio de metros cubiertos: {prediction.caracteristicas.metrosCubiertosPromedio}</p>
-        <p>Porcentaje con cochera: {prediction.caracteristicas.cocheraPorcentaje}%</p>
-        <p>Porcentaje con seguridad: {prediction.caracteristicas.seguridadPorcentaje}%</p>
-        <p>Porcentaje con patio, terraza o balcón: {prediction.caracteristicas.aireLibrePorcentaje}%</p>
-        <p>Porcentaje con parrilla: {prediction.caracteristicas.parrillaPorcentaje}%</p>
-        <p>Porcentaje que aceptan mascotas: {prediction.caracteristicas.aptoMascotaPorcentaje}%</p>
-        <p>Porcentaje con pileta: {prediction.caracteristicas.piletaPorcentaje}%</p>
-
-      </div>
-    )}
-
+        <div>
+          <h2 className="text-lg font-bold">Predicción: {prediction.prediction}</h2>
+          <p>Propiedades publicadas en la localidad: {prediction.caracteristicas.propiedadesPublicadas}</p>
+          {Number(prediction.caracteristicas.propiedadesSimilares) === 0 ? (
+            <p>
+              Sea el primero en mostrar esta exclusiva propiedad a nuestros clientes más exigentes.<br />
+              No existen propiedades publicadas con las características descriptas en la zona.
+            </p>
+          ) : (
+            <>
+              <p>Propiedades similares: {prediction.caracteristicas.propiedadesSimilares}</p>
+              <p>Precio promedio: {prediction.caracteristicas.precioPromedio}</p>
+              <p>Precio mínimo: {prediction.caracteristicas.precioMinimo}</p>
+              <p>Precio máximo: {prediction.caracteristicas.precioMaximo}</p>
+              <p>Promedio de metros totales: {prediction.caracteristicas.metrosTotalesPromedio}</p>
+              <p>Promedio de metros cubiertos: {prediction.caracteristicas.metrosCubiertosPromedio}</p>
+              <p>Porcentaje con cochera: {prediction.caracteristicas.cocheraPorcentaje}%</p>
+              <p>Porcentaje con seguridad: {prediction.caracteristicas.seguridadPorcentaje}%</p>
+              <p>Porcentaje con patio, terraza o balcón: {prediction.caracteristicas.aireLibrePorcentaje}%</p>
+              <p>Porcentaje con parrilla: {prediction.caracteristicas.parrillaPorcentaje}%</p>
+              <p>Porcentaje que aceptan mascotas: {prediction.caracteristicas.aptoMascotaPorcentaje}%</p>
+              <p>Porcentaje con pileta: {prediction.caracteristicas.piletaPorcentaje}%</p>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };
-
-//export default PredecirPrecio;
