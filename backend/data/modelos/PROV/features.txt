@@ -1,0 +1,9 @@
+precio_m2_medio
+precio_m2_cubierto_medio
+precio_m2  
+superficie_cubierta
+banios
+precio_m2_cubierto
+cantidad_de_ambientes
+superficie_total
+cantidad_de_dormitorios
