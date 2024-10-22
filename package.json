@@ -42,5 +42,9 @@
   },
   "engines": {
     "node": ">=18.17.0"
+  },
+  "dependencies": {
+    "firebase": "9.19.1",
+    "undici": "5"
   }
 }

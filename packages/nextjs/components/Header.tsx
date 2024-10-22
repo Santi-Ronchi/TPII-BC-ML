@@ -25,6 +25,11 @@ export const menuLinks: HeaderMenuLink[] = [
     icon: <HomeIcon className="h-4 w-4" />,
   },
   {
+    label: "Accede a tu cuenta",
+    href: "/loginPage",
+    icon: <HomeIcon className="h-4 w-4" />,
+  },
+  {
     label: "Debug Contract",
     href: "/debug",
     icon: <BugAntIcon className="h-4 w-4" />,
