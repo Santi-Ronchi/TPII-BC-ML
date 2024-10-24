@@ -8,18 +8,27 @@ app = Flask(__name__)
 CORS(app) 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-filename = 'data/precios_por_localidad_v5.csv'
-filepath = os.path.join(current_dir, filename)
 
-df_localidades = pd.read_csv(filepath)
+path_nombre_archivos_provincia = os.path.join(current_dir,'data/modelos/PROV/df_precio_por_localidad_prov.csv')
+path_nombre_archivos_CABA = os.path.join(current_dir,'data/modelos/CABA/precios_por_localidad_caba.csv')
 
-model_path = os.path.join(current_dir, 'data\modelos\modelo_filtrado_v1.pkl')
-scaler_path = os.path.join(current_dir, 'data\modelos\scaler_v1.joblib')
-model = joblib.load(model_path)
-scaler = joblib.load(scaler_path)
+df_localidades_caba = pd.read_csv(path_nombre_archivos_CABA)
+df_localidades_prov = pd.read_csv(path_nombre_archivos_provincia)
 
-model_path_prov = os.path.join(current_dir, 'data\modelos\modelo_filtrado_prov_v5.pkl')
-scaler_path_prov = os.path.join(current_dir, 'data\modelos\scaler_prov_v5.joblib')
+df_localidades = pd.merge(df_localidades_prov, df_localidades_caba, on=['localidad', 'provincia'], how='outer')
+
+df_localidades['precio_medio'] = df_localidades['precio_medio_x'].combine_first(df_localidades['precio_medio_y'])
+df_localidades['precio_m2_medio'] = df_localidades['precio_m2_medio_x'].combine_first(df_localidades['precio_m2_medio_y'])
+
+df_localidades.drop(columns=['precio_medio_x', 'precio_medio_y', 'precio_m2_medio_x', 'precio_m2_medio_y'], inplace=True)
+
+model_path_caba = os.path.join(current_dir, 'data\modelos\CABA\modelo_filtrado_CABA.pkl')
+scaler_path_caba = os.path.join(current_dir, 'data\modelos\CABA\scaler_CABA.joblib')
+model_caba = joblib.load(model_path_caba)
+scaler_caba = joblib.load(scaler_path_caba)
+
+model_path_prov = os.path.join(current_dir, 'data\modelos\PROV\modelo_filtrado_prov.pkl')
+scaler_path_prov = os.path.join(current_dir, 'data\modelos\PROV\scaler_prov.joblib')
 model_prov = joblib.load(model_path_prov)
 scaler_prov = joblib.load(scaler_path_prov)
 
@@ -34,15 +43,14 @@ def predict():
     cantidad_baños = data['cantidad_baños']
     cantidad_ambientes = data['cantidad_ambientes']
 
-
-    localidad = df_localidades[df_localidades['localidad'] == data['localidad']]
-
     if data["provincia"] == "Ciudad Autonoma de Buenos Aires":
-        datos_entrada = [[superficie_total, superficie_cubierta, cantidad_baños, cantidad_dormitorios, localidad["precio_m2_medio"].values[0], localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0]]]    
-        datos_entrada_escalados = scaler.transform(datos_entrada)
-        prediction = model.predict(datos_entrada_escalados)
+        localidad = df_localidades_caba[df_localidades_caba['localidad'] == data['localidad']]
+        datos_entrada = [[superficie_total, localidad["precio_medio"].values[0], superficie_cubierta, localidad["precio_m2_medio"].values[0], cantidad_ambientes]]
+        datos_entrada_escalados = scaler_caba.transform(datos_entrada)
+        prediction = model_caba.predict(datos_entrada_escalados)
     else:
-        datos_entrada = [[superficie_total,superficie_cubierta,localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0],localidad["precio_m2_medio"].values[0]]]    
+        localidad = df_localidades_prov[df_localidades_prov['localidad'] == data['localidad']]
+        datos_entrada = [[superficie_cubierta,localidad["precio_m2_cubierto_medio"].values[0],superficie_total,cantidad_baños,localidad["precio_m2_cubierto_medio"].values[0],localidad["precio_medio"].values[0],localidad["precio_m2_medio"].values[0],cantidad_ambientes,cantidad_dormitorios]]
         datos_entrada_escalados = scaler_prov.transform(datos_entrada)
         prediction = model_prov.predict(datos_entrada_escalados)
 
@@ -84,18 +92,19 @@ def get_localidades():
 
     if provincia_seleccionada:
         localidades_filtradas = df_localidades[df_localidades['provincia'] == provincia_seleccionada]
-        localidades = localidades_filtradas.to_dict(orient='records')
+        localidades = localidades_filtradas['localidad'].tolist()
     else:
-        localidades = df_localidades.to_dict(orient='records')
+        localidades = df_localidades['localidad'].tolist()
 
     return jsonify(localidades)
+
 
 def obtener_propiedades_en_localidad(provincia, localidad):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     if provincia == "Ciudad Autonoma de Buenos Aires":
-        filename = 'data/inmuebles_CABA_post.csv'
+        filename = 'data/modelos/CABA/df_inmuebles_caba.csv'
     else:
-        filename = 'data/inmuebles_sin_CABA_post.csv'
+        filename = 'data/modelos/PROV/df_inmuebles_prov.csv'
     
     filepath = os.path.join(current_dir, filename)
     df_propiedades = pd.read_csv(filepath)

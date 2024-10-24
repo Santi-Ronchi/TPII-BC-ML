@@ -162,8 +162,8 @@ export const PredecirPrecio = () => {
           <select value={selectedLocalidad} onChange={handleLocalidadChange} className="text-md font-bold form-select rounded-full w-full h-8">
             <option value="">Seleccionar localidad</option>
             {localidades.map((localidad, index) => (
-              <option key={index} value={localidad.localidad}>
-                {localidad.localidad}
+              <option key={index} value={localidad}>
+                {localidad}
               </option>
             ))}
           </select>
