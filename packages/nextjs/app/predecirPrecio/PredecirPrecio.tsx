@@ -138,6 +138,7 @@ export const PredecirPrecio = () => {
   return (
     <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10">
       <img src="ARPA-WIDE.png" alt="logo de ARPA" className="mx-auto imgRounder" />
+      <br /> <br />
       <h1 className="text-xl font-bold">Ingresá los datos de la propiedad:</h1>
       <br /><br />
       <form onSubmit={handleSubmit}>
@@ -196,33 +197,89 @@ export const PredecirPrecio = () => {
         <br />
         <button type="submit" className="btn btn-primary">Predecir</button>
       </form>
+      <br />
+      <br />
       {prediction && (
-        <div>
-          <h2 className="text-lg font-bold">Predicción: {prediction.prediction}</h2>
-          <p>Propiedades publicadas en la localidad: {prediction.caracteristicas.propiedadesPublicadas}</p>
+      <div className="bg-white shadow-lg rounded-lg p-6">
+        <h2 className="text-2xl font-bold text-blue-600 mb-4">
+          Predicción: <span className="text-gray-800">{prediction.prediction}</span>
+        </h2>
+        
+        <div className="mb-4">
+          <p className="text-gray-700">
+            <span className="font-medium">Propiedades publicadas en la localidad: </span>{prediction.caracteristicas.propiedadesPublicadas}
+          </p>
           {Number(prediction.caracteristicas.propiedadesSimilares) === 0 ? (
-            <p>
+            <p className="text-red-500 mt-2">
               Sea el primero en mostrar esta exclusiva propiedad a nuestros clientes más exigentes.<br />
               No existen propiedades publicadas con las características descriptas en la zona.
             </p>
           ) : (
-            <>
-              <p>Propiedades similares: {prediction.caracteristicas.propiedadesSimilares}</p>
-              <p>Precio promedio: {prediction.caracteristicas.precioPromedio}</p>
-              <p>Precio mínimo: {prediction.caracteristicas.precioMinimo}</p>
-              <p>Precio máximo: {prediction.caracteristicas.precioMaximo}</p>
-              <p>Promedio de metros totales: {prediction.caracteristicas.metrosTotalesPromedio}</p>
-              <p>Promedio de metros cubiertos: {prediction.caracteristicas.metrosCubiertosPromedio}</p>
-              <p>Porcentaje con cochera: {prediction.caracteristicas.cocheraPorcentaje}%</p>
-              <p>Porcentaje con seguridad: {prediction.caracteristicas.seguridadPorcentaje}%</p>
-              <p>Porcentaje con patio, terraza o balcón: {prediction.caracteristicas.aireLibrePorcentaje}%</p>
-              <p>Porcentaje con parrilla: {prediction.caracteristicas.parrillaPorcentaje}%</p>
-              <p>Porcentaje que aceptan mascotas: {prediction.caracteristicas.aptoMascotaPorcentaje}%</p>
-              <p>Porcentaje con pileta: {prediction.caracteristicas.piletaPorcentaje}%</p>
-            </>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Propiedades similares:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.propiedadesSimilares}</p>
+              </div>
+              
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Precio promedio:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.precioPromedio}</p>
+              </div>
+              
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Precio mínimo:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.precioMinimo}</p>
+              </div>
+              
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Precio máximo:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.precioMaximo}</p>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Promedio de metros totales:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.metrosTotalesPromedio}</p>
+              </div>
+              
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Promedio de metros cubiertos:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.metrosCubiertosPromedio}</p>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Porcentaje con cochera:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.cocheraPorcentaje}%</p>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Porcentaje con seguridad:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.seguridadPorcentaje}%</p>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Porcentaje con patio, terraza o balcón:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.aireLibrePorcentaje}%</p>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Porcentaje con parrilla:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.parrillaPorcentaje}%</p>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Porcentaje que aceptan mascotas:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.aptoMascotaPorcentaje}%</p>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="font-medium text-gray-600">Porcentaje con pileta:</p>
+                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.piletaPorcentaje}%</p>
+              </div>
+            </div>
           )}
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 };
