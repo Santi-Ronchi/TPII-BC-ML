@@ -17,10 +17,8 @@ def predict():
     precio_medio_localidad = data['precio_medio_localidad']
     precio_m2 = data['precio_m2']
 
-    # Realizar la predicción con el modelo cargado
     prediction = model.predict([[superficie_total, precio_m2_medio_localidad, precio_medio_localidad, precio_m2]])
 
-    # Devolver la predicción como JSON
     return jsonify({'prediction': prediction.tolist()})
 
 if __name__ == '__main__':

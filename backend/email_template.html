@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .logo {
+            width: 150px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .welcome-message {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .farewell-message {
+            font-size: 16px;
+            color: #555;
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .signature {
+            font-size: 14px;
+            color: #777;
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="ARPA.png" alt="Logo" class="logo">
+        
+        <!-- Mensaje de bienvenida -->
+        <div class="welcome-message">
+            <h1>¡Hola!</h1>
+            <p>Te enviamos la información de tu contrato de alquiler.</p>
+        </div>
+        
+        <h1>Detalles de la Transacción</h1>
+        <table>
+            <tr>
+                <th>Propiedad</th>
+                <th>Valor</th>
+            </tr>
+            <!-- Aquí se insertarán los detalles de la transacción -->
+            {transaction_rows}
+        </table>
+        
+        <!-- Mensaje de despedida -->
+        <div class="farewell-message">
+            <p>Si tiene alguna pregunta, no dude en contactarnos. ¡Que tenga un gran día!</p>
+        </div>
+
+        <!-- Firma -->
+        <div class="signature">
+            Atentamente,<br>
+            Equipo Arpa<br>
+            <br>
+            Contacto: [-] | Tel: [-]
+        </div>
+    </div>
+</body>
+</html>
