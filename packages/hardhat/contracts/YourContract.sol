@@ -35,6 +35,17 @@ contract YourContract {
 	mapping(address => ContratoAlquiler[]) public mapUsuarioContrato;
 	mapping(uint256 => bool) public propiedadesAlquiladas;
 
+	event ContratoCreado(
+		address Owner,
+		uint256 Monto,
+		uint256 ID,
+		string pass,
+		bool fixed_penalty,
+		uint256 GracePeriod,
+		uint256 Penalty_Percentage,
+		uint256 Duration
+    );
+
 	struct ContratoAlquiler{
 		uint256 timestamp;
 		ContractStatus Status;
@@ -59,6 +70,9 @@ contract YourContract {
 		PenaltyType penalty =  PenaltyType.Cumulative;
 		contratosAlquiler[_ID] = ContratoAlquiler(block.timestamp,ContractStatus.Draft,msg.sender,address(0),Monto,_ID,allowedWallet,penalty,_Penalty_Percentage, _GracePeriod,_Duration,block.timestamp);
 		propiedadesAlquiladas[_ID] = true;
+
+		emit ContratoCreado(_Owner, Monto, _ID,  _pass,  fixed_penalty,  _GracePeriod,  _Penalty_Percentage,  _Duration);
+
 	}
 
 
