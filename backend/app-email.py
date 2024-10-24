@@ -3,15 +3,22 @@ import os
 from flask import Flask, jsonify, request
 from web3 import Web3
 from email.message import EmailMessage
-import ssl
-import smtplib
 import time
+from dotenv import load_dotenv
+from mailjet_rest import Client
+
+
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
+
+MAILJET_API_KEY = os.getenv('MAILJET_API_KEY')
+MAILJET_SECRET_KEY = os.getenv('MAILJET_SECRET_KEY')
+
 
 # Configura Flask
 app = Flask(__name__)
 
 # Datos del email
-emailPass = "xvlp pfln ptfg btln"
 email = "equipo.arpa.72@gmail.com"
 emailReceiver = "equipo.arpa.72@gmail.com"
 subject = "Nuevo contrato de alquiler"
@@ -66,8 +73,8 @@ def load_contract_data():
 
     return abi, contract_address
 
-# Función para enviar un correo
-def enviar_correo(transaction_details):
+# Función para enviar un correo usando Mailjet
+def send_email(transaction_details):
     # Cargar el template HTML
     with open('email_template.html', 'r', encoding='utf-8') as file:
         html_template = file.read()
@@ -81,24 +88,40 @@ def enviar_correo(transaction_details):
     # Reemplazar el marcador con los detalles de la transacción
     html_content = html_template.replace("{transaction_rows}", transaction_rows)
 
-    # Configura el mensaje de correo
-    msg = EmailMessage()
-    msg['From'] = email
-    msg['To'] = emailReceiver
-    msg['Subject'] = subject
-    msg.set_content("Este correo requiere un cliente de correo compatible con HTML.", subtype='html')
-    msg.add_alternative(html_content, subtype='html')
+    # Configura el cliente de Mailjet
+    mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_SECRET_KEY), version='v3.1')
 
-    # Configura el contexto SSL
-    context = ssl.create_default_context()
+    # Cuerpo del mensaje de correo
+    data = {
+        'Messages': [
+            {
+                "From": {
+                    "Email": email,  # Email de remitente
+                    "Name": "ARPA"
+                },
+                "To": [
+                    {
+                        "Email": emailReceiver,  # Destinatario
+                        "Name": "Receptor"
+                    }
+                ],
+                "Subject": subject,  # Asunto del correo
+                "TextPart": "Este correo requiere un cliente de correo compatible con HTML.",
+                "HTMLPart": html_content  # Contenido HTML
+            }
+        ]
+    }
 
-    # Enviar el correo utilizando el servidor SMTP de Gmail
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
-        smtp.login(email, emailPass)
-        smtp.send_message(msg)
+    # Enviar el correo
+    result = mailjet.send.create(data=data)
+
+    if result.status_code == 200:
+        print(f"Correo enviado exitosamente: {result.json()}")
+    else:
+        print(f"Error al enviar correo: {result.status_code} {result.json()}")
 
 # Función para monitorear eventos en el contrato
-def monitorear_transacciones(contract, event_name, poll_interval=5):
+def monitor_transactions(contract, event_name, poll_interval=5):
     # Define el evento a monitorear
     event_filter = contract.events.ContratoCreado.create_filter(from_block='latest')
 
@@ -107,7 +130,7 @@ def monitorear_transacciones(contract, event_name, poll_interval=5):
         # Revisa si hay eventos nuevos
         for event in event_filter.get_new_entries():
             print(f"Nuevo evento: {event}")
-            enviar_correo(event.args)  # Envía un correo con los detalles del evento
+            send_email(event.args)  # Envía un correo con los detalles del evento
 
         # Espera antes de volver a revisar
         time.sleep(poll_interval)
@@ -137,7 +160,6 @@ def get_balance(address):
 if __name__ == '__main__':
     # Cargar ABI y dirección del contrato
     abi, contract_address = load_contract_data()
-    print("----------- EL ADDRESS DEL CONTRATO ES: ")
     print(contract_address)
 
     if abi is not None and contract_address is not None:
@@ -147,7 +169,7 @@ if __name__ == '__main__':
 
         # Inicia el monitoreo en segundo plano
         from threading import Thread
-        monitor_thread = Thread(target=monitorear_transacciones, args=(contract, event_name))
+        monitor_thread = Thread(target=monitor_transactions, args=(contract, event_name))
         monitor_thread.start()
 
         # Inicia el servidor Flask en el puerto 5000
