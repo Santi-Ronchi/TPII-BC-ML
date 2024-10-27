@@ -33,10 +33,12 @@ function createNewUser(email: string,password: string){
 }
 
 function login(email: string, password: string){
+  event?.preventDefault();
   signInWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     // Signed up 
     const user = userCredential.user;
+    alert("login succesful");
     // ...
   })
   .catch((error) => {
