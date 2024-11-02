@@ -3,6 +3,8 @@ import type { NextPage } from "next";
 import React from "react";
 import { collection, addDoc } from "firebase/firestore"; 
 import { db } from "../loginPage/firebase";
+import { useAccount } from "wagmi";
+import { Address, Balance } from "~~/components/scaffold-eth";
 
 async function writeToDataBase(){
     try {
@@ -18,9 +20,13 @@ async function writeToDataBase(){
 }
 
 const testWriteDB: NextPage = () => {
- 
+  const { address: connectedAddress } = useAccount();
   return(<div>
     <button onClick={writeToDataBase}>Escribir a DB</button>
+
+    <div className="text-sm font-semibold mb-2">
+        Address: <Address address={connectedAddress} />
+      </div>
   </div>)
 
   };
