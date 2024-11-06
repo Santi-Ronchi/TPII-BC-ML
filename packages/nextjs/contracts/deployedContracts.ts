@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           inputs: [
@@ -32,16 +32,6 @@ const deployedContracts = {
               name: "ID_Propiedad",
               type: "uint256",
             },
-            {
-              internalType: "address",
-              name: "_Lesse",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "_pass",
-              type: "string",
-            },
           ],
           name: "AceptarContrato",
           outputs: [],
@@ -50,11 +40,6 @@ const deployedContracts = {
         },
         {
           inputs: [
-            {
-              internalType: "address",
-              name: "_Owner",
-              type: "address",
-            },
             {
               internalType: "uint256",
               name: "Monto",
@@ -66,14 +51,9 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "string",
-              name: "_pass",
-              type: "string",
-            },
-            {
-              internalType: "bool",
-              name: "fixed_penalty",
-              type: "bool",
+              internalType: "address",
+              name: "allowedWallet",
+              type: "address",
             },
             {
               internalType: "uint256",
@@ -117,19 +97,9 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "address",
-              name: "_Lessee",
-              type: "address",
-            },
-            {
               internalType: "bool",
               name: "accept",
               type: "bool",
-            },
-            {
-              internalType: "string",
-              name: "_pass",
-              type: "string",
             },
           ],
           name: "answerContractCancelationPropopsitionLease",
@@ -145,19 +115,9 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "address",
-              name: "_Owner",
-              type: "address",
-            },
-            {
               internalType: "bool",
               name: "accept",
               type: "bool",
-            },
-            {
-              internalType: "string",
-              name: "_pass",
-              type: "string",
             },
           ],
           name: "answerContractCancelationPropopsitionOwner",
@@ -190,11 +150,6 @@ const deployedContracts = {
               internalType: "uint256",
               name: "_ID",
               type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_ownerAddress",
-              type: "address",
             },
           ],
           name: "cancelContractOwner",
@@ -262,9 +217,9 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "bytes32",
-              name: "Password",
-              type: "bytes32",
+              internalType: "address",
+              name: "AllowedWallet",
+              type: "address",
             },
             {
               internalType: "enum PenaltyType",
@@ -290,11 +245,6 @@ const deployedContracts = {
               internalType: "uint256",
               name: "TimestampLastPayment",
               type: "uint256",
-            },
-            {
-              internalType: "bytes32",
-              name: "CancelationPassword",
-              type: "bytes32",
             },
           ],
           stateMutability: "view",
@@ -340,7 +290,7 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
-          stateMutability: "nonpayable",
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -403,6 +353,25 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "address",
+              name: "allowedWallet",
+              type: "address",
+            },
+          ],
+          name: "isAllowedWallet",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "uint256",
               name: "_ID",
               type: "uint256",
@@ -426,11 +395,6 @@ const deployedContracts = {
               name: "ID_Propiedad",
               type: "uint256",
             },
-            {
-              internalType: "address",
-              name: "_Lesse",
-              type: "address",
-            },
           ],
           name: "isLessee",
           outputs: [
@@ -449,11 +413,6 @@ const deployedContracts = {
               internalType: "uint256",
               name: "ID_Propiedad",
               type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_Owner",
-              type: "address",
             },
           ],
           name: "isOwner",
@@ -494,60 +453,12 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "string",
-              name: "_pass",
-              type: "string",
-            },
-          ],
-          name: "isValidCancelationPassword",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-            {
               internalType: "address",
               name: "_Lesse",
               type: "address",
             },
           ],
           name: "isValidLesse",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "_pass",
-              type: "string",
-            },
-          ],
-          name: "isValidPassword",
           outputs: [
             {
               internalType: "bool",
@@ -604,9 +515,9 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "bytes32",
-              name: "Password",
-              type: "bytes32",
+              internalType: "address",
+              name: "AllowedWallet",
+              type: "address",
             },
             {
               internalType: "enum PenaltyType",
@@ -632,11 +543,6 @@ const deployedContracts = {
               internalType: "uint256",
               name: "TimestampLastPayment",
               type: "uint256",
-            },
-            {
-              internalType: "bytes32",
-              name: "CancelationPassword",
-              type: "bytes32",
             },
           ],
           stateMutability: "view",
@@ -685,9 +591,9 @@ const deployedContracts = {
                   type: "uint256",
                 },
                 {
-                  internalType: "bytes32",
-                  name: "Password",
-                  type: "bytes32",
+                  internalType: "address",
+                  name: "AllowedWallet",
+                  type: "address",
                 },
                 {
                   internalType: "enum PenaltyType",
@@ -713,11 +619,6 @@ const deployedContracts = {
                   internalType: "uint256",
                   name: "TimestampLastPayment",
                   type: "uint256",
-                },
-                {
-                  internalType: "bytes32",
-                  name: "CancelationPassword",
-                  type: "bytes32",
                 },
               ],
               internalType: "struct YourContract.ContratoAlquiler[]",
@@ -774,16 +675,6 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "address",
-              name: "_Lesse",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "_pass",
-              type: "string",
-            },
-            {
               internalType: "uint256",
               name: "newMonto",
               type: "uint256",
@@ -801,11 +692,6 @@ const deployedContracts = {
               name: "_Id",
               type: "uint256",
             },
-            {
-              internalType: "address",
-              name: "_Lessee",
-              type: "address",
-            },
           ],
           name: "proposeContractCancelationMutualAgreementLessee",
           outputs: [],
@@ -818,11 +704,6 @@ const deployedContracts = {
               internalType: "uint256",
               name: "_Id",
               type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_Owner",
-              type: "address",
             },
           ],
           name: "proposeContractCancelationMutualAgreementOwner",
@@ -855,11 +736,6 @@ const deployedContracts = {
               internalType: "uint256",
               name: "ID_propiedad",
               type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
             },
             {
               internalType: "uint256",
