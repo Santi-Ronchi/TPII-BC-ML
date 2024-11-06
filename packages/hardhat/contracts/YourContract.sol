@@ -5,7 +5,7 @@ pragma solidity >=0.8.0 <0.9.0;
 import "hardhat/console.sol";
 import "./ContractStates/States.sol";
 import "./ContractStates/Penalties.sol";
-//import "./DateFunctions/DateFunction.sol";
+
 // Use openzeppelin to inherit battle-tested implementations (ERC20, ERC721, etc)
 // import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -42,46 +42,25 @@ contract YourContract {
     	address Lesse; 
     	uint256 Monto;
 		uint256 ID_propiedad;
-		bytes32  Password;
+		address  AllowedWallet;
 		PenaltyType Penalty;
 		uint256 PenaltyPercentage;
 		uint256 GracePeriod;
 		uint256 DurationInMonths;
 		uint256 TimestampLastPayment; //Cuando se acepta el contrato se toma como el momento del primer timestamp 
-		bytes32 CancelationPassword; //TODO: obtener un password random por fuera de la blockchain
 	}
 
 	function contractExists(uint256 id) public view returns (bool) {
 		return propiedadesAlquiladas[id];
 	}
 
-	function CrearContrato(address _Owner, uint256 Monto, uint256 _ID, string calldata _pass, bool fixed_penalty, uint256 _GracePeriod, uint256 _Penalty_Percentage, uint256 _Duration) public {
-		//TODO ver si se puede optimizar, se crea el contrato 3 veces
+	function CrearContrato(uint256 Monto, uint256 _ID, address allowedWallet, uint256 _GracePeriod, uint256 _Penalty_Percentage, uint256 _Duration) public {
 		require(!contractExists(_ID),"A contract for the required property already exists");
-		bytes32 Password = keccak256(abi.encodePacked(_pass));
-		PenaltyType penalty;
-		if(fixed_penalty){
-			penalty = PenaltyType.Fixed;
-		}else{
-			penalty = PenaltyType.Cumulative;
-		}
-		contratosAlquiler[_ID] = ContratoAlquiler(block.timestamp,ContractStatus.Draft,_Owner,address(0),Monto,_ID,Password,penalty,_Penalty_Percentage, _GracePeriod,_Duration,block.timestamp,keccak256(abi.encodePacked("random")));
+		PenaltyType penalty =  PenaltyType.Cumulative;
+		contratosAlquiler[_ID] = ContratoAlquiler(block.timestamp,ContractStatus.Draft,msg.sender,address(0),Monto,_ID,allowedWallet,penalty,_Penalty_Percentage, _GracePeriod,_Duration,block.timestamp);
 		propiedadesAlquiladas[_ID] = true;
 	}
 
-	function isValidPassword(uint256 _ID, string calldata _pass)public view returns (bool){
-		if (contratosAlquiler[_ID].Password == keccak256(abi.encodePacked(_pass))) {
-			return true;
-		}
-		return false;
-	}
-
-	function isValidCancelationPassword(uint256 _ID, string calldata _pass)public view returns (bool){
-		if (contratosAlquiler[_ID].Password == keccak256(abi.encodePacked(_pass))) {
-			return true;
-		}
-		return false;
-	}
 
 	function rentPaidThisMonth(uint256 _ID) public view returns (bool){
 		require(contractExists(_ID),'Property has not contract');
@@ -142,24 +121,24 @@ contract YourContract {
 
 
 
-	function proposeContractCancelationMutualAgreementOwner(uint256 _Id, address _Owner) public {
+	function proposeContractCancelationMutualAgreementOwner(uint256 _Id) public {
 		require(contractExists(_Id),"Contract must exist to be cancelled");
 		require(isActiveContract(_Id),"Contract must be active to propose cancelation");
-		require(isOwner(_Id,_Owner),"Only the involved parties may propose a contract cancellation");
+		require(isOwner(_Id),"Only the involved parties may propose a contract cancellation");
 		contratosAlquiler[_Id].Status = ContractStatus.CancelationProposedByOwner;
 	}
 
-	function proposeContractCancelationMutualAgreementLessee(uint256 _Id, address _Lessee) public {
+	function proposeContractCancelationMutualAgreementLessee(uint256 _Id) public {
 		require(contractExists(_Id),"Contract must exist to be cancelled");
 		require(isActiveContract(_Id),"Contract must be active to propose cancelation");
-		require(isLessee(_Id,_Lessee),"Only the involved parties may propose a contract cancellation");
+		require(isLessee(_Id),"Only the involved parties may propose a contract cancellation");
 		contratosAlquiler[_Id].Status = ContractStatus.CancelationPropopsedByLeassee;
 	}
 
-	function answerContractCancelationPropopsitionLease(uint256 _ID, address _Lessee, bool accept, string calldata _pass) public {
-		require(isLessee(_ID,_Lessee),'Only the current leassee may answer a cancelation propoistion');
+	function answerContractCancelationPropopsitionLease(uint256 _ID, bool accept) public {
+		require(contractExists(_ID),"Contract must exist to be cancelled");
+		require(isLessee(_ID),'Only the current leassee may answer a cancelation propoistion');
 		require (ownerProposedCancelation(_ID),'Owner did not propose a contract cancelation');
-		require (isValidCancelationPassword(_ID, _pass),'Invalid cancelation password');
 		if (accept){
 			contratosAlquiler[_ID].Status = ContractStatus.Cancelled;
 		} else {
@@ -167,11 +146,10 @@ contract YourContract {
 		}
 	}
 
-	function answerContractCancelationPropopsitionOwner(uint256 _ID, address _Owner, bool accept , string calldata _pass) public {
+	function answerContractCancelationPropopsitionOwner(uint256 _ID, bool accept) public {
 		//Es la respuesta que el owner le responde a quien alquila
-		require(isOwner(_ID,_Owner),'Only the current owner may answer a cancelation propoistion');
+		require(isOwner(_ID),'Only the current owner may answer a cancelation propoistion');
 		require (contratosAlquiler[_ID].Status == ContractStatus.CancelationPropopsedByLeassee,'Tenant did not propose a contract cancelation');
-		require (isValidCancelationPassword(_ID, _pass),'Invalid cancelation password');
 		if (accept){
 			contratosAlquiler[_ID].Status = ContractStatus.Cancelled;
 		} else {
@@ -180,9 +158,9 @@ contract YourContract {
 	}
 
 	//only usable by owner. Unilateral cancelation of contract
-	function cancelContractOwner(uint256 _ID, address _ownerAddress) payable public{
+	function cancelContractOwner(uint256 _ID) payable public{
 		require(contractExists(_ID),"Property is not leasable");
-		require(isOwner(_ID,_ownerAddress), "Only the owner may cancel the contract");
+		require(isOwner(_ID), "Only the owner may cancel the contract");
 		uint256 ethPenalty = 10000;
 		if(!haveToPayPenalties(_ID)){
 			require(msg.value == 0,"No penalty needs to be paid");
@@ -206,16 +184,20 @@ contract YourContract {
 		}
 	}
 
+	function isAllowedWallet(address allowedWallet) public view returns (bool){
+		if (msg.sender == allowedWallet){
+			return true;
+		} return false;
+	}
 
 
-
-	function AceptarContrato(uint256 ID_Propiedad, address _Lesse, string calldata _pass)  public {
+	function AceptarContrato(uint256 ID_Propiedad)  public {
 		require(contractExists(ID_Propiedad),"Property is not leasable");
 		require(isAcceptableContract(ID_Propiedad),"Contract cannot be accepted");
-		require(isValidPassword(ID_Propiedad, _pass), "Invalid password");
 		ContratoAlquiler storage contrato = contratosAlquiler[ID_Propiedad];
+		require(isAllowedWallet(contrato.AllowedWallet));
 		contrato.Status = ContractStatus.Active;
-		contrato.Lesse = _Lesse;
+		contrato.Lesse = msg.sender;
 		contrato.TimestampLastPayment = block.timestamp;
 	}
 
@@ -229,42 +211,42 @@ contract YourContract {
 		return contratosAlquiler[_ID].Status == ContractStatus.DraftReview;
 	}
 
-	function proponerCambios(uint256 ID_Propiedad, address _Lesse, string calldata _pass, uint256 newMonto) public{
+	function proponerCambios(uint256 ID_Propiedad, uint256 newMonto) public{
 		require(contractExists(ID_Propiedad),"Property is not leasable");
 		require(isAcceptableContract(ID_Propiedad),"Contract cannot be accepted");
-		require(isValidPassword(ID_Propiedad, _pass), "Invalid password");
 		ContratoAlquiler storage contrato = contratosAlquiler[ID_Propiedad];
+		require(isAllowedWallet(contrato.AllowedWallet));
 		contrato.Status = ContractStatus.DraftReview;
 		contrato.Monto = newMonto;
-		contrato.Lesse = _Lesse;
+		contrato.Lesse = msg.sender;
 	}
 
-	function reviewProposedChanges(uint256 ID_propiedad, address owner, uint256 newMonto) public {
+	function reviewProposedChanges(uint256 ID_propiedad, uint256 newMonto) public {
 		require(contractExists(ID_propiedad),"Lease contract does not exist");
-		require(isOwner(ID_propiedad, owner),"Only the owner may review the contract");
+		require(isOwner(ID_propiedad),"Only the owner may review the contract");
 		require(isOwnerAcceptable(ID_propiedad),"Leasse has not proposed any changes to the existing contract");
 		contratosAlquiler[ID_propiedad].Monto = newMonto;
 		contratosAlquiler[ID_propiedad].Status = ContractStatus.Draft;
 	}
 
 
-	function isOwner(uint256 ID_Propiedad,address _Owner)view public returns (bool){
+	function isOwner(uint256 ID_Propiedad)view public returns (bool){
 		ContratoAlquiler storage contrato = contratosAlquiler[ID_Propiedad];
 		if(contrato.ID_propiedad == 0){
 			return false;
 		}
-		if(contrato.Owner == _Owner){
+		if(contrato.Owner == msg.sender){
 			return true;
 		}
 		return false;
 	}
 
-	function isLessee(uint256 ID_Propiedad,address _Lesse)view public returns (bool){
+	function isLessee(uint256 ID_Propiedad)view public returns (bool){
 		ContratoAlquiler storage contrato = contratosAlquiler[ID_Propiedad];
 		if(contrato.ID_propiedad == 0){
 			return false;
 		}
-		if(contrato.Owner == _Lesse){
+		if(contrato.Lesse == msg.sender){
 			return true;
 		}
 		return false;
@@ -357,7 +339,7 @@ contract YourContract {
         }
     }
 
-	function cuantosMesesAdeudoTest(uint256 last_timestamp, uint256 today_timestamp) public returns(uint256){
+	function cuantosMesesAdeudoTest(uint256 last_timestamp, uint256 today_timestamp) public view returns(uint256){
 		uint16 year = getYear(last_timestamp);
         uint256 daysSinceStartOfYear = (last_timestamp - getSecondsInYears(year)) / SECONDS_PER_DAY;
         (uint8 month, uint256 dayInMonth) = getMonthAndDay(daysSinceStartOfYear, year);
@@ -453,7 +435,7 @@ contract YourContract {
 	}
 
 	function withdraw(uint256 ID_propiedad) public {
-		if (isOwner(ID_propiedad,msg.sender)){
+		if (isOwner(ID_propiedad)){
 			(bool success, ) = msg.sender.call{ value: address(this).balance }("");
 			require(success, "Failed to send Ether");
 			return;
