@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
+import numpy as np
 import pandas as pd
 
 app = Flask(__name__)
@@ -18,9 +19,8 @@ df_localidades_prov = pd.read_csv(path_nombre_archivos_provincia)
 df_localidades = pd.merge(df_localidades_prov, df_localidades_caba, on=['localidad', 'provincia'], how='outer')
 
 df_localidades['precio_medio'] = df_localidades['precio_medio_x'].combine_first(df_localidades['precio_medio_y'])
-df_localidades['precio_m2_medio'] = df_localidades['precio_m2_medio_x'].combine_first(df_localidades['precio_m2_medio_y'])
 
-df_localidades.drop(columns=['precio_medio_x', 'precio_medio_y', 'precio_m2_medio_x', 'precio_m2_medio_y'], inplace=True)
+df_localidades.drop(columns=['precio_medio_x', 'precio_medio_y'], inplace=True)
 
 model_path_caba = os.path.join(current_dir, 'data\modelos\CABA\modelo_filtrado_CABA.pkl')
 scaler_path_caba = os.path.join(current_dir, 'data\modelos\CABA\scaler_CABA.joblib')
@@ -49,10 +49,11 @@ def predict():
         datos_entrada_escalados = scaler_caba.transform(datos_entrada)
         prediction = model_caba.predict(datos_entrada_escalados)
     else:
-        localidad = df_localidades_prov[df_localidades_prov['localidad'] == data['localidad']]
-        datos_entrada = [[superficie_cubierta,localidad["precio_m2_cubierto_medio"].values[0],superficie_total,cantidad_baños,localidad["precio_m2_cubierto_medio"].values[0],localidad["precio_medio"].values[0],localidad["precio_m2_medio"].values[0],cantidad_ambientes,cantidad_dormitorios]]
+        localidad = df_localidades_prov[(df_localidades_prov['localidad'] == data['localidad']) & (df_localidades_prov['cantidad_de_ambiente'] == data['cantidad_ambientes'])]
+        datos_entrada = [[localidad["precio_medio"].values[0],localidad["precio_m2_cubierto_medio_localidad"].values[0] * superficie_cubierta,superficie_cubierta,localidad["precio_m2_cubierto_medio_localidad"].values[0]]]
         datos_entrada_escalados = scaler_prov.transform(datos_entrada)
-        prediction = model_prov.predict(datos_entrada_escalados)
+        log_prediction = model_prov.predict(datos_entrada_escalados)
+        prediction = np.exp(log_prediction)
 
     print("Prediccion: ", prediction)
 
@@ -92,7 +93,7 @@ def get_localidades():
 
     if provincia_seleccionada:
         localidades_filtradas = df_localidades[df_localidades['provincia'] == provincia_seleccionada]
-        localidades = localidades_filtradas['localidad'].tolist()
+        localidades = list(dict.fromkeys(localidades_filtradas['localidad'].tolist()))
     else:
         localidades = df_localidades['localidad'].tolist()
 

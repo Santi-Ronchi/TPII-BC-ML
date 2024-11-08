@@ -1,9 +1,4 @@
-      superficie_cubierta    34.045100
-8         precio_m2_cubierto    30.221068
-0           superficie_total    13.065099
-6                     banios     8.313691
-10  precio_m2_cubierto_medio     5.893291
-11              precio_medio     2.404234
-9            precio_m2_medio     2.210199
-2       cantidad_de_ambiente     1.534671
-3    cantidad_de_dormitorios     1.135311
+precio_medio_localidad
+precio_cubierto_calculado
+superficie_cubierta
+precio_m2_cubierto
