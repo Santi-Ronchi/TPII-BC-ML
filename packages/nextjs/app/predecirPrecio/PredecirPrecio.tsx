@@ -60,7 +60,7 @@ export const PredecirPrecio = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
   
-    if (!selectedProvincia || !selectedLocalidad || !superficie_total || !superficie_cubierta || !cantidad_dormitorios || !cantidad_baños || !cantidad_ambientes) {
+    if (!selectedProvincia || !selectedLocalidad || !superficie_total || !superficie_cubierta || !cantidad_ambientes) {
       console.error('Faltan campos obligatorios');
       setPrediction(null);
       alert('Por favor, completa todos los campos.');
@@ -142,7 +142,7 @@ export const PredecirPrecio = () => {
       <h1 className="text-xl font-bold">Ingresá los datos de la propiedad:</h1>
       <br /><br />
       <form onSubmit={handleSubmit}>
-          <label className="text-md font-bold">Provincia</label>
+          <label className="text-md font-bold">Provincia *</label>
           <br />
           <select 
             value={selectedProvincia} 
@@ -158,7 +158,7 @@ export const PredecirPrecio = () => {
           <br />
           <br />
         <div>
-          <label className="text-md font-bold">Localidad</label>
+          <label className="text-md font-bold">Localidad *</label>
           <br />
           <select value={selectedLocalidad} onChange={handleLocalidadChange} className="text-md font-bold form-select rounded-full w-full h-8">
             <option value="">Seleccionar localidad</option>
@@ -171,17 +171,17 @@ export const PredecirPrecio = () => {
         </div>
         <br />
         <div>
-            <label className="text-md font-bold">Superficie Total</label>
+            <label className="text-md font-bold">Superficie Total *</label>
           <IntegerInput value={superficie_total} onChange={handleSuperficieTotalChange} placeholder="Ingresar superficie total" />
         </div>
         <br />
         <div>
-          <label className="text-md font-bold">Superficie cubierta</label>
+          <label className="text-md font-bold">Superficie cubierta *</label>
           <IntegerInput value={superficie_cubierta} onChange={handleSuperficieCubiertaChange} placeholder="Ingresar superficie cubierta" />
         </div>
         <br />
         <div>
-          <label className="text-md font-bold">Cantidad de Ambientes</label>
+          <label className="text-md font-bold">Cantidad de Ambientes *</label>
           <IntegerInput value={cantidad_ambientes} onChange={handleCantidadAmbientesChange} placeholder="Ingresar la cantidad de ambientes" />
         </div>
         <br />
@@ -202,7 +202,7 @@ export const PredecirPrecio = () => {
       {prediction && (
       <div className="bg-white shadow-lg rounded-lg p-6">
         <h2 className="text-2xl font-bold text-blue-600 mb-4">
-          Predicción: <span className="text-gray-800">{prediction.prediction}</span>
+          El precio recomendado para la publicacion de su propiedad es: <span className="text-gray-800">USD { (prediction.prediction*0.9).toFixed(0) } - {(prediction.prediction*1.1).toFixed(0)} </span>
         </h2>
         
         <div className="mb-4">
@@ -223,17 +223,17 @@ export const PredecirPrecio = () => {
               
               <div className="bg-blue-50 p-4 rounded-lg">
                 <p className="font-medium text-gray-600">Precio promedio:</p>
-                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.precioPromedio}</p>
+                <p className="text-gray-800 text-xl font-semibold">USD {prediction.caracteristicas.precioPromedio}</p>
               </div>
               
               <div className="bg-blue-50 p-4 rounded-lg">
                 <p className="font-medium text-gray-600">Precio mínimo:</p>
-                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.precioMinimo}</p>
+                <p className="text-gray-800 text-xl font-semibold">USD {prediction.caracteristicas.precioMinimo}</p>
               </div>
               
               <div className="bg-blue-50 p-4 rounded-lg">
                 <p className="font-medium text-gray-600">Precio máximo:</p>
-                <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.precioMaximo}</p>
+                <p className="text-gray-800 text-xl font-semibold">USD {prediction.caracteristicas.precioMaximo}</p>
               </div>
 
               <div className="bg-blue-50 p-4 rounded-lg">

@@ -10,51 +10,101 @@ CORS(app)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-path_nombre_archivos_provincia = os.path.join(current_dir,'data/modelos/PROV/df_precio_por_localidad_prov.csv')
+path_nombre_archivos_provincia = os.path.join(current_dir,'data/modelos/PROV/precio_por_localidad_prov.csv')
 path_nombre_archivos_CABA = os.path.join(current_dir,'data/modelos/CABA/precios_por_localidad_caba.csv')
+path_nombre_archivos_BSAS = os.path.join(current_dir,'data/modelos/BSAS/precios_por_localidad_bsas.csv')
 
 df_localidades_caba = pd.read_csv(path_nombre_archivos_CABA)
 df_localidades_prov = pd.read_csv(path_nombre_archivos_provincia)
+df_localidades_bsas = pd.read_csv(path_nombre_archivos_BSAS)
 
-df_localidades = pd.merge(df_localidades_prov, df_localidades_caba, on=['localidad', 'provincia'], how='outer')
+def obtener_localidades(df_localidades_bsas, df_localidades_prov,df_localidades_caba):
+    df_localidades = pd.merge(df_localidades_bsas,df_localidades_prov, on=['localidad', 'provincia'], how='outer')
+    df_localidades['cantidad_de_ambiente'] = df_localidades['cantidad_de_ambiente_x'].combine_first(df_localidades['cantidad_de_ambiente_y'])
+    df_localidades['precio_m2_cubierto_medio_localidad'] = df_localidades['precio_m2_cubierto_medio_localidad_x'].combine_first(df_localidades['precio_m2_cubierto_medio_localidad_y'])
+    df_localidades['precio_medio'] = df_localidades['precio_medio_x'].combine_first(df_localidades['precio_medio_y'])
+    df_localidades.drop(columns=['precio_m2_cubierto_medio_localidad_x','precio_m2_cubierto_medio_localidad_y', 'cantidad_de_ambiente_y', 'cantidad_de_ambiente_x','precio_medio_x','precio_medio_y'], inplace=True)
+    df_localidades = pd.merge(df_localidades, df_localidades_caba, on=['localidad', 'provincia'], how='outer')
+    df_localidades['precio_medio'] = df_localidades['precio_medio_x'].combine_first(df_localidades['precio_medio_y'])
+    df_localidades.drop(columns=['precio_medio_x', 'precio_medio_y'], inplace=True)
+    return df_localidades
 
-df_localidades['precio_medio'] = df_localidades['precio_medio_x'].combine_first(df_localidades['precio_medio_y'])
-
-df_localidades.drop(columns=['precio_medio_x', 'precio_medio_y'], inplace=True)
+df_localidades = obtener_localidades(df_localidades_bsas,df_localidades_prov,df_localidades_caba)
 
 model_path_caba = os.path.join(current_dir, 'data\modelos\CABA\modelo_filtrado_CABA.pkl')
 scaler_path_caba = os.path.join(current_dir, 'data\modelos\CABA\scaler_CABA.joblib')
 model_caba = joblib.load(model_path_caba)
 scaler_caba = joblib.load(scaler_path_caba)
 
-model_path_prov = os.path.join(current_dir, 'data\modelos\PROV\modelo_filtrado_prov.pkl')
+model_path_prov = os.path.join(current_dir, 'data\modelos\PROV\model_prov.pkl')
 scaler_path_prov = os.path.join(current_dir, 'data\modelos\PROV\scaler_prov.joblib')
 model_prov = joblib.load(model_path_prov)
 scaler_prov = joblib.load(scaler_path_prov)
+
+model_path_bsas = os.path.join(current_dir, 'data\modelos\BSAS\model_bsas.pkl')
+scaler_path_bsas = os.path.join(current_dir, 'data\modelos\BSAS\scaler_bsas.joblib')
+model_bsas = joblib.load(model_path_bsas)
+scaler_bsas = joblib.load(scaler_path_bsas)
 
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
     print(data)
     
+    provincia_data = data['provincia']
+    localidad_data = data['localidad']
     superficie_total = data['superficie_total']
     superficie_cubierta = data['superficie_cubierta']
     cantidad_dormitorios = data['cantidad_dormitorios']
     cantidad_baños = data['cantidad_baños']
     cantidad_ambientes = data['cantidad_ambientes']
 
-    if data["provincia"] == "Ciudad Autonoma de Buenos Aires":
-        localidad = df_localidades_caba[df_localidades_caba['localidad'] == data['localidad']]
-        datos_entrada = [[superficie_total, localidad["precio_medio"].values[0], superficie_cubierta, localidad["precio_m2_medio"].values[0], cantidad_ambientes]]
-        datos_entrada_escalados = scaler_caba.transform(datos_entrada)
+    if provincia_data == "Ciudad Autonoma de Buenos Aires":
+        print("Nombres features scaler: " + scaler_caba.feature_names_in_)
+        localidad = df_localidades_caba[df_localidades_caba['localidad'] == localidad_data]
+        datos_entrada = [[superficie_total,superficie_cubierta,cantidad_ambientes,localidad["precio_m2_medio"].values[0],localidad["precio_m2_medio"].values[0]]]
+        datos_entrada_df = pd.DataFrame(datos_entrada, columns=['superficie_total','superficie_cubierta', 'cantidad_de_ambiente', 'precio_m2','precio_m2_medio_localidad'])
+        datos_entrada_escalados = scaler_caba.transform(datos_entrada_df)
         prediction = model_caba.predict(datos_entrada_escalados)
-    else:
-        localidad = df_localidades_prov[(df_localidades_prov['localidad'] == data['localidad']) & (df_localidades_prov['cantidad_de_ambiente'] == data['cantidad_ambientes'])]
-        datos_entrada = [[localidad["precio_medio"].values[0],localidad["precio_m2_cubierto_medio_localidad"].values[0] * superficie_cubierta,superficie_cubierta,localidad["precio_m2_cubierto_medio_localidad"].values[0]]]
-        datos_entrada_escalados = scaler_prov.transform(datos_entrada)
-        log_prediction = model_prov.predict(datos_entrada_escalados)
-        prediction = np.exp(log_prediction)
 
+    elif provincia_data == "Zona Sur (GBA)" or provincia_data == "Zona Oeste (GBA)" or provincia_data == "Zona Norte (GBA)":
+        print("Nombres features scaler: " + scaler_bsas.feature_names_in_)
+        
+        localidad = df_localidades_bsas[(df_localidades_bsas['localidad'] == localidad_data) & (df_localidades_bsas['cantidad_de_ambiente'] == data['cantidad_ambientes'])]
+        if localidad.empty:
+            localidad = df_localidades_bsas[df_localidades_bsas['localidad'] == localidad_data]
+            precio_medio = localidad['precio_medio'].mean()
+            precio_m2_cubierto_medio_localidad = localidad['precio_m2_cubierto_medio_localidad'].mean()
+            datos_localidad = [[provincia_data,localidad_data,cantidad_ambientes,precio_m2_cubierto_medio_localidad,0,precio_medio]]
+            localidad = pd.DataFrame(datos_localidad, columns=['provincia','localidad','cantidad_de_ambiente','precio_m2_cubierto_medio_localidad','precio_m2_medio','precio_medio'])
+
+        datos_entrada = [[superficie_total,superficie_cubierta,cantidad_ambientes,localidad["precio_m2_cubierto_medio_localidad"].values[0],localidad["precio_medio"].values[0]]]
+        
+        datos_entrada_df = pd.DataFrame(datos_entrada, columns=['superficie_total','superficie_cubierta', 'cantidad_de_ambiente', 'precio_m2_cubierto_medio_localidad', 'precio_medio_localidad'])
+        datos_entrada_escalados = scaler_bsas.transform(datos_entrada)
+        
+        log_prediction = model_bsas.predict(datos_entrada_escalados)
+        prediction = np.exp(log_prediction) * superficie_total
+    else:
+        print("Nombres features scaler: " + scaler_prov.feature_names_in_)
+        
+        localidad = df_localidades_prov[(df_localidades_prov['localidad'] == localidad_data) & (df_localidades_prov['cantidad_de_ambiente'] == cantidad_ambientes)]
+        if localidad.empty:
+            localidad = df_localidades_prov[df_localidades_prov['localidad'] == localidad_data]
+            precio_medio = localidad['precio_medio'].mean()
+            precio_m2_cubierto_medio_localidad = localidad['precio_m2_cubierto_medio_localidad'].mean()
+            datos_localidad = [[provincia_data,localidad_data,cantidad_ambientes,precio_m2_cubierto_medio_localidad,0,precio_medio]]
+            localidad = pd.DataFrame(datos_localidad, columns=['provincia','localidad','cantidad_de_ambiente','precio_m2_cubierto_medio_localidad','precio_m2_medio','precio_medio'])
+
+        datos_entrada = [[superficie_total,superficie_cubierta,cantidad_ambientes,localidad["precio_m2_cubierto_medio_localidad"].values[0],localidad["precio_medio"].values[0]]]
+        
+        datos_entrada_df = pd.DataFrame(datos_entrada, columns=['superficie_total','superficie_cubierta', 'cantidad_de_ambiente', 'precio_m2_cubierto_medio_localidad', 'precio_medio_localidad'])
+        datos_entrada_escalados = scaler_prov.transform(datos_entrada)
+        
+        prediction = model_prov.predict(datos_entrada_escalados) * superficie_total
+        
+
+    prediction = round(prediction[0])
     print("Prediccion: ", prediction)
 
     propiedades_publicadas = obtener_propiedades_en_localidad(data["provincia"], data["localidad"])
@@ -64,7 +114,7 @@ def predict():
     print("Hay " + str(propiedades_similares.shape[0]) + " propiedades similares publicadas en la localidad de " + data["localidad"] + ", provincia de " + data["provincia"])
 
     return jsonify({
-    'prediction': prediction.tolist(),
+    'prediction': prediction,
     'caracteristicas': {
         'propiedadesPublicadas': str(propiedades_publicadas.shape[0]),
         'propiedadesSimilares': str(propiedades_similares.shape[0]),
@@ -84,7 +134,7 @@ def predict():
 
 @app.route('/api/provincias', methods=['GET'])
 def get_provincias():
-    provincias_unicas = df_localidades['provincia'].unique().tolist()
+    provincias_unicas = sorted(df_localidades['provincia'].unique().tolist())
     return jsonify(provincias_unicas)
 
 @app.route('/api/localidades', methods=['GET'])
@@ -93,18 +143,22 @@ def get_localidades():
 
     if provincia_seleccionada:
         localidades_filtradas = df_localidades[df_localidades['provincia'] == provincia_seleccionada]
-        localidades = list(dict.fromkeys(localidades_filtradas['localidad'].tolist()))
-    else:
-        localidades = df_localidades['localidad'].tolist()
+        localidades = sorted(list(dict.fromkeys(localidades_filtradas['localidad'].tolist())))
+    else :
+        localidades = sorted(df_localidades['localidad'].tolist())
 
     return jsonify(localidades)
 
 
 def obtener_propiedades_en_localidad(provincia, localidad):
     current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    print("PROV: ",provincia)
     if provincia == "Ciudad Autonoma de Buenos Aires":
         filename = 'data/modelos/CABA/df_inmuebles_caba.csv'
-    else:
+    elif provincia == "Zona Sur (GBA)" or provincia == "Zona Oeste (GBA)" or provincia == "Zona Norte (GBA)":
+        filename = 'data/modelos/BSAS/df_inmuebles_bsas.csv'
+    else:    
         filename = 'data/modelos/PROV/df_inmuebles_prov.csv'
     
     filepath = os.path.join(current_dir, filename)
