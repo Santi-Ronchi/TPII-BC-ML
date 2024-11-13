@@ -1,17 +1,10 @@
 'use client';
 import type { NextPage } from "next";
-import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 import React from "react";
 import {createUserWithEmailAndPassword} from 'firebase/auth';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase";
 import { useState } from 'react';
-import { set } from "nprogress";
-/*
-export const metadata = getMetadata({
-  title: "Login page",
-  description: "Ingresa credenciales de acceso.",
-});*/
 
 
 function buttonPress(){
@@ -22,6 +15,7 @@ function createNewUser(email: string,password: string){
   createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     // Signed up 
+//    console.log('SE CREÓ EL USER')
     const user = userCredential.user;
     // ...
   })
