@@ -9,6 +9,8 @@ import { useAccount , useClient} from "wagmi";
 import { notification } from "~~/utils/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { AddressInput,  EtherInput, IntegerInput } from "~~/components/scaffold-eth";
+import { addDoc, collection, setDoc, doc } from "firebase/firestore";
+import { auth, db } from "../loginPage/firebase";
 
 
 export const CrearContratoAlquiler = () => {
@@ -18,6 +20,9 @@ export const CrearContratoAlquiler = () => {
     const { address: connectedAddress } = useAccount();
     const [ownerAddress, setOwnerAddress] = useState("");
     const [lesseAddress, setLesseAddress] = useState("");
+    const [interestRate, setInterestRate] = useState<string | bigint>("");
+    const [paymentPeriod, setPaymentPeriod] = useState<string | bigint>("");
+    const [contractDuration, setContractDuration] = useState<string | bigint>("");
 
     const [ethAmount, setEthAmount] = useState("");
     const [txValue, setTxValue] = useState<string | bigint>("");
@@ -39,7 +44,7 @@ export const CrearContratoAlquiler = () => {
         <label className="text-md font-bold">Rentador</label>
         <AddressInput onChange={setLesseAddress} value={lesseAddress} placeholder="Input your lesse address" />
         <br />
-        <label className="text-md font-bold">Direccion</label>
+        <label className="text-md font-bold">ID de la propiedad</label>
         <IntegerInput
           value={txValue}
           onChange={updatedTxValue => {
@@ -50,6 +55,22 @@ export const CrearContratoAlquiler = () => {
         <br />
         <label className="text-lg font-bold">Precio</label>
         <EtherInput value={ethAmount} onChange={amount => setEthAmount(amount)} />
+
+        <label className="text-lg font-bold">Penalidad porcentual por atraso de pago</label>
+        <IntegerInput value = {interestRate} onChange={updatedInterestRate => {
+          setInterestRate(updatedInterestRate);
+        }}></IntegerInput>
+
+        <label className="text-lg font-bold">Limite en días para realizar el pago mensual</label>
+        <IntegerInput value = {paymentPeriod} onChange={updatedPaymentPeriod => {
+          setPaymentPeriod(updatedPaymentPeriod);
+        }}></IntegerInput>
+
+        <label className="text-lg font-bold">Duración del contrato(en meses)</label>
+        <IntegerInput value = {contractDuration} onChange={updatedContractDuration => {
+          setContractDuration(updatedContractDuration);
+        }}></IntegerInput>
+
         <br />
         <button
           className="btn btn-primary"
@@ -58,8 +79,29 @@ export const CrearContratoAlquiler = () => {
                 await writeYourContractAsync({
                     functionName: "CrearContrato",
                     //args: [connectedAddress,connectedAddress,1,777]
-                    args: [ownerAddress,lesseAddress,ethAmount,txValue]
-              });
+                    args: [ethAmount,txValue,lesseAddress,paymentPeriod,interestRate,contractDuration]
+                    //args: [ownerAddress,lesseAddress,ethAmount,txValue]
+              }).then(async () =>{
+                console.log("TODO Creamos el contrato correctamente");
+                if (auth.currentUser){
+                  try{
+                    console.log("Entramos al try para agregar el contrato a firebase");
+                    const docRef = doc(db,"Contratos",txValue);
+                    setDoc(docRef,{
+                        ownerAddress : ownerAddress,
+                        lesseAddress : lesseAddress,
+                        amount : ethAmount,
+                        daysToPay: paymentPeriod,
+                        interest: interestRate,
+                        duration: contractDuration,
+                        state: "Draft"
+                      });
+                  }
+                  catch(e_1){
+                    console.error("Error setting greeting:", e_1);
+                  }
+                } 
+              } );
             } catch (e) {
       console.error("Error setting greeting:", e);
       }

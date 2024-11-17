@@ -1,60 +1,18 @@
 'use client';
 import type { NextPage } from "next";
-import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 import React from "react";
 import {createUserWithEmailAndPassword} from 'firebase/auth';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase";
 import { useState } from 'react';
-import { set } from "nprogress";
-/*
-export const metadata = getMetadata({
-  title: "Login page",
-  description: "Ingresa credenciales de acceso.",
-});*/
-
-
-function buttonPress(){
- alert("you clicked me");
-}
-
-function createNewUser(email: string,password: string){
-  createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ..
-  });
-}
-
-function login(email: string, password: string){
-  event?.preventDefault();
-  signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-    alert("login succesful");
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    alert(errorCode);
-    // ..
-  });
-}
-
-
-
+import { db } from "./firebase";
+import { setDoc, doc } from "firebase/firestore";
+import { useAccount } from "wagmi";
 
 const LoginPage: NextPage = () => {
   const [userName,setUserName] = useState('');
   const [password,setPassword] = useState('');
+  const { address: connectedAddress } = useAccount();
 
   function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>){
     setUserName(event.target.value);
@@ -62,6 +20,58 @@ const LoginPage: NextPage = () => {
 
   function handlePasswordChange(event: React.ChangeEvent<HTMLInputElement>){
     setPassword(event.target.value);
+  }
+
+  async function createNewUser(email: string,password: string){
+    createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed up 
+      const user = userCredential.user;
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ..
+    });
+    try{
+      const docRef = doc(db,"Email-Wallets",userName);
+      await setDoc(docRef, {
+        userEmail: userName,
+        walletAddr: [connectedAddress],
+      });
+      console.log("Document added to Email-Wallets with ID: ", userName);
+    } catch(e){
+      console.error("Error adding document: ", e);
+    };
+    try {
+      const docRef = doc(db,"Wallet-email",connectedAddress);
+      await setDoc(docRef, {
+        userEmail: userName,
+        walletAddr: localStorage.getItem('DarpaConnectedWallet'),
+      });
+      console.log("Document added with ID: ", connectedAddress);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+
+  function login(email: string, password: string){
+    event?.preventDefault();
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed up 
+      const user = userCredential.user;
+      alert("login succesful");
+      
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      alert(errorCode);
+      // ..
+    });
   }
   
 
