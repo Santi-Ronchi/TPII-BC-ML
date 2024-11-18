@@ -37,7 +37,7 @@ export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Perfil de usuario",
     href: "/user",
-    icon: <BugAntIcon className="h-4 w-4" />,
+    icon: <HomeIcon className="h-4 w-4" />,
   },
 ];
 
