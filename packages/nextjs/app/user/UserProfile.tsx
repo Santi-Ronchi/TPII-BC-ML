@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { User } from '../../types/utils';
 import { db } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc , getDocs, collection, query, where} from 'firebase/firestore';
 
 interface UserProfileProps {
   userId: string;
@@ -12,6 +12,7 @@ interface UserProfileProps {
 const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingWallets, setLoadingWallets] =  useState<boolean>(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -35,8 +36,33 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
     fetchUserData();
   }, [userId]);
 
+
+  useEffect( () => {
+    const fetchUserContracts = async () => {
+	  if(loadingWallets){
+      try{
+        const ref = collection(db,'Email-Wallets');
+        const queryWallets = query(ref,where("userEmail",'==','prueba@gmail.com'));
+        const walletSnapshot = await getDocs(queryWallets);
+		walletSnapshot.forEach((doc) => {
+			console.log("Resultado de hacer query a Email-wallets");
+			console.log(doc.data());
+		});
+      }
+      catch(error){
+        console.log(error);
+      }
+      finally{
+        setLoadingWallets(false);
+      }
+    }};
+    fetchUserContracts();
+  }, []);
+
+
   if (loading) return <p>Cargando...</p>;
   if (!user) return <p>No se encontraron datos de usuario.</p>;
+
 
   return (
     <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10"
