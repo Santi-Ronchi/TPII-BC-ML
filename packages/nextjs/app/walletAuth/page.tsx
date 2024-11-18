@@ -1,6 +1,5 @@
 'use client';
 import type { NextPage } from "next";
-import Image from "next/image";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 import React from "react";
 import { useState } from 'react';
@@ -111,7 +110,7 @@ const WalletAuth: NextPage = () => {
                       <div className="md:mx-6 md:p-12">
                         {/* <!--Logo--> */}
                         <div className="text-center">
-                          <Image
+                          <img
                             className="mx-auto w-48 rounded-lg"
                             src="./logo-arpa.png"
                             alt="logo" />
@@ -160,7 +159,7 @@ const WalletAuth: NextPage = () => {
                     >
                       <div className="px-4 py-6 text-white md:mx-6 md:p-12">
                         <div className="text-center">
-                          <Image src="./ARPA-LOGIN-noback.png" alt="logo" />
+                          <img src="./ARPA-LOGIN-noback.png" alt="logo" />
                         </div>
                         <h4 className="mb-6 text-xl font-semibold">
                           Es más que solo un alquiler
@@ -219,7 +218,7 @@ const WalletAuth: NextPage = () => {
                       <div className="md:mx-6 md:p-12">
                         {/* <!--Logo--> */}
                         <div className="text-center">
-                          <Image
+                          <img
                             className="mx-auto w-48 rounded-lg"
                             src="./logo-arpa.png"
                             alt="logo" />
@@ -279,7 +278,7 @@ const WalletAuth: NextPage = () => {
                     >
                       <div className="px-4 py-6 text-white md:mx-6 md:p-12">
                         <div className="text-center">
-                          <Image src="./ARPA-LOGIN-noback.png" alt="logo" />
+                          <img src="./ARPA-LOGIN-noback.png" alt="logo" />
                         </div>
                         <h4 className="mb-6 text-xl font-semibold">
                           Es más que solo un alquiler

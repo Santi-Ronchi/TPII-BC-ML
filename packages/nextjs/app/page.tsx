@@ -5,7 +5,6 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { HomeIcon, ArrowLongDownIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
-import Image from "next/image";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
@@ -16,7 +15,7 @@ const Home: NextPage = () => {
         <div className="px-5">
           <h1 className="text-center">
             <span className="block text-2xl mb-2">Bienvenido a</span>
-            <Image src="ARPA-WIDE.png" alt="Logo de ARPA" className="imgRounder mx-auto"/>
+            <img src="ARPA-WIDE.png" alt="Logo de ARPA" className="imgRounder mx-auto"/>
             <span className="block text-4xl font-bold">Alquileres y Rentas de Propiedades Argentinas</span>
           </h1>
           <br />
