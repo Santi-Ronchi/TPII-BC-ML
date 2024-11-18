@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { User } from '../../types/utils';
+import { User, Contract } from '../../types/utils';
 import { db } from './firebase';
 import { doc, getDoc , getDocs, collection, query, where} from 'firebase/firestore';
 
@@ -11,8 +11,10 @@ interface UserProfileProps {
 
 const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [contracts, setContracts] = useState<Contract | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingWallets, setLoadingWallets] =  useState<boolean>(true);
+  const [userWallets, setUserWallets] = useState<String | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -20,7 +22,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
         const tableName = userId.includes("@") ? "Email-Wallets" : "Wallet-email";
         const userDoc = doc(db, tableName, userId);
         const userSnapshot = await getDoc(userDoc);
-
         if (userSnapshot.exists()) {
           console.log("Datos del usuario:", userSnapshot.data());
           setUser(userSnapshot.data() as User);
@@ -38,17 +39,52 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   }, [userId]);
 
 
-  useEffect( () => {
+  useEffect(() => {
     const fetchUserContracts = async () => {
-	  if(loadingWallets){
+	  if(loadingWallets && !loading){
       try{
-        const ref = collection(db,'Email-Wallets');
-        const queryWallets = query(ref,where("userEmail",'==','prueba@gmail.com'));
-        const walletSnapshot = await getDocs(queryWallets);
-		walletSnapshot.forEach((doc) => {
-			console.log("Resultado de hacer query a Email-wallets");
-			console.log(doc.data());
-		});
+		//tengo el email, tengo que extraer la totalidad de las wallets
+		let walletArray = [];
+		try{
+			const ref = collection(db,"Email-Wallets");
+			const queryWallets = query(ref, where("userEmail", "==", user.userEmail));
+			const walletSnapshot = await getDocs(queryWallets); 
+			walletSnapshot.forEach((doc) => {
+				walletArray = doc.data().walletAddr;
+			});
+			const newUserData: User = {
+				userEmail: user.userEmail,
+				walletAddr: walletArray
+			};
+			setUser(newUserData);
+		}
+		catch(error){
+			console.log(error);
+		}
+		setUserWallets(walletArray);
+		
+		//Recuperacion de contratos
+        const ref = collection(db,'Contratos');		
+		let contractArray = [];
+		for (const aWallet of walletArray) { 
+		  //console.log(aWallet);
+          const queryContracts = query(ref, where("ownerAddress", "==", aWallet));
+          const contractSnapshot = await getDocs(queryContracts); 
+          contractSnapshot.forEach((doc) => {
+            const contractData: Contract = {
+				amount: doc.data().amount ?? "",
+				daysToPay: doc.data().daysToPay ?? "",
+				duration: doc.data().duration ?? "",
+				interest: doc.data().interest ?? "",
+				lesseAddress: doc.data().lesseAddress ?? "",
+				ownerAddress: doc.data().ownerAddress ?? "",
+				state: doc.data().state ?? "",
+				id: doc.id ?? "",
+			};
+			contractArray.push(contractData);
+         });
+		};
+		setContracts(contractArray);
       }
       catch(error){
         console.log(error);
@@ -58,7 +94,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
       }
     }};
     fetchUserContracts();
-  }, []);
+  }, [contracts,loading]);
 
 
   if (loading) return <p>Cargando...</p>;
@@ -123,6 +159,34 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
         <h3 style={{ fontSize: '20px', color: '#333', borderBottom: '2px solid #ddd', paddingBottom: '5px' }}>
           Contratos
         </h3>
+		{
+		contracts != null
+      ? <ul style={{ padding: '0', listStyle: 'none' }}>
+		  {contracts.map((contract) => (
+		    <li
+                key={contract.id}
+                style={{
+                  backgroundColor: '#fff',
+                  padding: '10px',
+                  margin: '10px 0',
+                  borderRadius: '4px',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+                  color: '#333',
+                }}
+              >
+			  <strong>ID: {contract.id}</strong>
+			  <p style={{ margin: '5px 0' }}>Estado: {contract.state}</p>
+			  <p style={{ margin: '5px 0' }}>Monto a pagar: {contract.amount}</p>
+			  <p style={{ margin: '5px 0' }}>Duration: {contract.duration} meses</p>
+			  <p style={{ margin: '5px 0' }}>Interes por falta de pago: {contract.interest}%</p>
+			  <p style={{ margin: '5px 0' }}>Dirección de quien alquila:   
+			  <strong>{contract.lesseAddress}</strong></p>
+			</li>
+		  ))}
+	  </ul>
+      : <p>No posees contratos activos</p>
+		}
+
         {/*
         {user.contracts.length > 0 ? (
           <ul style={{ padding: '0', listStyle: 'none' }}>
