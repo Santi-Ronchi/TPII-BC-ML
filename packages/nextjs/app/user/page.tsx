@@ -13,7 +13,7 @@ const UserPage: NextPage = () => {
       <UserProfile userId="prueba@gmail.com" />
       */}
     </div><div className="text-center mt-8 bg-secondary p-10">
-        <h1 className="text-4xl my-0">Dale, ponelo en alquiler</h1>
+        <h1 className="text-4xl my-0">¿Cómo retiro mi dinero?</h1>
         <p className="text-neutral">
           Podrás retirar el dinero del contrato a tu billetera conectada cuando un inquilino lo deposite.
           <br /> Con amor,{" "}
