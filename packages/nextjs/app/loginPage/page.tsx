@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase";
 import { useState } from 'react';
-import { UserProvider, useUser } from "../user/UserContext";
+import { useUser } from "../user/UserContext";
 
 /*
 export const metadata = getMetadata({
