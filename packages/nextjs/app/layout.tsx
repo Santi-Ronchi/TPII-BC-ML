@@ -3,6 +3,7 @@ import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithPro
 import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
+import { UserProvider } from "./user/UserContext";
 
 export const metadata = getMetadata({
   title: "Scaffold-ETH 2 App",
@@ -14,7 +15,9 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
     <html suppressHydrationWarning>
       <body>
         <ThemeProvider enableSystem>
-          <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
+          <UserProvider>
+            <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>
