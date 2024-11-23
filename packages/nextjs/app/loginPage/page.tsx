@@ -22,39 +22,40 @@ const LoginPage: NextPage = () => {
     setPassword(event.target.value);
   }
 
-  async function createNewUser(email: string,password: string){
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed up 
+  async function createNewUser(email: string, password: string) {
+    try {
+      // Crear el usuario
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      // ...
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ..
-    });
-    try{
-      const docRef = doc(db,"Email-Wallets",userName);
-      await setDoc(docRef, {
+  
+      console.log("Usuario creado: ", user);
+  
+      // Validar que connectedAddress no sea undefined
+      if (!connectedAddress) {
+        throw new Error("connectedAddress no está definido.");
+      }
+  
+      // Agregar documento a Email-Wallets
+      const emailDocRef = doc(db, "Email-Wallets", userName);
+      await setDoc(emailDocRef, {
         userEmail: userName,
         walletAddr: [connectedAddress],
       });
-      console.log("Document added to Email-Wallets with ID: ", userName);
-    } catch(e){
-      console.error("Error adding document: ", e);
-    };
-    try {
-      const docRef = doc(db,"Wallet-email",connectedAddress);
-      await setDoc(docRef, {
+      console.log("Documento añadido a Email-Wallets con ID: ", userName);
+  
+      // Agregar documento a Wallet-email
+      const walletDocRef = doc(db, "Wallet-email", connectedAddress);
+      await setDoc(walletDocRef, {
         userEmail: userName,
-        walletAddr: localStorage.getItem('DarpaConnectedWallet'),
+        walletAddr: connectedAddress,
       });
-      console.log("Document added with ID: ", connectedAddress);
-    } catch (e) {
-      console.error("Error adding document: ", e);
+      console.log("Documento añadido con ID: ", connectedAddress);
+  
+    } catch (error) {
+      console.error("Error: ", error);
     }
   }
+  
 
   function login(email: string, password: string){
     event?.preventDefault();

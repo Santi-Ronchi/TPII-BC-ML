@@ -26,3 +26,4 @@ backend/venv/bin/activate
 backend/venv/bin/activate
 packages/nextjs/contracts/deployedContracts.ts
 backend/.env
+packages/nextjs/contracts/deployedContracts.ts

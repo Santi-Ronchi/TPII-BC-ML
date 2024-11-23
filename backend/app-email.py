@@ -6,7 +6,9 @@ from email.message import EmailMessage
 import time
 from dotenv import load_dotenv
 from mailjet_rest import Client
-
+import firebase_admin
+from firebase_admin import credentials, firestore
+from threading import Thread
 
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
@@ -14,13 +16,16 @@ load_dotenv()
 MAILJET_API_KEY = os.getenv('MAILJET_API_KEY')
 MAILJET_SECRET_KEY = os.getenv('MAILJET_SECRET_KEY')
 
+# Inicializar Firebase Admin SDK
+cred = credentials.Certificate('/home/josefina/TPII-BC-ML/backend/credentials.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
-# Configura Flask
+# Configurar Flask
 app = Flask(__name__)
 
 # Datos del email
 email = "equipo.arpa.72@gmail.com"
-emailReceiver = "equipo.arpa.72@gmail.com"
 subject = "Nuevo contrato de alquiler"
 
 # Configura el proveedor del nodo blockchain local (localhost:8545 por defecto)
@@ -40,7 +45,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 abi_path = os.path.join(script_dir, '../packages/hardhat/artifacts/contracts/YourContract.sol/YourContract.json')
 address_path = os.path.join(script_dir, '../packages/hardhat/deployments/localhost/YourContract.json')
 
-# Función para cargar ABI y la dirección del contrato
+# Cargar ABI y la dirección del contrato
 def load_contract_data():
     abi = None
     contract_address = None
@@ -54,7 +59,7 @@ def load_contract_data():
         print(f"ABI encontrado en {abi_path_absolute}")
         with open(abi_path_absolute, 'r') as abi_file:
             contract_data = json.load(abi_file)
-            abi = contract_data.get('abi')  # Extraemos solo la parte del 'abi'
+            abi = contract_data.get('abi')
             if not abi:
                 print("Error: El archivo no contiene el ABI.")
     else:
@@ -65,7 +70,7 @@ def load_contract_data():
         print(f"Dirección del contrato encontrada en {address_path_absolute}")
         with open(address_path_absolute, 'r') as address_file:
             address_data = json.load(address_file)
-            contract_address = address_data.get('address')  # Extraemos solo la dirección del contrato
+            contract_address = address_data.get('address')
             if not contract_address:
                 print("Error: No se encontró la dirección del contrato.")
     else:
@@ -73,41 +78,61 @@ def load_contract_data():
 
     return abi, contract_address
 
-# Función para enviar un correo usando Mailjet
-def send_email(transaction_details):
+# Consultar Firebase para obtener los correos electrónicos asociados
+def get_emails_from_wallets(owner_wallet, lessee_wallet):
+    emails = []
+    for wallet in [owner_wallet, lessee_wallet]:
+        doc_ref = db.collection("Wallet-email").document(wallet)
+        doc = doc_ref.get()
+        if doc.exists:
+            email = doc.to_dict().get("userEmail")
+            if email:
+                emails.append(email)
+    return emails
+
+# Enviar un correo usando Mailjet
+def send_email(transaction_details, emails):
     # Cargar el template HTML
     with open('email_template.html', 'r', encoding='utf-8') as file:
         html_template = file.read()
     
-    # Formatear los detalles de la transacción
-    transaction_rows = "".join(
-        f"<tr><td>{key}</td><td>{value}</td></tr>"
-        for key, value in transaction_details.items()
-    )
+    # Extraer la información de la transacción
+    owner = transaction_details['Owner']
+    lesse = transaction_details['Lesse']
+    monto = transaction_details['Monto']
+    duration = transaction_details['Duration']
+    grace_period = transaction_details['GracePeriod']
     
-    # Reemplazar el marcador con los detalles de la transacción
-    html_content = html_template.replace("{transaction_rows}", transaction_rows)
+    # Crear el bloque de detalles del contrato con la información extraída
+    contract_details = f"""
+        <p><strong>Billetera dueño:</strong> {owner}</p>
+        <p><strong>Billetera inquilino:</strong> {lesse}</p>
+        <p><strong>Duración del contrato:</strong> {duration} meses</p>
+        <p><strong>Monto del alquiler (en meses):</strong> {monto}</p>
+        <p><strong>Período de tolerancia del pago mensual:</strong> {grace_period}</p>
+    """
+    
+    # Reemplazar la sección de detalles del contrato en el template
+    html_content = html_template.replace("{contract_details}", contract_details)
 
-    # Configura el cliente de Mailjet
+    # Configurar el cliente de Mailjet
     mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_SECRET_KEY), version='v3.1')
+
+    # Crear el listado de destinatarios
+    to_emails = [{"Email": email, "Name": "Usuario"} for email in emails]
 
     # Cuerpo del mensaje de correo
     data = {
         'Messages': [
             {
                 "From": {
-                    "Email": email,  # Email de remitente
+                    "Email": email,
                     "Name": "ARPA"
                 },
-                "To": [
-                    {
-                        "Email": emailReceiver,  # Destinatario
-                        "Name": "Receptor"
-                    }
-                ],
-                "Subject": subject,  # Asunto del correo
+                "To": to_emails,
+                "Subject": "Detalles del contrato de alquiler",
                 "TextPart": "Este correo requiere un cliente de correo compatible con HTML.",
-                "HTMLPart": html_content  # Contenido HTML
+                "HTMLPart": html_content
             }
         ]
     }
@@ -127,52 +152,31 @@ def monitor_transactions(contract, event_name, poll_interval=5):
 
     print(f"Monitoreando evento {event_name} en el contrato {contract.address}")
     while True:
-        # Revisa si hay eventos nuevos
         for event in event_filter.get_new_entries():
             print(f"Nuevo evento: {event}")
-            send_email(event.args)  # Envía un correo con los detalles del evento
+            owner_wallet = event['args']['Owner']
+            lessee_wallet = event['args']['Lesse']
 
-        # Espera antes de volver a revisar
+            # Obtener emails de Firebase
+            emails = get_emails_from_wallets(owner_wallet, lessee_wallet)
+
+            print(f"Mail del Owner: {emails[0]} ,mail del Lesse: {emails[1]}") #
+
+
+            if emails:
+                send_email(event.args, emails)
+            else:
+                print("No se encontraron emails asociados a las wallets.")
+
         time.sleep(poll_interval)
 
-# Endpoint para consultar una transacción por hash
-@app.route('/transaction/<tx_hash>', methods=['GET'])
-def get_transaction(tx_hash):
-    try:
-        # Obtiene los detalles de la transacción usando el hash
-        transaction = w3.eth.getTransaction(tx_hash)
-        # Retorna la transacción en formato JSON
-        return jsonify(dict(transaction))
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-# Endpoint para consultar el balance de una dirección
-@app.route('/balance/<address>', methods=['GET'])
-def get_balance(address):
-    try:
-        # Obtiene el balance de la dirección especificada
-        balance = w3.eth.getBalance(address)
-        # Convierte el balance a Ether y lo retorna en formato JSON
-        return jsonify({"balance": w3.fromWei(balance, 'ether')})
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
 if __name__ == '__main__':
-    # Cargar ABI y dirección del contrato
     abi, contract_address = load_contract_data()
-    print(contract_address)
-
-    if abi is not None and contract_address is not None:
-        # Cargar el contrato
+    if abi and contract_address:
         contract = w3.eth.contract(address=contract_address, abi=abi)
-        event_name = "ContratoCreado"  # Nombre del evento que quieres monitorear
-
-        # Inicia el monitoreo en segundo plano
-        from threading import Thread
+        event_name = "ContratoCreado"
         monitor_thread = Thread(target=monitor_transactions, args=(contract, event_name))
         monitor_thread.start()
-
-        # Inicia el servidor Flask en el puerto 5000
         app.run(debug=True, port=5000)
     else:
         print("Error: ABI o dirección del contrato no encontrados.")

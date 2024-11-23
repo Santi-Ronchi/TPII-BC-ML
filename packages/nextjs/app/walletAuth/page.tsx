@@ -12,7 +12,7 @@ import { addDoc, collection, setDoc, doc, query, where, getDocs, getCountFromSer
 
 const walletAuth: NextPage = () => {
   const { address: connectedAddress } = useAccount();
-  const { data: signMessageData, error, isLoading, signMessage, variables } = useSignMessage()
+  const { data: signMessageData, error, signMessage, variables } = useSignMessage()
   const [userName,setUserName] = useState('');
   const [emailSet, setEmailInput] = useState(true);
 
@@ -69,32 +69,43 @@ const walletAuth: NextPage = () => {
     }
   }
 
-  async function addEmailToDatabase(){
-    if (auth.currentUser){
-      //console.log(auth.currentUser);
+  async function addEmailToDatabase() {
+    if (auth.currentUser) {
       console.log("Estoy logeado actualmente");
-      try {
-        const docRef = doc(db,"Wallet-email",localStorage.getItem('DarpaConnectedWallet'));
-        await setDoc(docRef, {
-          userEmail: userName,
-          walletAddr: localStorage.getItem('DarpaConnectedWallet'),
-        });
-        console.log("Document added with ID: ", localStorage.getItem('DarpaConnectedWallet'));
-      } catch (e) {
-        console.error("Error adding document: ", e);
+  
+      // Capturar y validar la billetera conectada
+      const walletAddr = localStorage.getItem('DarpaConnectedWallet');
+      if (!walletAddr) {
+        console.error("No se encontró 'DarpaConnectedWallet' en localStorage");
+        return; // Termina la función si no hay billetera
       }
-      try{
-        const docRef = doc(db,"Email-Wallets",userName);
+  
+      try {
+        // Referencia al documento usando la billetera
+        const docRef = doc(db, "Wallet-email", walletAddr);
         await setDoc(docRef, {
           userEmail: userName,
-          walletAddr: [localStorage.getItem('DarpaConnectedWallet')],
+          walletAddr: walletAddr,
         });
-        console.log("Document added to Email-Wallets with ID: ", userName);
-      } catch(e){
-        console.error("Error adding document: ", e);
+        console.log("Documento añadido con ID: ", walletAddr);
+      } catch (e) {
+        console.error("Error al añadir documento: ", e);
+      }
+  
+      try {
+        // Referencia al documento usando el email
+        const docRef = doc(db, "Email-Wallets", userName);
+        await setDoc(docRef, {
+          userEmail: userName,
+          walletAddr: [walletAddr],
+        });
+        console.log("Documento añadido a Email-Wallets con ID: ", userName);
+      } catch (e) {
+        console.error("Error al añadir documento: ", e);
       }
     }
   }
+  
 
   if(emailSet){
     return (
