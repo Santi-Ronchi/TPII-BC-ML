@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { User, Contract } from "../../types/utils";
 import { db } from "./firebase";
 import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
+import ContractLists from './ContractLists';
+import { useAccount } from "wagmi";
 
 interface UserProfileProps {
   userId: string;
@@ -40,9 +42,17 @@ const fetchWalletsAndContracts = async (userEmail: string): Promise<{
     // Fetch contracts
     const contractRef = collection(db, "Contratos");
     for (const wallet of walletArray) {
-      const contractQuery = query(contractRef, where("ownerAddress", "==", wallet));
-      const contractSnapshot = await getDocs(contractQuery);
-      contractSnapshot.forEach((doc) => {
+      const ownerContractQuery = query(contractRef, where("ownerAddress", "==", wallet));
+      const ownerContractSnapshot = await getDocs(ownerContractQuery);
+      ownerContractSnapshot.forEach((doc) => {
+        contractArray.push({
+          ...doc.data(),
+          id: doc.id,
+        } as unknown as Contract);
+      });
+      const lesseContractQuery = query(contractRef, where("lesseAddress", "==", wallet));
+      const lesseContractSnapshot = await getDocs(lesseContractQuery);
+      lesseContractSnapshot.forEach((doc) => {
         contractArray.push({
           ...doc.data(),
           id: doc.id,
@@ -57,6 +67,7 @@ const fetchWalletsAndContracts = async (userEmail: string): Promise<{
 };
 
 const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
+  const { address: connectedAddress } = useAccount();
   const [user, setUser] = useState<User | null>(null);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,8 +97,15 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   if (loading) return <p className="text-center">Cargando...</p>;
   if (!user) return <p className="text-center text-red-500">No se encontraron datos de usuario.</p>;
 
+  console.log(contracts);
+
   return (
-    <div className="p-8 shadow-xl rounded-lg max-w-4xl mx-auto" style={{ background: "linear-gradient(to right, #e5a073, #cc6164, #d4789b, #ae7ca3)",}}>
+    <div
+      className="p-8 shadow-xl rounded-lg max-w-7xl mx-auto min-h-screen flex flex-col items-center"
+      style={{
+        background: "linear-gradient(to right, #e5a073, #cc6164, #d4789b, #ae7ca3)",
+      }}
+    >
       {/* User Email */}
       <div className="text-center mb-10">
         <p className="text-2xl font-semibold text-white">
@@ -97,7 +115,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
       </div>
   
       {/* Wallets Section */}
-      <div className="mb-12 bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md">
+      <div className="mb-12 w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md">
         <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 border-b-2 border-gray-300 dark:border-gray-700 pb-3 mb-4">
           Wallets
         </h3>
@@ -120,34 +138,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
       </div>
   
       {/* Contracts Section */}
-      <div className="bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md">
-        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 border-b-2 border-gray-300 dark:border-gray-700 pb-3 mb-4">
-          Contratos
-        </h3>
-        {contracts.length > 0 ? (
-          <ul className="space-y-4">
-            {contracts.map((contract) => (
-              <li key={contract.id} className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-md shadow-sm transition-transform transform hover:scale-105 duration-300">
-                <strong className="block text-lg text-gray-800 dark:text-gray-200">
-                  ID: {contract.id}
-                </strong>
-                <p className="text-gray-700 dark:text-gray-300">Estado: {contract.state}</p>
-                <p className="text-gray-700 dark:text-gray-300">Monto a pagar: {contract.amount}</p>
-                <p className="text-gray-700 dark:text-gray-300">
-                  Duración: {contract.duration} meses
-                </p>
-                <p className="text-gray-700 dark:text-gray-300">Interés: {contract.interest}%</p>
-                <p className="text-gray-700 dark:text-gray-300">
-                  Dirección del inquilino:{" "}
-                  <span className="font-semibold">{contract.lesseAddress}</span>
-                </p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-600 dark:text-gray-400">No posees contratos activos.</p>
-        )}
-      </div>
+      <ContractLists contracts={contracts} />
     </div>
   );
 };

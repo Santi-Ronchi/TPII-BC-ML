@@ -16,7 +16,6 @@ export const CrearContratoAlquiler = () => {
     const userAccount = useAccount();
 
     const { address: connectedAddress } = useAccount();
-    const [ownerAddress, setOwnerAddress] = useState("");
     const [lesseAddress, setLesseAddress] = useState("");
 
     const [ethAmount, setEthAmount] = useState("");
@@ -58,7 +57,7 @@ export const CrearContratoAlquiler = () => {
                 await writeYourContractAsync({
                     functionName: "CrearContrato",
                     //args: [connectedAddress,connectedAddress,1,777]
-                    args: [ownerAddress,lesseAddress,ethAmount,txValue]
+                    args: [connectedAddress,lesseAddress,ethAmount,txValue]
               });
             } catch (e) {
       console.error("Error setting greeting:", e);
