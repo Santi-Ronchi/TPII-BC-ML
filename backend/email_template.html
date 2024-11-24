@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #cbcfd3;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+        .logo {
+            width: 100px;
+            display: block;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: #8c376c;
+            margin: 0;
+        }
+        .welcome-message {
+            font-size: 1rem;
+            color: #370921;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .farewell-message {
+            font-size: 1rem;
+            color: #370921;
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            text-align: left;
+        }
+        .details {
+            text-align: left;
+            margin: 20px 0;
+            font-size: 1rem;
+            color: #370921;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            width: 48%;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .accept {
+            background-color: #899b78;
+            color: white;
+            border: none;
+        }
+        .modify {
+            background-color: #e3b0cf;
+            color: white;
+            border: none;
+        }
+        .accept:hover {
+            background-color: #748462;
+        }
+        .modify:hover {
+            background-color: #d09abb;
+        }
+        .signature {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            font-style: italic;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <img src="ARPA.png" alt="Logo de ARPA" class="logo">
+
+        <!-- Mensaje de bienvenida -->
+        <div class="welcome-message">
+            <h1>¡Hola!</h1>
+            <p>Te enviamos la información de tu contrato de alquiler.</p>
+        </div>
+
+        <!-- Detalles del contrato -->
+        <h1>Detalles del Contrato</h1>
+        <div class="details">
+            <!-- Aquí es donde se reemplazarán los detalles del contrato -->
+            {contract_details}
+        </div>
+
+        <!-- Botones -->
+        <div class="buttons">
+            <a href="http://localhost:3000/aceptarAlquiler" class="button accept">ACEPTAR</a>
+            <a href="http://localhost:3000/modificarAlquiler" class="button modify">MODIFICAR</a>
+        </div>
+
+        <!-- Mensaje de despedida -->
+        <div class="farewell-message">
+            <p>Si tiene alguna pregunta, no dude en contactarnos. ¡Que tenga un gran día!</p>
+        </div>
+
+        <!-- Firma -->
+        <div class="signature">
+            Atentamente,<br>
+            Equipo Arpa<br>
+            <br>
+            Contacto: [-] | Tel: [-]
+        </div>
+    </div>
+</body>
+</html>

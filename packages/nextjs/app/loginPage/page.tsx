@@ -5,38 +5,78 @@ import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase";
 import { useState } from 'react';
-
-/*
-export const metadata = getMetadata({
-  title: "Login page",
-  description: "Ingresa credenciales de acceso.",
-});
-
-
-function buttonPress(){
- alert("you clicked me");
-}*/
-
-function login(email: string, password: string){
-  signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-    console.log(user);
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    alert(errorCode);
-    // ..
-  });
-}
-
+import { db } from "./firebase";
+import { setDoc, doc } from "firebase/firestore";
+import { useAccount } from "wagmi";
 
 const LoginPage: NextPage = () => {
   const [userName,setUserName] = useState('');
   const [password,setPassword] = useState('');
-  const router = useRouter();
+  const { address: connectedAddress } = useAccount();
 
+  function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>){
+    setUserName(event.target.value);
+  }
+
+  function handlePasswordChange(event: React.ChangeEvent<HTMLInputElement>){
+    setPassword(event.target.value);
+  }
+
+  async function createNewUser(email: string, password: string) {
+    try {
+      // Crear el usuario
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+  
+      console.log("Usuario creado: ", user);
+  
+      // Validar que connectedAddress no sea undefined
+      if (!connectedAddress) {
+        throw new Error("connectedAddress no está definido.");
+      }
+  
+      // Agregar documento a Email-Wallets
+      const emailDocRef = doc(db, "Email-Wallets", userName);
+      await setDoc(emailDocRef, {
+        userEmail: userName,
+        walletAddr: [connectedAddress],
+      });
+      console.log("Documento añadido a Email-Wallets con ID: ", userName);
+  
+      // Agregar documento a Wallet-email
+      const walletDocRef = doc(db, "Wallet-email", connectedAddress);
+      await setDoc(walletDocRef, {
+        userEmail: userName,
+        walletAddr: connectedAddress,
+      });
+      console.log("Documento añadido con ID: ", connectedAddress);
+  
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  }
+  
+
+  function login(email: string, password: string){
+    event?.preventDefault();
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed up 
+      const user = userCredential.user;
+      alert("login succesful");
+      
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      alert(errorCode);
+      // ..
+    });
+  }
+  
+
+  if (userName != '' && password != ''){
     return (
       <section className="">
         <div className=" h-full p-10">

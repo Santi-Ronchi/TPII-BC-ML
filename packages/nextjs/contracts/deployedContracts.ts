@@ -26,6 +26,61 @@ const deployedContracts = {
           type: "constructor",
         },
         {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "address",
+              name: "Owner",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "Monto",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "ID",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "pass",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "bool",
+              name: "fixed_penalty",
+              type: "bool",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "GracePeriod",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "Penalty_Percentage",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "Duration",
+              type: "uint256",
+            },
+          ],
+          name: "ContratoCreado",
+          type: "event",
+        },
+        {
           inputs: [
             {
               internalType: "uint256",
