@@ -17,17 +17,20 @@ function buttonPress(){
  alert("you clicked me");
 }*/
 
-function createNewUser(email: string,password: string){
-  createUserWithEmailAndPassword(auth, email, password)
+function createNewUser(email: string,password: string, setEmail: (email: string) => void): Promise<boolean> {
+  return createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     // Signed up 
     const user = userCredential.user;
     console.log(user);
+    setEmail(email)
+    return true
 
   })
   .catch((error) => {
     const errorCode = error.code;
     alert(errorCode);
+    return false
   });
 }
 
@@ -83,7 +86,10 @@ const RegisterPage: NextPage = () => {
                         {/* <!--Submit button--> */}
                         <div className="mb-12 pb-1 pt-1 text-center">
                             <button 
-                              onClick={() => {createNewUser(userName,password); setEmail(userName); router.push("/")}}
+                              onClick={async () => {
+                                const success = await createNewUser(userName,password, setEmail);
+                                if (success) router.push("/");
+                              }}
                               className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
                               type="button"
                               style={{
