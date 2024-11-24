@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 
 const WalletAuth: NextPage = () => {
   const { address: connectedAddress } = useAccount();
-  const { data: signMessageData, error, isLoading, signMessage, variables } = useSignMessage()
+  const { data: signMessageData, error, signMessage, variables } = useSignMessage()
   const [userName,setUserName] = useState('');
   const [emailSet, setEmailInput] = useState(true);
   const [isChecked, setIsChecked] = useState(false);

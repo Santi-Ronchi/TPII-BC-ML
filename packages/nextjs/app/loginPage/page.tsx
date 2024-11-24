@@ -3,19 +3,20 @@ import type { NextPage } from "next";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
 import { useState } from 'react';
-import { db } from "./firebase";
-import { setDoc, doc } from "firebase/firestore";
-import { useAccount } from "wagmi";
-import router from "next/router";
+import { getDoc, updateDoc, arrayUnion, setDoc, doc } from "firebase/firestore";
 import { useUser } from "../user/UserContext";
+import { useAccount } from "wagmi";
+import { FirebaseError } from "firebase/app";
+
 
 const LoginPage: NextPage = () => {
   const [userName,setUserName] = useState('');
   const [password,setPassword] = useState('');
   const { setEmail } = useUser();
   const { address: connectedAddress } = useAccount();
+  const router = useRouter();
 
   function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>){
     setUserName(event.target.value);
@@ -24,60 +25,71 @@ const LoginPage: NextPage = () => {
   function handlePasswordChange(event: React.ChangeEvent<HTMLInputElement>){
     setPassword(event.target.value);
   }
+ 
 
-  async function createNewUser(email: string, password: string) {
+
+  async function login(email: string, password: string): Promise<void> {
     try {
-      // Crear el usuario
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-  
-      console.log("Usuario creado: ", user);
-  
-      // Validar que connectedAddress no sea undefined
-      if (!connectedAddress) {
-        throw new Error("connectedAddress no está definido.");
-      }
-  
-      // Agregar documento a Email-Wallets
-      const emailDocRef = doc(db, "Email-Wallets", userName);
-      await setDoc(emailDocRef, {
-        userEmail: userName,
-        walletAddr: [connectedAddress],
-      });
-      console.log("Documento añadido a Email-Wallets con ID: ", userName);
-  
-      // Agregar documento a Wallet-email
-      const walletDocRef = doc(db, "Wallet-email", connectedAddress);
-      await setDoc(walletDocRef, {
-        userEmail: userName,
-        walletAddr: connectedAddress,
-      });
-      console.log("Documento añadido con ID: ", connectedAddress);
-  
-    } catch (error) {
-      console.error("Error: ", error);
-    }
-  }
-  
-
-  function login(email: string, password: string) {
-    event?.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed up 
+      // Iniciar sesión con Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       setEmail(email);
-      alert("login succesful");
-      // ...
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      alert(errorCode);
-      // ..
-    });
-  }
   
+      if (!connectedAddress) {
+        console.error("connectedAddress no está definido.");
+        alert("No hay una wallet conectada.");
+        return;
+      }
+  
+      // Referencia al documento de "Email-Wallets" basado en el email
+      const emailDocRef = doc(db, "Email-Wallets", email);
+      const emailDocSnapshot = await getDoc(emailDocRef);
+  
+      if (emailDocSnapshot.exists()) {
+        const emailData = emailDocSnapshot.data();
+        const walletAddr = emailData.walletAddr || [];
+  
+        // Verificar si la wallet ya está asociada
+        if (!walletAddr.includes(connectedAddress)) {
+          // Agregar la wallet a la lista existente
+          await updateDoc(emailDocRef, {
+            walletAddr: arrayUnion(connectedAddress),
+          });
+          console.log(`Wallet ${connectedAddress} añadida a la cuenta de ${email}`);
+        } else {
+          console.log(`La wallet ${connectedAddress} ya está asociada con ${email}`);
+        }
+      }
+  
+      // Referencia al documento de "Wallet-email" basado en la wallet
+      const walletDocRef = doc(db, "Wallet-email", connectedAddress);
+      const walletDocSnapshot = await getDoc(walletDocRef);
+  
+      if (!walletDocSnapshot.exists()) {
+        // Si no existe, crear un nuevo documento
+        await setDoc(walletDocRef, {
+          userEmail: email,
+          walletAddr: connectedAddress,
+        });
+        console.log(`Documento creado para la wallet ${connectedAddress} con el email ${email}`);
+      } else {
+        console.log(`El documento para la wallet ${connectedAddress} ya existe.`);
+      }
+  
+      alert("Login exitoso");
+    } catch (error) {
+      console.error("Error en el login:", error);
+  
+      if (error instanceof FirebaseError) {
+        alert(`Error de Firebase: ${error.message}`);
+      } else if (error instanceof Error) {
+        alert(`Error: ${error.message}`);
+      } else {
+        alert("Error desconocido durante el login.");
+      }
+    }
+  }
+    
 
 //  if (userName != '' && password != ''){
     return (
