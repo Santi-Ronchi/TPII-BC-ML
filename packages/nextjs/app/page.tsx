@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import { HomeIcon, ArrowLongDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, ArrowLongDownIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 
 const Home: NextPage = () => {
@@ -48,7 +48,7 @@ const Home: NextPage = () => {
         <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
           <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
             <div>
-              <h2 className="text-lg font-bold justify-center text-center items-center">Propietarios, es por acá:</h2>
+              <h2 className="text-lg font-bold justify-center text-center items-center">Es por acá:</h2>
               <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
                 <HomeIcon className="h-8 w-8 fill-secondary" />
                 <p>
@@ -59,7 +59,7 @@ const Home: NextPage = () => {
                 </p>
               </div>
             </div>
-            <div>
+            {/*<div>
               <h2 className="text-lg font-bold justify-center text-center items-center">Inquilinos, ¿qué están esperando?</h2>
               <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
                 <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
@@ -70,11 +70,11 @@ const Home: NextPage = () => {
                   </Link>{" "}
                 </p>
               </div>
-            </div>
+            </div>*/}
             <div>
               <h2 className="text-lg font-bold justify-center text-center items-center">¿No sabés el valor de tu alquiler?</h2>
               <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-                <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
+                <SparklesIcon className="h-8 w-8 fill-secondary" />
                 <p>
                   Calculá el{" "} 
                   <Link href="/predecirPrecio" passHref className="link">
