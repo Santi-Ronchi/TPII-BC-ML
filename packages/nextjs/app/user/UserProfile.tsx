@@ -7,6 +7,7 @@ import { doc, getDoc, getDocs, collection, query, where } from "firebase/firesto
 import ContractLists from './ContractLists';
 import { useAccount } from "wagmi";
 
+
 interface UserProfileProps {
   userId: string;
 }
@@ -69,8 +70,10 @@ const fetchWalletsAndContracts = async (userEmail: string): Promise<{
 const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   const { address: connectedAddress } = useAccount();
   const [user, setUser] = useState<User | null>(null);
-  const [contracts, setContracts] = useState<Contract[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [contracts, setContracts] = useState<Contract | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingWallets, setLoadingWallets] = useState<boolean>(true);
+  const [userWallets, setUserWallets] = useState<String | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -94,8 +97,69 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
     loadData();
   }, [userId]);
 
-  if (loading) return <p className="text-center">Cargando...</p>;
-  if (!user) return <p className="text-center text-red-500">No se encontraron datos de usuario.</p>;
+
+  useEffect(() => {
+    const fetchUserContracts = async () => {
+      if (loadingWallets && !loading) {
+        try {
+          //tengo el email, tengo que extraer la totalidad de las wallets
+          let walletArray = [];
+          try {
+            const ref = collection(db, "Email-Wallets");
+            const queryWallets = query(ref, where("userEmail", "==", user.userEmail));
+            const walletSnapshot = await getDocs(queryWallets);
+            walletSnapshot.forEach((doc) => {
+              walletArray = doc.data().walletAddr;
+            });
+            const newUserData: User = {
+              userEmail: user.userEmail,
+              walletAddr: walletArray
+            };
+            setUser(newUserData);
+          }
+          catch (error) {
+            console.log(error);
+          }
+          setUserWallets(walletArray);
+
+          //Recuperacion de contratos
+          const ref = collection(db, 'Contratos');
+          let contractArray = [];
+          for (const aWallet of walletArray) {
+            //console.log(aWallet);
+            const queryContracts = query(ref, where("ownerAddress", "==", aWallet));
+            const contractSnapshot = await getDocs(queryContracts);
+            contractSnapshot.forEach((doc) => {
+              const contractData: Contract = {
+                amount: doc.data().amount ?? "",
+                daysToPay: doc.data().daysToPay ?? "",
+                duration: doc.data().duration ?? "",
+                interest: doc.data().interest ?? "",
+                lesseAddress: doc.data().lesseAddress ?? "",
+                ownerAddress: doc.data().ownerAddress ?? "",
+                state: doc.data().state ?? "",
+                id: doc.id ?? "",
+              };
+              contractArray.push(contractData);
+            });
+          };
+          setContracts(contractArray);
+        }
+        catch (error) {
+          console.log(error);
+        }
+        finally {
+          setLoadingWallets(false);
+        }
+      }
+    };
+    fetchUserContracts();
+  }, [contracts, loading]);
+
+
+  if (loading) return <p>Cargando...</p>;
+  if (!user) return <p>No se encontraron datos de usuario.</p>;
+
 
   console.log(contracts);
 
@@ -119,26 +183,81 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
         <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 border-b-2 border-gray-300 dark:border-gray-700 pb-3 mb-4">
           Wallets
         </h3>
-        {Array.isArray(user.walletAddr) && user.walletAddr.length > 0 ? (
-          <ul className="space-y-4">
-            {user.walletAddr.map((wallet, index) => (
-              <li
-                key={index}
-                className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-md shadow-sm transition-transform transform hover:scale-105 duration-300"
-              >
-                <p className="text-lg text-gray-800 dark:text-gray-200">
-                  <strong>Dirección:</strong> {wallet}
-                </p>
-              </li>
-            ))}
-          </ul>
+
+        {Array.isArray(user.walletAddr) ? (
+          user.walletAddr.length > 0 ? (
+            <ul style={{ padding: '0', listStyle: 'none' }}>
+              {user.walletAddr.map((wallet, index) => (
+                <li
+                  key={index}
+                  style={{
+                    backgroundColor: '#fff',
+                    padding: '10px',
+                    margin: '10px 0',
+                    borderRadius: '4px',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+                    color: '#333',
+                  }}
+                >
+                  Dirección: {wallet}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p style={{ color: '#999' }}>No hay wallets asociadas.</p>
+          )
+        ) : user.walletAddr ? (
+          <p
+            style={{
+              backgroundColor: '#fff',
+              padding: '10px',
+              margin: '10px 0',
+              borderRadius: '4px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+              color: '#333',
+            }}
+          >
+            Dirección: {user.walletAddr}
+          </p>
         ) : (
-          <p className="text-gray-600 dark:text-gray-400">No hay wallets asociadas.</p>
+          <p style={{ color: '#999' }}>No hay wallets asociadas.</p>
         )}
+
+
       </div>
-  
-      {/* Contracts Section */}
-      <ContractLists contracts={contracts} />
+
+      <div>
+        <h3 style={{ fontSize: '20px', color: '#333', borderBottom: '2px solid #ddd', paddingBottom: '5px' }}>
+          Contratos
+        </h3>
+        {
+          contracts != null
+            ? <ul style={{ padding: '0', listStyle: 'none' }}>
+              {contracts.map((contract) => (
+                <li
+                  key={contract.id}
+                  style={{
+                    backgroundColor: '#fff',
+                    padding: '10px',
+                    margin: '10px 0',
+                    borderRadius: '4px',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+                    color: '#333',
+                  }}
+                >
+                  <strong>ID: {contract.id}</strong>
+                  <p style={{ margin: '5px 0' }}>Estado: {contract.state}</p>
+                  <p style={{ margin: '5px 0' }}>Monto a pagar: {contract.amount}</p>
+                  <p style={{ margin: '5px 0' }}>Duration: {contract.duration} meses</p>
+                  <p style={{ margin: '5px 0' }}>Interes por falta de pago: {contract.interest}%</p>
+                  <p style={{ margin: '5px 0' }}>Dirección de quien alquila:
+                    <strong>{contract.lesseAddress}</strong></p>
+                </li>
+              ))}
+            </ul>
+            : <p>No posees contratos activos</p>
+        }
+      </div>
     </div>
   );
 };
