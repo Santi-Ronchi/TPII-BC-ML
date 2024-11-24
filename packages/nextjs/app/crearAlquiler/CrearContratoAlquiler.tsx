@@ -18,7 +18,6 @@ export const CrearContratoAlquiler = () => {
     const userAccount = useAccount();
 
     const { address: connectedAddress } = useAccount();
-    const [ownerAddress, setOwnerAddress] = useState("");
     const [lesseAddress, setLesseAddress] = useState("");
     const [interestRate, setInterestRate] = useState<string | bigint>("");
     const [paymentPeriod, setPaymentPeriod] = useState<string | bigint>("");
@@ -39,7 +38,7 @@ export const CrearContratoAlquiler = () => {
         <h1 className="text-xl font-bold">Ingresa los datos de tu propiedad:</h1>
         <br /><br />
         <label className="text-md font-bold">Tu Billetera</label>
-        <AddressInput onChange={setOwnerAddress} value={ownerAddress} placeholder="Input your owner address" />
+        <AddressInput value={connectedAddress} placeholder="Input your owner address" />
         <br />
         <label className="text-md font-bold">Rentador</label>
         <AddressInput onChange={setLesseAddress} value={lesseAddress} placeholder="Input your lesse address" />
@@ -102,6 +101,7 @@ export const CrearContratoAlquiler = () => {
                   }
                 } 
               } );
+
             } catch (e) {
       console.error("Error setting greeting:", e);
       }

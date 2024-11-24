@@ -33,6 +33,11 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/debug",
     icon: <BugAntIcon className="h-4 w-4" />,
   },
+  {
+    label: "Perfil de usuario",
+    href: "/user",
+    icon: <HomeIcon className="h-4 w-4" />,
+  },
 ];
 
 export const HeaderMenuLinks = () => {
@@ -99,7 +104,7 @@ export const Header = () => {
         </div>
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
           <div className="flex relative w-10 h-10">
-            <img alt="SE2 logo" className="cursor-pointer imgRounder" fill src="/logo-arpa.png" />
+            <img alt="SE2 logo" className="cursor-pointer imgRounder" src="/logo-arpa.png" />
           </div>
           <div className="flex flex-col">
             <span className="font-bold leading-tight">ARPA</span>
