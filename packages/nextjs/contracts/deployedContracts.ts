@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           inputs: [
@@ -36,6 +36,12 @@ const deployedContracts = {
             },
             {
               indexed: false,
+              internalType: "address",
+              name: "Lesse",
+              type: "address",
+            },
+            {
+              indexed: false,
               internalType: "uint256",
               name: "Monto",
               type: "uint256",
@@ -45,18 +51,6 @@ const deployedContracts = {
               internalType: "uint256",
               name: "ID",
               type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "pass",
-              type: "string",
-            },
-            {
-              indexed: false,
-              internalType: "bool",
-              name: "fixed_penalty",
-              type: "bool",
             },
             {
               indexed: false,
@@ -90,7 +84,7 @@ const deployedContracts = {
           ],
           name: "AceptarContrato",
           outputs: [],
-          stateMutability: "nonpayable",
+          stateMutability: "payable",
           type: "function",
         },
         {
@@ -368,30 +362,6 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "last_timestamp",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "today_timestamp",
-              type: "uint256",
-            },
-          ],
-          name: "cuantosMesesAdeudoTest",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [],
           name: "deployer",
           outputs: [
@@ -653,6 +623,19 @@ const deployedContracts = {
             },
           ],
           name: "proposeContractCancelationMutualAgreementOwner",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "ID_propiedad",
+              type: "uint256",
+            },
+          ],
+          name: "rejectContract",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
