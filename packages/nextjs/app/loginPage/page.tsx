@@ -2,12 +2,13 @@
 import type { NextPage } from "next";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase";
 import { useState } from 'react';
 import { db } from "./firebase";
 import { setDoc, doc } from "firebase/firestore";
 import { useAccount } from "wagmi";
+import router from "next/router";
 
 const LoginPage: NextPage = () => {
   const [userName,setUserName] = useState('');
@@ -76,7 +77,7 @@ const LoginPage: NextPage = () => {
   }
   
 
-  if (userName != '' && password != ''){
+//  if (userName != '' && password != ''){
     return (
       <section className="">
         <div className=" h-full p-10">
@@ -195,6 +196,13 @@ const LoginPage: NextPage = () => {
         </div>
       </section>
     );
-  };
-
+//  }
+/*  else {
+    return (
+      <section className="h-screen flex items-center justify-center">
+        <p>Por favor, completa el formulario para iniciar sesión.</p>
+      </section>
+    );
+  }*/
+};
   export default LoginPage;
