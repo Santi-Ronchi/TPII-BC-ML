@@ -9,13 +9,17 @@ import { useAccount } from "wagmi";
 import { auth, db } from "../loginPage/firebase";
 import { signInWithCustomToken } from "firebase/auth";
 import { addDoc, collection, setDoc, doc, query, where, getDocs, getCountFromServer } from "firebase/firestore";
+import { useUser } from "../user/UserContext";
+import { useRouter } from "next/navigation";
 
 const WalletAuth: NextPage = () => {
   const { address: connectedAddress } = useAccount();
-  const { data: signMessageData, error, isLoading, signMessage, variables } = useSignMessage()
+  const { data: signMessageData, error, signMessage, variables } = useSignMessage()
   const [userName,setUserName] = useState('');
   const [emailSet, setEmailInput] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
+  const router = useRouter();
+  const { setEmail } = useUser();
 
   function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>){
     setUserName(event.target.value);
@@ -55,15 +59,16 @@ const WalletAuth: NextPage = () => {
         //Tras conectarse, revisar que el mail este en la base de datos
         const ref = collection(db,'Wallet-email');
         const q = query(ref,where("walletAddr",'==',localStorage.getItem("DarpaConnectedWallet")));
-        //const queryResult = await getDocs(q);
-        const queryResult = await getCountFromServer(q);
-        if (queryResult.data().count == 0){
+        const queryResult = await getDocs(q);
+        if (queryResult.empty){
           setEmailInput(false);
           console.log("La wallet no tiene mail asociado")
         } else{
-          console.log("La wallet tiene mail asociado");
+          const email = queryResult.docs[0].data().userEmail;
+          setEmail(email); 
+          console.log("La wallet tiene mail asociado:", email);
+          router.push("/")
         }
-        //queryResult.forEach((doc) => {console.log(doc.id, '=>', doc.data())});
     }
     catch(error){
       console.log("error.message");
@@ -261,7 +266,7 @@ const WalletAuth: NextPage = () => {
 
                         <input type="text" id="fname" name="fname" value={userName} placeholder="unmail@mail.com" onChange={handleUsernameChange}></input>
                         <div></div>
-                        <button onClick={() => addEmailToDatabase()}>
+                        <button onClick={() => {addEmailToDatabase(); setEmail(userName); router.push("/") }}>
                           Vincular mail
                         </button>
                       </div>

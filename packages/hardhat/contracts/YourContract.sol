@@ -34,6 +34,17 @@ contract YourContract {
 	//mapping(address => ContratoAlquiler[]) public mapUsuarioContrato;
 	mapping(uint256 => bool) public propiedadesAlquiladas;
 
+	event ContratoCreado(
+		address Owner,
+		address Lesse,
+		uint256 Monto,
+		uint256 ID,
+		uint256 GracePeriod,
+		uint256 Penalty_Percentage,
+		uint256 Duration
+//        uint256 startDate
+    );
+
 	struct ContratoAlquiler{
 		uint256 timestamp;
 		ContractStatus Status;
@@ -57,6 +68,9 @@ contract YourContract {
 		require(!contractExists(_ID),"A contract for the required property already exists");
 		contratosAlquiler[_ID] = ContratoAlquiler(block.timestamp,ContractStatus.Draft,msg.sender,address(0),Monto,_ID,allowedWallet,_Penalty_Percentage, _GracePeriod,_Duration,block.timestamp,0);
 		propiedadesAlquiladas[_ID] = true;
+
+		emit ContratoCreado(msg.sender,allowedWallet,Monto, _ID,  _GracePeriod,  _Penalty_Percentage,  _Duration);
+
 	}
 	
 

@@ -1,4 +1,5 @@
 import { getAuth } from "firebase/auth";
+import { Firestore } from "firebase/firestore";
 const admin = require("firebase-admin");
 
 let firebaseApp;
@@ -21,4 +22,8 @@ function getFirebaseAuthenticator(){
     return auth;
 }
 
-module.exports = { getFirebaseApp, getFirebaseAuthenticator };
+function getFirestore(){
+    return Firestore.getFirestore(); 
+}
+
+module.exports = { getFirebaseApp, getFirebaseAuthenticator, getFirestore };
