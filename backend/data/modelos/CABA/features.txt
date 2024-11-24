@@ -1,7 +1,3 @@
-Con Cat boost
+CatBoost
 
-superficie_total
-precio_m2
-superficie_cubierta
-precio_m2_medio_localidad
-cantidad_de_ambiente
+['superficie_total' 'superficie_cubierta' 'precio_m2' 'precio_m2_medio_localidad' 'precio_medio_localidad']

@@ -62,14 +62,13 @@ def predict():
     if provincia_data == "Ciudad Autonoma de Buenos Aires":
         print("Nombres features scaler: " + scaler_caba.feature_names_in_)
         localidad = df_localidades_caba[df_localidades_caba['localidad'] == localidad_data]
-        datos_entrada = [[superficie_total,superficie_cubierta,cantidad_ambientes,localidad["precio_m2_medio"].values[0],localidad["precio_m2_medio"].values[0]]]
-        datos_entrada_df = pd.DataFrame(datos_entrada, columns=['superficie_total','superficie_cubierta', 'cantidad_de_ambiente', 'precio_m2','precio_m2_medio_localidad'])
+        datos_entrada = [[superficie_total,superficie_cubierta,localidad["precio_m2_medio"].values[0],localidad["precio_m2_medio"].values[0],localidad["precio_medio"].values[0]]]
+        datos_entrada_df = pd.DataFrame(datos_entrada, columns=['superficie_total','superficie_cubierta', 'precio_m2', 'precio_m2_medio_localidad','precio_medio_localidad'])
         datos_entrada_escalados = scaler_caba.transform(datos_entrada_df)
         prediction = model_caba.predict(datos_entrada_escalados)
 
     elif provincia_data == "Zona Sur (GBA)" or provincia_data == "Zona Oeste (GBA)" or provincia_data == "Zona Norte (GBA)":
         print("Nombres features scaler: " + scaler_bsas.feature_names_in_)
-        
         localidad = df_localidades_bsas[(df_localidades_bsas['localidad'] == localidad_data) & (df_localidades_bsas['cantidad_de_ambiente'] == data['cantidad_ambientes'])]
         if localidad.empty:
             localidad = df_localidades_bsas[df_localidades_bsas['localidad'] == localidad_data]
@@ -78,13 +77,13 @@ def predict():
             datos_localidad = [[provincia_data,localidad_data,cantidad_ambientes,precio_m2_cubierto_medio_localidad,0,precio_medio]]
             localidad = pd.DataFrame(datos_localidad, columns=['provincia','localidad','cantidad_de_ambiente','precio_m2_cubierto_medio_localidad','precio_m2_medio','precio_medio'])
 
-        datos_entrada = [[superficie_total,superficie_cubierta,cantidad_ambientes,localidad["precio_m2_cubierto_medio_localidad"].values[0],localidad["precio_medio"].values[0]]]
-        
-        datos_entrada_df = pd.DataFrame(datos_entrada, columns=['superficie_total','superficie_cubierta', 'cantidad_de_ambiente', 'precio_m2_cubierto_medio_localidad', 'precio_medio_localidad'])
-        datos_entrada_escalados = scaler_bsas.transform(datos_entrada)
-        
+        datos_entrada = [[superficie_total,superficie_cubierta,localidad["precio_m2_cubierto_medio_localidad"].values[0]*superficie_cubierta/superficie_total,localidad["precio_m2_cubierto_medio_localidad"].values[0],localidad["precio_medio"].values[0]]]
+        print(datos_entrada)
+        datos_entrada_df = pd.DataFrame(datos_entrada, columns=['superficie_total','superficie_cubierta', 'precio_m2', 'precio_m2_cubierto_medio_localidad', 'precio_medio_localidad'])
+        datos_entrada_escalados = scaler_bsas.transform(datos_entrada_df)
+        print(datos_entrada_escalados)
         log_prediction = model_bsas.predict(datos_entrada_escalados)
-        prediction = np.exp(log_prediction) * superficie_total
+        prediction = np.exp(log_prediction)
     else:
         print("Nombres features scaler: " + scaler_prov.feature_names_in_)
         
@@ -96,12 +95,12 @@ def predict():
             datos_localidad = [[provincia_data,localidad_data,cantidad_ambientes,precio_m2_cubierto_medio_localidad,0,precio_medio]]
             localidad = pd.DataFrame(datos_localidad, columns=['provincia','localidad','cantidad_de_ambiente','precio_m2_cubierto_medio_localidad','precio_m2_medio','precio_medio'])
 
-        datos_entrada = [[superficie_total,superficie_cubierta,cantidad_ambientes,localidad["precio_m2_cubierto_medio_localidad"].values[0],localidad["precio_medio"].values[0]]]
+        datos_entrada = [[superficie_total,superficie_cubierta,cantidad_ambientes,localidad["precio_m2_cubierto_medio_localidad"].values[0]*superficie_cubierta/superficie_total,localidad["precio_m2_cubierto_medio_localidad"].values[0],localidad["precio_medio"].values[0]]]
         
-        datos_entrada_df = pd.DataFrame(datos_entrada, columns=['superficie_total','superficie_cubierta', 'cantidad_de_ambiente', 'precio_m2_cubierto_medio_localidad', 'precio_medio_localidad'])
+        datos_entrada_df = pd.DataFrame(datos_entrada, columns=['superficie_total','superficie_cubierta', 'cantidad_de_ambiente', 'precio_m2', 'precio_m2_cubierto_medio_localidad', 'precio_medio_localidad'])
         datos_entrada_escalados = scaler_prov.transform(datos_entrada)
         
-        prediction = model_prov.predict(datos_entrada_escalados) * superficie_total
+        prediction = model_prov.predict(datos_entrada_escalados)
         
 
     prediction = round(prediction[0])

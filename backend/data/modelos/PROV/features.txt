@@ -1,7 +1,3 @@
-Con red neuronal
+Red Neuronal
 
-superficie_total,
-superficie_cubierta,
-cantidad_de_ambiente,
-precio_m2_cubierto,
-precio_medio_localidad
+['superficie_total' 'superficie_cubierta' 'cantidad_de_ambiente' 'precio_m2' 'precio_m2_cubierto_medio_localidad' 'precio_medio_localidad']

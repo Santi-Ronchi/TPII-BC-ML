@@ -1,7 +1,3 @@
-Con XGB y catboost en log
+Logaritmo usando XGBoost y CatBoost
 
-#3  precio_m2_cubierto_medio_localidad    40.967295
-#0                    superficie_total    31.261406
-#1                 superficie_cubierta    13.030908
-#4              precio_medio_localidad    11.664221
-#2                cantidad_de_ambiente     3.076170
+['superficie_total' 'superficie_cubierta' 'precio_m2' 'precio_m2_cubierto_medio_localidad' 'precio_medio_localidad']
