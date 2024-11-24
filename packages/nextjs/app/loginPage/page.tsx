@@ -60,22 +60,20 @@ const LoginPage: NextPage = () => {
   }
   
 
-  function login(email: string, password: string, setEmail: (email: string) => void): Promise<boolean> {
+  function login(email: string, password: string) {
     event?.preventDefault();
-    return signInWithEmailAndPassword(auth, email, password)
+    signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed up 
       const user = userCredential.user;
       setEmail(email);
       alert("login succesful");
-      return true
       // ...
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       alert(errorCode);
-      return false
       // ..
     });
   }
@@ -128,8 +126,7 @@ const LoginPage: NextPage = () => {
                         <div className="mb-12 pb-1 pt-1 text-center">
                           <button
                               onClick={async () => {
-                                const success = await login(userName, password, setEmail);
-                                if (success) router.push("/");
+                                login(userName, password);
                               }}
                             className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
                             type="button"
