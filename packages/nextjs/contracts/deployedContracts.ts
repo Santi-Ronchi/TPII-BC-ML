@@ -222,11 +222,6 @@ const deployedContracts = {
               type: "address",
             },
             {
-              internalType: "enum PenaltyType",
-              name: "Penalty",
-              type: "uint8",
-            },
-            {
               internalType: "uint256",
               name: "PenaltyPercentage",
               type: "uint256",
@@ -246,8 +241,56 @@ const deployedContracts = {
               name: "TimestampLastPayment",
               type: "uint256",
             },
+            {
+              internalType: "uint256",
+              name: "CollectedAmount",
+              type: "uint256",
+            },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "Monto",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_ID",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "allowedWallet",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "_GracePeriod",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_Penalty_Percentage",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_Duration",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "last_payment_timestamp",
+              type: "uint256",
+            },
+          ],
+          name: "createRawContract",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -294,6 +337,76 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [],
+          name: "deployer",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "ID_propiedad",
+              type: "uint256",
+            },
+          ],
+          name: "getCollectedEtherAmount",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "ID_propiedad",
+              type: "uint256",
+            },
+          ],
+          name: "getContractBaseMonthlyAmountToBePaid",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "ID_propiedad",
+              type: "uint256",
+            },
+          ],
+          name: "getContractCurrentState",
+          outputs: [
+            {
+              internalType: "enum ContractStatus",
+              name: "",
+              type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
           inputs: [
             {
               internalType: "uint256",
@@ -302,44 +415,6 @@ const deployedContracts = {
             },
           ],
           name: "haveToPayPenalties",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-          ],
-          name: "isAcceptableContract",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-          ],
-          name: "isActiveContract",
           outputs: [
             {
               internalType: "bool",
@@ -440,190 +515,6 @@ const deployedContracts = {
               internalType: "bool",
               name: "",
               type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_Lesse",
-              type: "address",
-            },
-          ],
-          name: "isValidLesse",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "mapUsuarioContrato",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "timestamp",
-              type: "uint256",
-            },
-            {
-              internalType: "enum ContractStatus",
-              name: "Status",
-              type: "uint8",
-            },
-            {
-              internalType: "address",
-              name: "Owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "Lesse",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "Monto",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "ID_propiedad",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "AllowedWallet",
-              type: "address",
-            },
-            {
-              internalType: "enum PenaltyType",
-              name: "Penalty",
-              type: "uint8",
-            },
-            {
-              internalType: "uint256",
-              name: "PenaltyPercentage",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "GracePeriod",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "DurationInMonths",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "TimestampLastPayment",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "usuario",
-              type: "address",
-            },
-          ],
-          name: "obtenerContratos",
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: "uint256",
-                  name: "timestamp",
-                  type: "uint256",
-                },
-                {
-                  internalType: "enum ContractStatus",
-                  name: "Status",
-                  type: "uint8",
-                },
-                {
-                  internalType: "address",
-                  name: "Owner",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "Lesse",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "Monto",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "ID_propiedad",
-                  type: "uint256",
-                },
-                {
-                  internalType: "address",
-                  name: "AllowedWallet",
-                  type: "address",
-                },
-                {
-                  internalType: "enum PenaltyType",
-                  name: "Penalty",
-                  type: "uint8",
-                },
-                {
-                  internalType: "uint256",
-                  name: "PenaltyPercentage",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "GracePeriod",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "DurationInMonths",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "TimestampLastPayment",
-                  type: "uint256",
-                },
-              ],
-              internalType: "struct YourContract.ContratoAlquiler[]",
-              name: "",
-              type: "tuple[]",
             },
           ],
           stateMutability: "view",
