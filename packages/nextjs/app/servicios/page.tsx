@@ -12,7 +12,7 @@ import Servicios from "./Servicios";
 const ServiciosPage: NextPage = () => {
   return (
     <><div>
-      <Servicios></Servicios>
+      <Servicios propiedadId={"1"}></Servicios>
     </div></>
     );
   };

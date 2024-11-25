@@ -3,12 +3,12 @@ import axios from 'axios';
 import { NextPage } from 'next';
 import { useUser } from '../user/UserContext';
 import { db } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { dataServicios } from '~~/types/utils';
 
-const Servicios: NextPage = () => {
+const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
   const [numeroCuenta, setNumeroCuenta] = useState<string>(''); 
-  const [servicio, setServicio] = useState<keyof dataServicios>('AYSA');
+  const [servicio, setServicio] = useState<keyof dataServicios>('AYSA'); 
   const [postResponse, setPostResponse] = useState<string | null>(null);
   const [getResponse, setGetResponse] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -18,6 +18,7 @@ const Servicios: NextPage = () => {
   const getUrl = '/api/get-balance';
 
   const handleRequest = async () => {
+    // TENGO QUE CAMBIAR ESTO EL ID ESTA HARCODEADO
     console.log('Servicio seleccionado:', servicio);
     console.log('Número de cuenta:', numeroCuenta);
 
@@ -27,6 +28,24 @@ const Servicios: NextPage = () => {
     };
 
     try {
+      const tableName = 'Servicios';
+      const userDoc = doc(db, tableName, propiedadId);
+      const userSnapshot = await getDoc(userDoc);
+
+      if (userSnapshot.exists()) {
+        const existingData = userSnapshot.data() as dataServicios;
+
+        if (existingData[servicio] !== numeroCuenta) {
+          await setDoc(userDoc, { ...existingData, [servicio]: numeroCuenta }, { merge: true });
+          console.log(`Número de cuenta para ${servicio} actualizado en la base de datos.`);
+        } else {
+          console.log(`Número de cuenta para ${servicio} ya estaba actualizado.`);
+        }
+      } else {
+        await setDoc(userDoc, { [servicio]: numeroCuenta });
+        console.log(`Documento creado con el número de cuenta para ${servicio}.`);
+      }
+
       const postResult = await axios.post(postUrl, requestBody, {
         headers: { 'Content-Type': 'application/json' },
       });
@@ -56,9 +75,7 @@ const Servicios: NextPage = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      // ACA LE TENGO QUE PASAR EL ID DE LA PROPIEDAD QUE QUIERO VER
-      const propId = '2'; 
-      const propData = await fetchUserData(propId);
+      const propData = await fetchUserData(propiedadId);
       setLeerServicio(propData);
     };
 
@@ -81,7 +98,7 @@ const Servicios: NextPage = () => {
         <select 
           id="servicio" 
           value={servicio} 
-          onChange={(e) => setServicio(e.target.value as keyof dataServicios)}
+          onChange={(e) => setServicio(e.target.value as keyof dataServicios)} 
         >
           <option value="AYSA">AYSA</option>
           <option value="EDESUR">EDESUR</option>
@@ -97,8 +114,8 @@ const Servicios: NextPage = () => {
           onChange={(e) => setNumeroCuenta(e.target.value)} 
         />
       </div>
-
-      <button onClick={handleRequest}>Realizar POST y GET</button>
+      
+      <button onClick={() => handleRequest()}>Realizar POST y GET</button>
 
       {error && <div style={{ color: 'red' }}>Error: {error}</div>}
 
