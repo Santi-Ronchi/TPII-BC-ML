@@ -5,7 +5,7 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { HomeIcon, ArrowLongDownIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
-import Servicios from "./user/Servicios";
+import Servicios from "./servicios/Servicios";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
@@ -44,13 +44,6 @@ const Home: NextPage = () => {
           <div className="flex flex-row justify-around text-center items-center">
             <ArrowLongDownIcon className="h-40 w-40"/>
           </div>
-        </div>
-
-        <div>
-            <Servicios>
-              
-            </Servicios>
-
         </div>
         <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
           <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
