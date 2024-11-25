@@ -7,10 +7,16 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { dataServicios } from '~~/types/utils';
 
 const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   const [numeroCuenta, setNumeroCuenta] = useState<string>(''); 
   const [servicio, setServicio] = useState<keyof dataServicios>('AYSA'); 
   const [postResponse, setPostResponse] = useState<string | null>(null);
   const [getResponse, setGetResponse] = useState<string | null>(null);
+  const [parsedGetResponse, setParsedGetResponse] = useState<{
+    servicio?: string;
+    numeroCuenta?: string;
+    saldo?: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [leerServicio, setLeerServicio] = useState<dataServicios | null>(null);
 
@@ -18,7 +24,6 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
   const getUrl = '/api/get-balance';
 
   const handleRequest = async () => {
-    // TENGO QUE CAMBIAR ESTO EL ID ESTA HARCODEADO
     console.log('Servicio seleccionado:', servicio);
     console.log('Número de cuenta:', numeroCuenta);
 
@@ -51,11 +56,21 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
       });
       setPostResponse(JSON.stringify(postResult.data, null, 2));
 
+      await delay(20000);
+
       const getResult = await axios.get(getUrl, {
         params: requestBody,
         headers: { 'Content-Type': 'application/json' },
       });
-      setGetResponse(JSON.stringify(getResult.data, null, 2));
+      const getResponseData = getResult.data;
+
+      setGetResponse(JSON.stringify(getResponseData, null, 2));
+
+      setParsedGetResponse({
+        servicio: getResponseData.servicio,
+        numeroCuenta: getResponseData.numeroCuenta,
+        saldo: getResponseData.saldo,
+      });
     } catch (err: any) {
       setError(err.response?.data || err.message);
     }
@@ -92,7 +107,7 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
 
   return (
     <div>
-      <h1>Consulte el estado de cuenta actual de los servicios asociados a su propiedad</h1>
+      <h1>Consulte el estado de cuenta de los servicios asociados a su propiedad</h1>
       <div>
         <label htmlFor="servicio">Seleccione el servicio: </label>
         <select 
@@ -115,15 +130,31 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
         />
       </div>
       
-      <button onClick={() => handleRequest()}>Realizar POST y GET</button>
+      <button onClick={() => handleRequest()}
+                        style={{
+                          padding: '8px 16px',
+                          marginTop: '10px',
+                          backgroundColor: '#007BFF',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                        }}
+                        >Realizar consulta</button>
 
-      {error && <div style={{ color: 'red' }}>Error: {error}</div>}
+      <pre>{postResponse!= null ? 'Consulta enviada. Por favor aguarde unos segundos.' : ''}</pre>
 
-      <h2>Respuesta POST:</h2>
-      <pre>{postResponse || 'Esperando resultado del POST...'}</pre>
+      {error && <div>No fue posible obtener la infomacion solicitada</div>}
 
-      <h2>Respuesta GET:</h2>
-      <pre>{getResponse || 'Esperando resultado del GET...'}</pre>
+
+      {parsedGetResponse && (
+        <div>
+          <h3>Detalles de la respuesta:</h3>
+          <p>Servicio: {parsedGetResponse.servicio}</p>
+          <p>Número de Cuenta: {parsedGetResponse.numeroCuenta}</p>
+          <p>Saldo: {parsedGetResponse.saldo}</p>
+        </div>
+      )}
     </div>
   );
 };
