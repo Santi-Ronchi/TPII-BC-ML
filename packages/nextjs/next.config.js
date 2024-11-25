@@ -14,6 +14,14 @@ const nextConfig = {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://149.50.145.155:3002/:path*',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

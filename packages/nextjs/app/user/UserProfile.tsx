@@ -7,7 +7,6 @@ import { doc, getDoc, getDocs, collection, query, where } from "firebase/firesto
 import ContractLists from './ContractLists';
 import { useAccount } from "wagmi";
 
-
 interface UserProfileProps {
   userId: string;
 }

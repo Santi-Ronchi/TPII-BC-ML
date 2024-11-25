@@ -5,6 +5,7 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { HomeIcon, ArrowLongDownIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
+import Servicios from "./user/Servicios";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
@@ -45,6 +46,12 @@ const Home: NextPage = () => {
           </div>
         </div>
 
+        <div>
+            <Servicios>
+              
+            </Servicios>
+
+        </div>
         <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
           <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
             <div>
