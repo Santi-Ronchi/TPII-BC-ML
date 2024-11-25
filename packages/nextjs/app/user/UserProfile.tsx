@@ -183,81 +183,26 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
         <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 border-b-2 border-gray-300 dark:border-gray-700 pb-3 mb-4">
           Wallets
         </h3>
-
-        {Array.isArray(user.walletAddr) ? (
-          user.walletAddr.length > 0 ? (
-            <ul style={{ padding: '0', listStyle: 'none' }}>
-              {user.walletAddr.map((wallet, index) => (
-                <li
-                  key={index}
-                  style={{
-                    backgroundColor: '#fff',
-                    padding: '10px',
-                    margin: '10px 0',
-                    borderRadius: '4px',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    color: '#333',
-                  }}
-                >
-                  Dirección: {wallet}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p style={{ color: '#999' }}>No hay wallets asociadas.</p>
-          )
-        ) : user.walletAddr ? (
-          <p
-            style={{
-              backgroundColor: '#fff',
-              padding: '10px',
-              margin: '10px 0',
-              borderRadius: '4px',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-              color: '#333',
-            }}
-          >
-            Dirección: {user.walletAddr}
-          </p>
+        {Array.isArray(user.walletAddr) && user.walletAddr.length > 0 ? (
+          <ul className="space-y-4">
+            {user.walletAddr.map((wallet, index) => (
+              <li
+                key={index}
+                className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-md shadow-sm transition-transform transform hover:scale-105 duration-300"
+              >
+                <p className="text-lg text-gray-800 dark:text-gray-200">
+                  <strong>Dirección:</strong> {wallet}
+                </p>
+              </li>
+            ))}
+          </ul>
         ) : (
-          <p style={{ color: '#999' }}>No hay wallets asociadas.</p>
+          <p className="text-gray-600 dark:text-gray-400">No hay wallets asociadas.</p>
         )}
-
-
       </div>
 
-      <div>
-        <h3 style={{ fontSize: '20px', color: '#333', borderBottom: '2px solid #ddd', paddingBottom: '5px' }}>
-          Contratos
-        </h3>
-        {
-          contracts != null
-            ? <ul style={{ padding: '0', listStyle: 'none' }}>
-              {contracts.map((contract) => (
-                <li
-                  key={contract.id}
-                  style={{
-                    backgroundColor: '#fff',
-                    padding: '10px',
-                    margin: '10px 0',
-                    borderRadius: '4px',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    color: '#333',
-                  }}
-                >
-                  <strong>ID: {contract.id}</strong>
-                  <p style={{ margin: '5px 0' }}>Estado: {contract.state}</p>
-                  <p style={{ margin: '5px 0' }}>Monto a pagar: {contract.amount}</p>
-                  <p style={{ margin: '5px 0' }}>Duration: {contract.duration} meses</p>
-                  <p style={{ margin: '5px 0' }}>Interes por falta de pago: {contract.interest}%</p>
-                  <p style={{ margin: '5px 0' }}>Dirección de quien alquila:
-                    <strong>{contract.lesseAddress}</strong></p>
-                </li>
-              ))}
-            </ul>
-            : <p>No posees contratos activos</p>
-        }
-      </div>
+      {/* Contracts Section */}
+      <ContractLists contracts={contracts || []} />
     </div>
   );
 };
