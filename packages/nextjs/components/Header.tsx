@@ -38,11 +38,6 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/user",
     icon: <HomeIcon className="h-4 w-4" />,
   },
-  {
-    label: "Servicios provisorio",
-    href: "/servicios",
-    icon: <HomeIcon className="h-4 w-4" />,
-  },
 ];
 
 export const HeaderMenuLinks = () => {
