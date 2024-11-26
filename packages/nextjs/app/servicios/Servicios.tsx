@@ -146,13 +146,20 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
 
       {error && <div>No fue posible obtener la infomacion solicitada</div>}
 
-
       {parsedGetResponse && (
         <div>
-          <h3>Detalles de la respuesta:</h3>
-          <p>Servicio: {parsedGetResponse.servicio}</p>
-          <p>Número de Cuenta: {parsedGetResponse.numeroCuenta}</p>
-          <p>Saldo: {parsedGetResponse.saldo}</p>
+          {Number(parsedGetResponse.saldo.replace('.', '').replace(',', '.')) > 0 ? (
+            <p>
+              El cliente de <strong>{parsedGetResponse.servicio}</strong> número{' '}
+              <strong>{parsedGetResponse.numeroCuenta}</strong> tiene un saldo pendiente de{' '}
+              <strong>{parsedGetResponse.saldo.replace('.', '').replace(',', '.')}</strong>.
+            </p>
+          ) : (
+            <p>
+              No se adeuda saldo pendiente para el cliente número{' '}
+              <strong>{parsedGetResponse.numeroCuenta}</strong>.
+            </p>
+          )}
         </div>
       )}
     </div>

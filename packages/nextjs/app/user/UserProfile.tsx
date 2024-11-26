@@ -6,7 +6,7 @@ import { db } from "./firebase";
 import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
 import ContractLists from './ContractLists';
 import { useAccount } from "wagmi";
-import Servicios from "../servicios/Servicios";
+
 
 interface UserProfileProps {
   userId: string;
@@ -74,12 +74,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingWallets, setLoadingWallets] = useState<boolean>(true);
   const [userWallets, setUserWallets] = useState<String | null>(null);
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
 
-  const handleButtonClick = (propertyId: string) => {
-    setSelectedPropertyId(selectedPropertyId === propertyId ? null : propertyId);
-  };
-  
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -188,101 +183,26 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
         <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 border-b-2 border-gray-300 dark:border-gray-700 pb-3 mb-4">
           Wallets
         </h3>
-
-        {Array.isArray(user.walletAddr) ? (
-          user.walletAddr.length > 0 ? (
-            <ul style={{ padding: '0', listStyle: 'none' }}>
-              {user.walletAddr.map((wallet, index) => (
-                <li
-                  key={index}
-                  style={{
-                    backgroundColor: '#fff',
-                    padding: '10px',
-                    margin: '10px 0',
-                    borderRadius: '4px',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    color: '#333',
-                  }}
-                >
-                  Dirección: {wallet}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p style={{ color: '#999' }}>No hay wallets asociadas.</p>
-          )
-        ) : user.walletAddr ? (
-          <p
-            style={{
-              backgroundColor: '#fff',
-              padding: '10px',
-              margin: '10px 0',
-              borderRadius: '4px',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-              color: '#333',
-            }}
-          >
-            Dirección: {user.walletAddr}
-          </p>
-        ) : (
-          <p style={{ color: '#999' }}>No hay wallets asociadas.</p>
-        )}
-
-
-      </div>
-
-      <div>
-        <h3 style={{ fontSize: '20px', color: '#333', borderBottom: '2px solid #ddd', paddingBottom: '5px' }}>
-          Contratos
-        </h3>
-        {contracts != null ? (
-        <ul style={{ padding: '0', listStyle: 'none' }}>
-          {contracts.map((contract) => (
-            <li
-              key={contract.id}
-              style={{
-                backgroundColor: '#fff',
-                padding: '10px',
-                margin: '10px 0',
-                borderRadius: '4px',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                color: '#333',
-              }}
-            >
-              <strong>ID: {contract.id}</strong>
-              <p style={{ margin: '5px 0' }}>Estado: {contract.state}</p>
-              <p style={{ margin: '5px 0' }}>Monto a pagar: {contract.amount}</p>
-              <p style={{ margin: '5px 0' }}>Duración: {contract.duration} meses</p>
-              <p style={{ margin: '5px 0' }}>Interés por falta de pago: {contract.interest}%</p>
-              <p style={{ margin: '5px 0' }}>
-                Dirección de quien alquila: <strong>{contract.lesseAddress}</strong>
-              </p>
-              <button
-                onClick={() => handleButtonClick(contract.id)}
-                style={{
-                  padding: '8px 16px',
-                  marginTop: '10px',
-                  backgroundColor: '#007BFF',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
+        {Array.isArray(user.walletAddr) && user.walletAddr.length > 0 ? (
+          <ul className="space-y-4">
+            {user.walletAddr.map((wallet, index) => (
+              <li
+                key={index}
+                className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-md shadow-sm transition-transform transform hover:scale-105 duration-300"
               >
-                {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
-              </button>
-              {selectedPropertyId === contract.id && (
-                <div style={{ marginTop: '20px' }}>
-                  <Servicios propiedadId={contract.id} />
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No posees contratos activos</p>
-      )}
+                <p className="text-lg text-gray-800 dark:text-gray-200">
+                  <strong>Dirección:</strong> {wallet}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-600 dark:text-gray-400">No hay wallets asociadas.</p>
+        )}
       </div>
+
+      {/* Contracts Section */}
+      <ContractLists contracts={contracts || []} />
     </div>
   );
 };

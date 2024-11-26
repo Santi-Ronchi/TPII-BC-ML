@@ -6,12 +6,18 @@ import { db } from "./firebase";
 import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
 import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import Servicios from "../servicios/Servicios";
 
 interface ContractListsProps {
     contracts: Contract[];
   }
 
 const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+
+  const handleButtonClick = (propertyId: string) => {
+    setSelectedPropertyId(selectedPropertyId === propertyId ? null : propertyId);
+  };
 
   const { address: connectedAddress } = useAccount();
     
@@ -78,6 +84,26 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                             </button>
                             </div>
                         )}
+
+                        <button
+                            onClick={() => handleButtonClick(contract.id)}
+                            style={{
+                              padding: '8px 16px',
+                              marginTop: '10px',
+                              backgroundColor: '#007BFF',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                          {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
+                          </button>
+                          {selectedPropertyId === contract.id && (
+                            <div style={{ marginTop: '20px' }}>
+                              <Servicios propiedadId={contract.id} />
+                            </div>
+                          )}
                     </li>
                   ))}
               </ul>
@@ -113,6 +139,26 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                         Dirección del inquilino:{" "}
                         <span className="font-semibold">{contract.lesseAddress}</span>
                       </p>
+
+                      <button
+                            onClick={() => handleButtonClick(contract.id)}
+                            style={{
+                              padding: '8px 16px',
+                              marginTop: '10px',
+                              backgroundColor: '#007BFF',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                          {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
+                          </button>
+                          {selectedPropertyId === contract.id && (
+                            <div style={{ marginTop: '20px' }}>
+                              <Servicios propiedadId={contract.id} />
+                            </div>
+                          )}
                     </li>
                   ))}
               </ul>
