@@ -18,3 +18,8 @@ export interface Contract{
 	state: String;
 	id: String;
 }
+
+export interface dataServicios {
+	AYSA: string;
+	EDESUR: string;
+}
