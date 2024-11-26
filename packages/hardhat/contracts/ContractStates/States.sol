@@ -7,6 +7,6 @@ enum ContractStatus{
     Active, //contrato activo
     Breach, 
     CancelationProposedByOwner,
-    CancelationPropopsedByLeassee,
+    CancelationPropopsedByLessee,
     Cancelled
 }

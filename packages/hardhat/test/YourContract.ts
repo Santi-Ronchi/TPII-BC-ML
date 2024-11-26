@@ -17,7 +17,7 @@ describe("YourContract", function () {
 
   describe("Contract creation", function () {
     it("On creation, a new contract exists", async function () {
-	  await yourContract.CrearContrato(1000, 777, addr2.address, 10, 10, 12);
+	  await yourContract.createContract(1000, 777, addr2.address, 10, 10, 12);
 	  expect(await yourContract.contractExists(777)).to.equal(true);
     });
 	
@@ -29,17 +29,17 @@ describe("YourContract", function () {
 
   describe("Contract access", function () {
     it("On creation, another contract with the same id cannot be created", async function () {
-		await expect(yourContract.CrearContrato(1000, 777, '0x0000000000000000000000000000000000000000', 10, 10, 12)).to.be.revertedWith('A contract for the required property already exists');
+		await expect(yourContract.createContract(1000, 777, '0x0000000000000000000000000000000000000000', 10, 10, 12)).to.be.revertedWith('A contract for the required property already exists');
 	});	
     it("Once a contract is created, only the client specified by the owner can accept it", async function () {
-        await expect(yourContract.connect(addr1).AceptarContrato(777)).to.be.revertedWith('Only the address specified by the owner can accept the contract');
+        await expect(yourContract.connect(addr1).acceptContract(777)).to.be.revertedWith('Only the address specified by the owner can accept the contract');
     });
 	it("The client specified by the owner can accept the contract", async function (){
 		let depositAmount = await yourContract.getContractBaseMonthlyAmountToBePaid(777) * 2n;
-		await expect(yourContract.connect(addr2).AceptarContrato(777,{value: depositAmount})).to.not.be.reverted;
+		await expect(yourContract.connect(addr2).acceptContract(777,{value: depositAmount})).to.not.be.reverted;
 	});
 	it("Once a contract has been accepted, it cannot be re-accepted", async function (){
-		await expect(yourContract.connect(addr2).AceptarContrato(777)).to.be.revertedWith('The specified contract cannot be accepted');
+		await expect(yourContract.connect(addr2).acceptContract(777)).to.be.revertedWith('The specified contract cannot be accepted');
 	});
   });
   
@@ -51,11 +51,11 @@ describe("YourContract", function () {
 			penaltyAmount = (currentDay - 10) * (100);
 		};
 		let finalAmount = penaltyAmount + 1000;
-		expect(await yourContract.calcularMontoAPagar(777)).to.equal(finalAmount);
+		expect(await yourContract.getTotalAmountToBePaid(777)).to.equal(finalAmount);
 	  });
 	  
 	  it("Only the lessee can make payments for the lease contract", async function () {
-		  await expect(yourContract.connect(addr1).PagarAlquiler(777)).to.be.revertedWith('You are not the lessee');
+		  await expect(yourContract.connect(addr1).payRent(777)).to.be.revertedWith('You are not the lessee');
 	  });
 	  
 	it("The amount paid by the lessee must be the exact value ", async function (){
@@ -65,7 +65,7 @@ describe("YourContract", function () {
 			penaltyAmount = (currentDay - 10) * (100);
 		};
 		let finalAmount = penaltyAmount + 1000;
-		await expect(yourContract.connect(addr2).PagarAlquiler( 777, {value: finalAmount})).to.not.be.reverted;
+		await expect(yourContract.connect(addr2).payRent( 777, {value: finalAmount})).to.not.be.reverted;
 	});
 	
 	it("Once paid, the lease contract shows an increased ether amount" , async function () {
@@ -88,16 +88,16 @@ describe("YourContract", function () {
   
   describe("Contract conditions negotiation", function(){
 	  it("Once the contract has been accepted, the lessee cannot propose changes to it", async function() {
-		await expect(yourContract.connect(addr2).proponerCambios(777,100)).to.be.revertedWith('The specified contract cannot be accepted');
+		await expect(yourContract.connect(addr2).proposeChanges(777,100,10,10)).to.be.revertedWith('The specified contract cannot be accepted');
 	  });
 	  
 	  it("Only the potential client may propose changes to the contract", async function () {
-		await yourContract.connect(owner).CrearContrato(1000, 778, addr2.address, 10, 10, 12);
-		await expect(yourContract.connect(addr2).proponerCambios(778,100)).to.not.be.reverted;
+		await yourContract.connect(owner).createContract(1000, 778, addr2.address, 10, 10, 12);
+		await expect(yourContract.connect(addr2).proposeChanges(778,100,10,10)).to.not.be.reverted;
 	  });
 	  
 	  it("Once the counter-proposal is made, the client cannot accept the contract", async function () {
-		await expect(yourContract.connect(addr2).AceptarContrato(778)).to.be.revertedWith('The specified contract cannot be accepted');
+		await expect(yourContract.connect(addr2).acceptContract(778)).to.be.revertedWith('The specified contract cannot be accepted');
 	  });
 	  
 	  it("Once a counter-proposal is made, the original contract values are replaced with the proposed changes", async function () {
@@ -119,7 +119,7 @@ describe("YourContract", function () {
 		const targetDate = new Date(currentDate.getFullYear(), targetMonth, 1);
 		const epoch = Math.floor(targetDate.getTime() / 1000);
 		await yourContract.connect(owner).createRawContract(1000, 779, addr2.address, 10, 10, 12, epoch);
-		expect(await yourContract.cuantosMesesAdeudo(779)).to.equal(1);
+		expect(await yourContract.getNumberOfOwedMonths(779)).to.equal(1);
 	  })
 	  it("A lease was paid last month. The amount of full months owed is 0", async function () {
 		const currentDate = new Date();
@@ -127,7 +127,7 @@ describe("YourContract", function () {
 		const targetDate = new Date(currentDate.getFullYear(), targetMonth, 1);
 		const epoch = Math.floor(targetDate.getTime() / 1000);
 		await yourContract.connect(owner).createRawContract(1000, 780, addr2.address, 10, 10, 12, epoch);
-		expect(await yourContract.cuantosMesesAdeudo(780)).to.equal(0); 
+		expect(await yourContract.getNumberOfOwedMonths(780)).to.equal(0); 
 	  });
 	  it("A lease was last paid two months ago. As a result, the total amount of debt equals the base amount plus the interes for the remaining days outside of the grace period in a month with 30 days",
 		async function () {
@@ -137,7 +137,7 @@ describe("YourContract", function () {
 				penaltyAmount = BigInt(currentDay - 10) * 100n;
 			};
 			let currentMonthAmountToPay = penaltyAmount + 1000n;
-			let debt = await yourContract.calcularMontoAPagar(779) - currentMonthAmountToPay;
+			let debt = await yourContract.getTotalAmountToBePaid(779) - currentMonthAmountToPay;
 			expect(debt).to.equal(3000n);
 		})
 	  
