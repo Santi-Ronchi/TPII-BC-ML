@@ -33,10 +33,7 @@ export const CrearContratoAlquiler = () => {
     return(
 
 
-      <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10"
-        style={{
-          background: "linear-gradient(to right, #e5a073, #cc6164, #d4789b, #ae7ca3)",
-        }}>
+      <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10">
         <img src="ARPA-WIDE.png" alt="logo de ARPA" className="mx-auto imgRounder"/>
         <h1 className="text-xl font-bold">Ingresa los datos de tu propiedad:</h1>
         <br /><br />
@@ -57,17 +54,17 @@ export const CrearContratoAlquiler = () => {
         <br />
         <label className="text-lg font-bold">Precio</label>
         <EtherInput value={ethAmount} onChange={amount => setEthAmount(amount)} />
-        <br />
+
         <label className="text-lg font-bold">Penalidad porcentual por atraso de pago</label>
         <IntegerInput value = {interestRate} onChange={updatedInterestRate => {
           setInterestRate(updatedInterestRate);
         }}></IntegerInput>
-        <br />
+
         <label className="text-lg font-bold">Limite en días para realizar el pago mensual</label>
         <IntegerInput value = {paymentPeriod} onChange={updatedPaymentPeriod => {
           setPaymentPeriod(updatedPaymentPeriod);
         }}></IntegerInput>
-        <br />
+
         <label className="text-lg font-bold">Duración del contrato(en meses)</label>
         <IntegerInput value = {contractDuration} onChange={updatedContractDuration => {
           setContractDuration(updatedContractDuration);
@@ -88,9 +85,10 @@ export const CrearContratoAlquiler = () => {
                 if (auth.currentUser){
                   try{
                     console.log("Entramos al try para agregar el contrato a firebase");
-                    const docRef = doc(db,"Contratos",txValue);
+                    const txValue_str = typeof txValue === 'bigint' ? txValue.toString() : txValue;
+                    const docRef = doc(db,"Contratos",txValue_str);
                     setDoc(docRef,{
-                        ownerAddress : ownerAddress,
+                        ownerAddress : connectedAddress,//ownerAddress,
                         lesseAddress : lesseAddress,
                         amount : ethAmount,
                         daysToPay: paymentPeriod,
