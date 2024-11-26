@@ -100,7 +100,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
 
   useEffect(() => {
     const fetchUserContracts = async () => {
-      if (loadingWallets && !loading) {
+      if (loadingWallets && loading) {
         try {
           //tengo el email, tengo que extraer la totalidad de las wallets
           let walletArray = [];
