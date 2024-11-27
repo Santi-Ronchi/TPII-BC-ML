@@ -45,7 +45,7 @@ const Home: NextPage = () => {
             <ArrowLongDownIcon className="h-40 w-40"/>
           </div>
         </div>
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
+        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12" style={{ backgroundColor: 'rgba(203, 207, 211, 0.5)' }}>
           <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
             <div>
               <h2 className="text-lg font-bold justify-center text-center items-center">Es por acá:</h2>

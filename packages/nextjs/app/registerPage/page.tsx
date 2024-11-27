@@ -106,6 +106,7 @@ const RegisterPage: NextPage = () => {
                         <input
                           type="text"
                           className="mb-4 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Ingrese su email"
                           value={userName}
                           onChange={(e) => setUserName(e.target.value)} 
                         ></input>
@@ -117,6 +118,7 @@ const RegisterPage: NextPage = () => {
                           type="password"
                           className="mb-4 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           value={password}
+                          placeholder="Ingrese su contraseña"
                           onChange={(e) => setPassword(e.target.value)} 
                         ></input>
   
@@ -129,10 +131,7 @@ const RegisterPage: NextPage = () => {
                               }}
                               className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
                               type="button"
-                              style={{
-                                background:
-                                  "linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593)",
-                              }}
+                              style={{ backgroundColor: '#8c376c' }}    
                               disabled={!userName || !password}
                             >
                               Registrarse
@@ -144,28 +143,23 @@ const RegisterPage: NextPage = () => {
   
                   {/* <!-- Right column container with background and description--> */}
                   <div
-                    className="flex items-center rounded-b-lg lg:w-6/12 lg:rounded-r-lg lg:rounded-bl-none"
-                    style={{
-                      background:
-                        "linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593)",
-                    }}
-                  >
-                    <div className="px-4 py-6 text-white md:mx-6 md:p-12">
-                      <div className="text-center">
-                        <img src="./ARPA-LOGIN-noback.png" alt="logo"/>
-                      </div>
-                      <h4 className="mb-6 text-xl font-semibold">
-                        Es más que solo un alquiler
-                      </h4>
-                      <p className="text-sm font-bold">
-                        En ARPA nos ocupamos de darte la mejor experiencia a la hora de alquilar,
-                        tanto si sos inquilino como si sos propietario, queremos facilitar el proceso
-                        para que nadie se quede con bronca, completa transparencia en los contratos
-                        gracias al poder de la blockchain y las mejores recomendaciones de precios con
-                        MaLe, nuestro asesor virtual inteligente.
-                      </p>
-                    </div>
+                  className="flex items-center rounded-b-lg lg:w-6/12 lg:rounded-r-lg lg:rounded-bl-none"
+                  style={{
+                    backgroundImage: 'url(./llaves.jpg)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                  }}  
+                >
+                  <div className="px-4 py-6 text-white md:mx-6 md:p-12" style={{ marginTop: '-300px', marginLeft: '100px', position: 'absolute', backgroundColor: 'rgba(203, 207, 211, 0.5)', borderRadius: '10px' }}>
+                    <h4 className="mb-6 font-semibold" style={{ fontSize: '30px', color: '#8c376c' }}>
+                      ¡Bienvenido! 
+                      <br/>
+                      <br/>
+                      Nos sentimos muy felices de sumarte a la familia DARPA
+                    </h4>
                   </div>
+                </div>
                 </div>
               </div>
             </div>

@@ -136,11 +136,17 @@ export const PredecirPrecio = () => {
   };
   
   return (
-    <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10">
+    <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10" style={{ backgroundColor: 'rgba(203, 207, 211, 0.5)' }}>
       <img src="ARPA-WIDE.png" alt="logo de ARPA" className="mx-auto imgRounder" />
-      <br /> <br />
-      <h1 className="text-xl font-bold">Ingresá los datos de la propiedad:</h1>
-      <br /><br />
+      <br /> 
+      <div
+        className="mb-3 inline-block w-full rounded px-6 pb-8 pt-8 text-center text-lg font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
+        style={{ backgroundColor: '#370921' }}
+      >
+        CALCULADORA INTELIGENTE
+      </div>
+      <br />
+      <br />
       <form onSubmit={handleSubmit}>
           <label className="text-md font-bold">Provincia *</label>
           <br />
@@ -195,14 +201,17 @@ export const PredecirPrecio = () => {
           <IntegerInput value={cantidad_baños} onChange={handleCantidadBañosChange} placeholder="Ingresar cantidad de baños" />
         </div>
         <br />
-        <button type="submit" className="btn btn-primary">Predecir</button>
+        <button 
+        className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
+        style={{ backgroundColor: '#8c376c' }}
+        type="submit">Predecir precio de alquiler</button>
       </form>
       <br />
       <br />
       {prediction && (
-      <div className="bg-white shadow-lg rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-blue-600 mb-4">
-          El precio recomendado para la publicacion de su propiedad es: <span className="text-gray-800">USD { (prediction.prediction*0.9).toFixed(0) } - {(prediction.prediction*1.1).toFixed(0)} </span>
+      <div >
+        <h2 className="text-2xl font-bold text-blue-600 mb-4" style={{ fontSize: '30px', color: '#8c376c' }}>
+          Precio recomendado de publicacion de su propiedad: <span className="text-gray-800" style={{ fontSize: '30px', color: '#370921' }}>USD { (prediction.prediction*0.9).toFixed(0) } - {(prediction.prediction*1.1).toFixed(0)} </span>
         </h2>
         
         <div className="mb-4">
