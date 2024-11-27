@@ -14,8 +14,6 @@ import { auth, db } from "../loginPage/firebase";
 
 
 export const CrearContratoAlquiler = () => {
-    //const router = useRouter();
-    const userAccount = useAccount();
 
     const { address: connectedAddress } = useAccount();
     const [lesseAddress, setLesseAddress] = useState("");
@@ -26,12 +24,9 @@ export const CrearContratoAlquiler = () => {
     const [ethAmount, setEthAmount] = useState("");
     const [txValue, setTxValue] = useState<string | bigint>("");
 
-    
-
-
     const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
-    return(
 
+    return(
 
       <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10">
         <img src="ARPA-WIDE.png" alt="logo de ARPA" className="mx-auto imgRounder"/>
@@ -54,17 +49,17 @@ export const CrearContratoAlquiler = () => {
         <br />
         <label className="text-lg font-bold">Precio</label>
         <EtherInput value={ethAmount} onChange={amount => setEthAmount(amount)} />
-
+        <br />
         <label className="text-lg font-bold">Penalidad porcentual por atraso de pago</label>
         <IntegerInput value = {interestRate} onChange={updatedInterestRate => {
           setInterestRate(updatedInterestRate);
         }}></IntegerInput>
-
+        <br />
         <label className="text-lg font-bold">Limite en días para realizar el pago mensual</label>
         <IntegerInput value = {paymentPeriod} onChange={updatedPaymentPeriod => {
           setPaymentPeriod(updatedPaymentPeriod);
         }}></IntegerInput>
-
+        <br />
         <label className="text-lg font-bold">Duración del contrato(en meses)</label>
         <IntegerInput value = {contractDuration} onChange={updatedContractDuration => {
           setContractDuration(updatedContractDuration);
@@ -76,7 +71,7 @@ export const CrearContratoAlquiler = () => {
             onClick={async () => {
               try {
                 await writeYourContractAsync({
-                    functionName: "CrearContrato",
+                    functionName: "createContract",
                     //args: [connectedAddress,connectedAddress,1,777]
                     args: [ethAmount,txValue,lesseAddress,paymentPeriod,interestRate,contractDuration]
                     //args: [ownerAddress,lesseAddress,ethAmount,txValue]

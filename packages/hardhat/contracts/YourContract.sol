@@ -204,6 +204,12 @@ contract YourContract {
 		propertyContract.TimestampLastPayment = block.timestamp;
 	}
 	
+	function rejectLeaseOffer(uint256 propertyID) public {
+		require(contractExists(propertyID) == true, "The specified contract does not exist");
+		ContratoAlquiler storage contrato = contratosAlquiler[propertyID];
+		require(isAllowedWallet(contrato.AllowedWallet),"Only the client may reject the contract offer");
+		contrato.Status = ContractStatus.Cancelled;
+	}
 
 	function isLesseeAcceptable(uint256 _ID)public view returns (bool){
 		require(contractExists(_ID),"Property is not leasable");
@@ -426,12 +432,6 @@ contract YourContract {
 		_;
 	}
 	
-	function rejectLeaseOffer(uint256 propertyID) public {
-		require(contractExists(propertyID) == true, "The specified contract does not exist");
-		ContratoAlquiler storage contrato = contratosAlquiler[propertyID];
-		require(isAllowedWallet(contrato.AllowedWallet),"Only the client may reject the contract offer");
-		contrato.Status = ContractStatus.Cancelled;
-	}
 	
 	//deployer use only. It may set any parameters it wants over a lease contract 
 	function createRawContract(uint256 Amount, uint256 _ID, address allowedWallet, uint256 _GracePeriod, uint256 _Penalty_Percentage, uint256 _Duration,uint256 last_payment_timestamp) public isDeployer(){

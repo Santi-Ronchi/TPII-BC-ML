@@ -2,7 +2,7 @@
 import type { NextPage } from "next";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "./firebase";
 import { useState } from 'react';
 import { getDoc, updateDoc, arrayUnion, setDoc, doc } from "firebase/firestore";

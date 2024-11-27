@@ -161,8 +161,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   if (!user) return <p>No se encontraron datos de usuario.</p>;
 
 
-  console.log(contracts);
-
   return (
     <div
       className="p-8 shadow-xl rounded-lg max-w-7xl mx-auto min-h-screen flex flex-col items-center"

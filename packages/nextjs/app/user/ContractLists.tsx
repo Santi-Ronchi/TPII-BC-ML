@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { User, Contract } from "../../types/utils";
+import React, { useState } from "react";
+import { Contract } from "../../types/utils";
 import { db } from "./firebase";
-import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import Servicios from "../servicios/Servicios";
+import { useRouter } from "next/navigation";
 
 interface ContractListsProps {
     contracts: Contract[];
@@ -14,14 +15,30 @@ interface ContractListsProps {
 
 const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleButtonClick = (propertyId: string) => {
     setSelectedPropertyId(selectedPropertyId === propertyId ? null : propertyId);
   };
 
   const { address: connectedAddress } = useAccount();
-    
   const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
+
+  const handleContractChange = async (contractId: string, newStatus: string) => {
+    try {
+        await writeYourContractAsync({
+          functionName: "acceptContract",
+          args: [contractId],
+        });
+
+        const contractRef = doc(db, "Contracts", contractId);
+        await updateDoc(contractRef, { state: newStatus });
+
+        console.log(`Contract ${contractId} state updated to Active.`);
+      } catch (e) {
+        console.error("Error accepting contract:", e);
+      }
+  }
 
     return(
         <div className="w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md">
@@ -64,22 +81,16 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       {contract.state == "Draft" && (
                             <div className="mt-4 flex gap-4">
                             <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                                onClick={async () => {
-                                    try {
-                                    await writeYourContractAsync({
-                                        functionName: "AceptarContrato",
-                                        args: [contract.id]
-                                    });
-                                } catch (e) {
-                            console.error("Error setting greeting:", e);
-                            }
-                            } }>
+                                onClick={() => handleContractChange(contract.id, "Active")}
+                              >
                                 Aceptar
-                            </button>
-                            <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors">
+                              </button>
+                            <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                                onClick={() => router.push(`/proposeNewOffer?contractId=${contract.id}`)}>
                                 Negociar
                             </button>
-                            <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
+                            <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                onClick={() => handleContractChange(contract.id, "Cancelled")}>
                                 Rechazar
                             </button>
                             </div>
@@ -87,15 +98,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
 
                         <button
                             onClick={() => handleButtonClick(contract.id)}
-                            style={{
-                              padding: '8px 16px',
-                              marginTop: '10px',
-                              backgroundColor: '#007BFF',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                            }}
+                            className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 transition ease-in-out duration-300"
                           >
                           {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
                           </button>
@@ -142,15 +145,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
 
                       <button
                             onClick={() => handleButtonClick(contract.id)}
-                            style={{
-                              padding: '8px 16px',
-                              marginTop: '10px',
-                              backgroundColor: '#007BFF',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                            }}
+                            className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 transition ease-in-out duration-300"
                           >
                           {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
                           </button>

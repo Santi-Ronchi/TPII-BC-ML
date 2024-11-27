@@ -3,9 +3,10 @@
 import React, { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, BugAntIcon, HomeIcon, BriefcaseIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon, HomeIcon, BriefcaseIcon, HomeModernIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
+
 
 type HeaderMenuLink = {
   label: string;
@@ -17,26 +18,27 @@ export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Home",
     href: "/",
+    icon: <HomeIcon className="h-5 w-5" />,
   },
   {
     label: "Crea tu alquiler!",
     href: "/crearAlquiler",
-    icon: <HomeIcon className="h-4 w-4" />,
+    icon: <HomeModernIcon className="h-5 w-5" />,
   },
   {
     label: "Accede a tu cuenta",
     href: "/loginPage",
-    icon: <BriefcaseIcon className="h-4 w-4" />,
+    icon: <BriefcaseIcon className="h-5 w-5" />,
   },
   {
     label: "Debug Contract",
     href: "/debug",
-    icon: <BugAntIcon className="h-4 w-4" />,
+    icon: <BugAntIcon className="h-5 w-5" />,
   },
   {
     label: "Perfil de usuario",
     href: "/user",
-    icon: <HomeIcon className="h-4 w-4" />,
+    icon: <UserCircleIcon className="h-5 w-5" />,
   },
 ];
 

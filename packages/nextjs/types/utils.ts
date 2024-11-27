@@ -9,14 +9,14 @@ export interface User {
 }
 
 export interface Contract{
-	amount: Number;
-	daysToPay: Number;
-	duration: Number;
-	interest: Number;
-	lesseAddress: String;
-	ownerAddress: String;
+	amount: number;
+	daysToPay: number;
+	duration: number;
+	interest: number;
+	lesseAddress: string;
+	ownerAddress: string;
 	state: String;
-	id: String;
+	id: string;
 }
 
 export interface dataServicios {

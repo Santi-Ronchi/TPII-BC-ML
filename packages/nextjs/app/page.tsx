@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import { HomeIcon, ArrowLongDownIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { HomeModernIcon, ArrowLongDownIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import Servicios from "./servicios/Servicios";
 
@@ -50,7 +50,7 @@ const Home: NextPage = () => {
             <div>
               <h2 className="text-lg font-bold justify-center text-center items-center">Es por acá:</h2>
               <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-                <HomeIcon className="h-8 w-8 fill-secondary" />
+                <HomeModernIcon className="h-8 w-8 fill-secondary" />
                 <p>
                   Empeza por acá poniendo tu{" "}
                   <Link href="/crearAlquiler" passHref className="link">
