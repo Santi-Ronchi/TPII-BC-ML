@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Contract } from "../../types/utils";
 import { db } from "./firebase";
@@ -8,6 +7,7 @@ import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import Servicios from "../servicios/Servicios";
 import { useRouter } from "next/navigation";
+import { NestedMiddlewareError } from "next/dist/build/utils";
 
 interface ContractListsProps {
     contracts: Contract[];
@@ -24,19 +24,28 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
   const { address: connectedAddress } = useAccount();
   const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
 
-  const handleContractChange = async (contractId: string, newStatus: string) => {
-    try {
+  const handleContractChange = async (contractId: bigint, newStatus: string, amount: bigint) => {
+      try {
+        if (newStatus != "Active"){
         await writeYourContractAsync({
-          functionName: "acceptContract",
+          functionName: 'rejectLeaseOffer',
           args: [contractId],
         });
-
-        const contractRef = doc(db, "Contracts", contractId);
+        }
+        else{
+          await writeYourContractAsync({
+            functionName: 'acceptContract',
+            args: [contractId],
+            value: BigInt(doubleAmount),
+          });
+        }
+        const stringId = contractId.toString();
+        const contractRef = doc(db, "Contratos", stringId);
         await updateDoc(contractRef, { state: newStatus });
-
-        console.log(`Contract ${contractId} state updated to Active.`);
-      } catch (e) {
-        console.error("Error accepting contract:", e);
+        console.log(`Contract ${contractId} state updated to ${newStatus}.`);
+      }
+      catch (e){
+          console.error("Error accepting contract:", e);
       }
   }
 
@@ -81,7 +90,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       {contract.state == "Draft" && (
                             <div className="mt-4 flex gap-4">
                             <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                                onClick={() => handleContractChange(contract.id, "Active")}
+                                onClick={() => handleContractChange(contract.id, "Active", contract.amount + contract.amount)}
                               >
                                 Aceptar
                               </button>
@@ -90,7 +99,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                                 Negociar
                             </button>
                             <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                                onClick={() => handleContractChange(contract.id, "Cancelled")}>
+                                onClick={() => handleContractChange(contract.id, "Cancelled", contract.amount)}>
                                 Rechazar
                             </button>
                             </div>

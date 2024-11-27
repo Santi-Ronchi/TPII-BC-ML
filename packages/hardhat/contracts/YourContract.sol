@@ -198,10 +198,11 @@ contract YourContract {
 		require(contractExists(propertyID),"Property is not leasable");
 		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
 		require(isAllowedWallet(propertyContract.AllowedWallet),'Only the address specified by the owner can accept the contract');
-		require(msg.value == propertyContract.Amount * 2);
+		require(msg.value == propertyContract.Amount * 2,"Tenes que pagar 2 meses por adelantado como deposito");
 		propertyContract.Status = ContractStatus.Active;
 		propertyContract.Lessee = msg.sender;
 		propertyContract.TimestampLastPayment = block.timestamp;
+		propertyContract.Amount = msg.value;
 	}
 	
 	function rejectLeaseOffer(uint256 propertyID) public {
