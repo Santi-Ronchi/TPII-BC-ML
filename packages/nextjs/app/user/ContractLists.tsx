@@ -10,9 +10,10 @@ import { useRouter } from "next/navigation";
 
 interface ContractListsProps {
     contracts: Contract[];
+    handleContractChange: (contractId: bigint, newStatus: string, amount: bigint, functionToCall: string) => Promise<void>;
   }
 
-const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
+const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContractChange }) => {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const router = useRouter();
 
@@ -22,55 +23,6 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
 
   const { address: connectedAddress } = useAccount();
   const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
-
-  const handleContractChange = async (contractId: bigint, newStatus: string, amount: bigint, functionToCall: string) => {
-      let doubleAmount = (BigInt(amount) + BigInt(amount));
-      try {
-        if (functionToCall == "acceptContract"){
-          await writeYourContractAsync({
-            functionName: 'acceptContract',
-            args: [contractId],
-            value: BigInt(doubleAmount),
-          });
-        }else{
-          await writeYourContractAsync({
-            functionName: functionToCall,
-            args: [contractId],
-          });
-        }
-        const stringId = contractId.toString();
-        const contractRef = doc(db, "Contratos", stringId);
-        await updateDoc(contractRef, { state: newStatus });
-        console.log(`Contract ${contractId} state updated to ${newStatus}.`);
-      }
-      catch (e){
-          console.error("Error accepting contract:", e);
-      }
-  }
-
-
-  const cancelConctract = async (contractId: bigint, newStatus: string) => {
-    try {
-      if (newStatus != "CancelationProposedByOwner"){
-      await writeYourContractAsync({
-        functionName: 'proposeContractCancelationMutualAgreementLessee',
-        args: [contractId],
-      });
-      }else{
-        await writeYourContractAsync({
-          functionName: 'proposeContractCancelationMutualAgreementOwner',
-          args: [contractId],
-        });
-      }
-      const stringId = contractId.toString();
-      const contractRef = doc(db, "Contratos", stringId);
-      await updateDoc(contractRef, { state: newStatus });
-      console.log(`Contract ${contractId} state updated to ${newStatus}.`);
-    }
-    catch (e){
-        console.error("Error accepting contract:", e);
-    }
-  }
 
     return(
         <div className="w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md">
@@ -137,7 +89,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                         </div>
                       )}
 
-                      {contract.state == "CancelationPropopsedByOwner" && (
+                      {contract.state == "CancelationProposedByOwner" && (
                         <div className="mt-4 flex gap-4">
                             <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
                               onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount), "acceptContractCancelationPropopsitionLessee")}>
