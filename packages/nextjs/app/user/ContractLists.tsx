@@ -97,6 +97,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       </strong>
                       <p className="text-gray-700 dark:text-gray-300">Estado: {contract.state}</p>
                       <p className="text-gray-700 dark:text-gray-300">Monto a pagar: {contract.amount}</p>
+                      <p className="text-gray-700 dark:text-gray-300">Dias de gracia: {contract.daysToPay}</p>
                       <p className="text-gray-700 dark:text-gray-300">
                         Duración: {contract.duration} meses
                       </p>
@@ -162,6 +163,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       </strong>
                       <p className="text-gray-700 dark:text-gray-300">Estado: {contract.state}</p>
                       <p className="text-gray-700 dark:text-gray-300">Monto a pagar: {contract.amount}</p>
+                      <p className="text-gray-700 dark:text-gray-300">Dias de gracia: {contract.daysToPay}</p>
                       <p className="text-gray-700 dark:text-gray-300">
                         Duración: {contract.duration} meses
                       </p>
