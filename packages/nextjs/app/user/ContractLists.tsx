@@ -25,6 +25,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
   const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
 
   const handleContractChange = async (contractId: bigint, newStatus: string, amount: bigint) => {
+      let doubleAmount = (BigInt(amount) + BigInt(amount));
       try {
         if (newStatus != "Active"){
         await writeYourContractAsync({
@@ -90,7 +91,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       {contract.state == "Draft" && (
                             <div className="mt-4 flex gap-4">
                             <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                                onClick={() => handleContractChange(contract.id, "Active", contract.amount + contract.amount)}
+                                onClick={() => handleContractChange(contract.id, "Active", contract.amount)}
                               >
                                 Aceptar
                               </button>
