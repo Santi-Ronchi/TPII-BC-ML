@@ -23,20 +23,19 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
   const { address: connectedAddress } = useAccount();
   const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
 
-  const handleContractChange = async (contractId: bigint, newStatus: string, amount: bigint) => {
+  const handleContractChange = async (contractId: bigint, newStatus: string, amount: bigint, functionToCall: string) => {
       let doubleAmount = (BigInt(amount) + BigInt(amount));
       try {
-        if (newStatus != "Active"){
-        await writeYourContractAsync({
-          functionName: 'rejectLeaseOffer',
-          args: [contractId],
-        });
-        }
-        else{
+        if (functionToCall == "acceptContract"){
           await writeYourContractAsync({
             functionName: 'acceptContract',
             args: [contractId],
             value: BigInt(doubleAmount),
+          });
+        }else{
+          await writeYourContractAsync({
+            functionName: functionToCall,
+            args: [contractId],
           });
         }
         const stringId = contractId.toString();
@@ -49,17 +48,17 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
       }
   }
 
-  const handleContractReview = async (contractId: bigint, newStatus: string) => {
+
+  const cancelConctract = async (contractId: bigint, newStatus: string) => {
     try {
-      if (newStatus != "Draft"){
+      if (newStatus != "CancelationProposedByOwner"){
       await writeYourContractAsync({
-        functionName: 'rejectProposedChanges',
+        functionName: 'proposeContractCancelationMutualAgreementLessee',
         args: [contractId],
       });
-      }
-      else{
+      }else{
         await writeYourContractAsync({
-          functionName: 'acceptProposedChanges',
+          functionName: 'proposeContractCancelationMutualAgreementOwner',
           args: [contractId],
         });
       }
@@ -71,7 +70,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
     catch (e){
         console.error("Error accepting contract:", e);
     }
-}
+  }
 
     return(
         <div className="w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md">
@@ -115,7 +114,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       {contract.state == "Draft" && (
                             <div className="mt-4 flex gap-4">
                                 <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                                    onClick={() => handleContractChange(BigInt(contract.id), "Active", BigInt(contract.amount))}>
+                                    onClick={() => handleContractChange(BigInt(contract.id), "Active", BigInt(contract.amount), "acceptContract")}>
                                     Aceptar
                                   </button>
                                 <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
@@ -123,23 +122,49 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                                     Negociar
                                 </button>
                                 <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                                    onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount))}>
+                                    onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount), "rejectLeaseOffer")}>
                                     Rechazar
                                 </button>
                             </div>
                         )}
 
-                        <button
+                      {contract.state == "Active" && (
+                        <div className="mt-4 flex gap-4">
+                            <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                                onClick={() => handleContractChange(BigInt(contract.id), "CancelationPropopsedByLessee", BigInt(contract.amount), "proposeContractCancelationMutualAgreementLessee")}>
+                                Rescindir Contrato
+                              </button>
+                        </div>
+                      )}
+
+                      {contract.state == "CancelationPropopsedByOwner" && (
+                        <div className="mt-4 flex gap-4">
+                            <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                              onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount), "acceptContractCancelationPropopsitionLessee")}>
+                              Aceptar Rescisión
+                            </button>
+                            <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                              onClick={() => handleContractChange(BigInt(contract.id), "Active", BigInt(contract.amount), "rejectContractCancelationPropopsitionLessee")}>
+                              Rechazar Rescisión
+                            </button>
+                        </div>
+                      )}
+
+                      {contract.state != "Cancelled" && (
+                        <>
+                          <button
                             onClick={() => handleButtonClick(contract.id)}
                             className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 transition ease-in-out duration-300"
                           >
-                          {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
+                            {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
                           </button>
                           {selectedPropertyId === contract.id && (
                             <div style={{ marginTop: '20px' }}>
                               <Servicios propiedadId={contract.id} />
                             </div>
                           )}
+                        </>
+                      )}
                     </li>
                   ))}
               </ul>
@@ -178,33 +203,59 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       </p>
 
                       {contract.state == "DraftReview" && (
+                        <div className="mt-4 flex gap-4">
+                            <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                onClick={() => handleContractChange(BigInt(contract.id), "Draft", BigInt(contract.amount), "acceptContract")}>
+                                Aceptar Cambios
+                            </button>
+                            <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                                onClick={() => router.push(`/reviewNewOffer?contractId=${contract.id}`)}>
+                                Negociar
+                            </button>
+                            <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount), "rejectLeaseOffer")}>
+                                Cerrar Contrato
+                            </button>
+                        </div>
+                      )}
+
+                        {contract.state == "Active" && (
                           <div className="mt-4 flex gap-4">
-                              <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                                  onClick={() => handleContractReview(BigInt(contract.id), "Draft")}>
-                                  Aceptar Cambios
-                              </button>
                               <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
-                                  onClick={() => router.push(`/reviewNewOffer?contractId=${contract.id}`)}>
-                                  Negociar
-                              </button>
-                              <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                                  onClick={() => handleContractReview(BigInt(contract.id), "Cancelled")}>
-                                  Cerrar Contrato
+                                onClick={() => handleContractChange(BigInt(contract.id), "CancelationProposedByOwner", BigInt(contract.amount), "proposeContractCancelationMutualAgreementOwner")}>
+                                Rescindir Contrato
                               </button>
                           </div>
                         )}
 
-                      <button
-                            onClick={() => handleButtonClick(contract.id)}
-                            className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 transition ease-in-out duration-300"
-                          >
-                          {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
-                          </button>
-                          {selectedPropertyId === contract.id && (
-                            <div style={{ marginTop: '20px' }}>
-                              <Servicios propiedadId={contract.id} />
-                            </div>
-                          )}
+                        {contract.state == "CancelationPropopsedByLessee" && (
+                          <div className="mt-4 flex gap-4">
+                              <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount), "acceptContractCancelationPropopsitionOwner")}>
+                                Aceptar Rescisión
+                              </button>
+                              <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                onClick={() => handleContractChange(BigInt(contract.id), "Active", BigInt(contract.amount), "rejectContractCancelationPropopsitionOwner")}>
+                                Rechazar Rescisión
+                              </button>
+                          </div>
+                        )}
+
+                        {contract.state != "Cancelled" && (
+                          <>
+                            <button
+                              onClick={() => handleButtonClick(contract.id)}
+                              className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 transition ease-in-out duration-300"
+                            >
+                              {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
+                            </button>
+                            {selectedPropertyId === contract.id && (
+                              <div style={{ marginTop: '20px' }}>
+                                <Servicios propiedadId={contract.id} />
+                              </div>
+                            )}
+                          </>
+                        )}
                     </li>
                   ))}
               </ul>
