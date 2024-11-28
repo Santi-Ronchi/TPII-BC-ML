@@ -144,26 +144,32 @@ contract YourContract {
 		contratosAlquiler[_Id].Status = ContractStatus.CancelationPropopsedByLessee;
 	}
 
-	function answerContractCancelationPropopsitionLessee(uint256 _ID, bool accept) public {
+	function acceptContractCancelationPropopsitionLessee(uint256 _ID) public {
 		require(contractExists(_ID),"Contract must exist to be cancelled");
 		require(isLessee(_ID),'Only the current leassee may answer a cancelation propoistion');
 		require (ownerProposedCancelation(_ID),'Owner did not propose a contract cancelation');
-		if (accept){
-			contratosAlquiler[_ID].Status = ContractStatus.Cancelled;
-		} else {
-			contratosAlquiler[_ID].Status = ContractStatus.Active;
-		}
+		contratosAlquiler[_ID].Status = ContractStatus.Cancelled;
 	}
 
-	function answerContractCancelationPropopsitionOwner(uint256 _ID, bool accept) public {
-		//Es la respuesta que el owner le responde a quien alquila
+	function rejectContractCancelationPropopsitionLessee(uint256 _ID) public {
+		require(contractExists(_ID),"Contract must exist to be cancelled");
+		require(isLessee(_ID),'Only the current leassee may answer a cancelation propoistion');
+		require (ownerProposedCancelation(_ID),'Owner did not propose a contract cancelation');
+		contratosAlquiler[_ID].Status = ContractStatus.Active;
+	}
+
+	function acceptContractCancelationPropopsitionOwner(uint256 _ID) public {
+		require(contractExists(_ID),"Contract must exist to be cancelled");
 		require(isOwner(_ID),'Only the current owner may answer a cancelation propoistion');
 		require (contratosAlquiler[_ID].Status == ContractStatus.CancelationPropopsedByLessee,'Tenant did not propose a contract cancelation');
-		if (accept){
-			contratosAlquiler[_ID].Status = ContractStatus.Cancelled;
-		} else {
-			contratosAlquiler[_ID].Status = ContractStatus.Active;
-		}
+		contratosAlquiler[_ID].Status = ContractStatus.Cancelled;
+	}
+
+	function rejectContractCancelationPropopsitionOwner(uint256 _ID) public {
+		require(contractExists(_ID),"Contract must exist to be cancelled");
+		require(isOwner(_ID),'Only the current owner may answer a cancelation propoistion');
+		require (contratosAlquiler[_ID].Status == ContractStatus.CancelationPropopsedByLessee,'Tenant did not propose a contract cancelation');
+		contratosAlquiler[_ID].Status = ContractStatus.Active;
 	}
 
 	//only usable by owner. Unilateral cancelation of contract
@@ -217,7 +223,7 @@ contract YourContract {
 		contrato.Status = ContractStatus.Cancelled;
 	}
 
-	function isLesseeAcceptable(uint256 _ID)public view returns (bool){
+	/*function isLesseeAcceptable(uint256 _ID)public view returns (bool){
 		require(contractExists(_ID),"Property is not leasable");
 		return contratosAlquiler[_ID].Status == ContractStatus.Draft;
 	}
@@ -225,7 +231,7 @@ contract YourContract {
 	function isOwnerAcceptable(uint256 _ID)public view returns (bool){
 		require(contractExists(_ID),"Property is not leasable");
 		return contratosAlquiler[_ID].Status == ContractStatus.DraftReview;
-	}
+	}*/
 
 	function proposeChanges(uint256 propertyID, uint256 newAmount, uint256 newPenaltyAmount, uint256 newGracePeriod) public contractCanBeAccepted(propertyID){
 		require(contractExists(propertyID),"Property is not leasable");
@@ -238,11 +244,10 @@ contract YourContract {
 		propertyContract.Lessee = msg.sender;
 	}
 
-	function acceptProposedChanges(uint256 propertyID) public {
+	function acceptProposedChanges(uint256 propertyID) public reviewCanBeAccepted(propertyID) {
 		require(contractExists(propertyID),"Lease contract does not exist");
 		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
 		require(isOwner(propertyID),"Only the owner may review the contract");
-		require(isOwnerAcceptable(propertyID),"Lessee has not proposed any changes to the existing contract");
 		propertyContract.Status = ContractStatus.Draft;
 	}
 
@@ -250,7 +255,6 @@ contract YourContract {
 		require(contractExists(propertyID),"Lease contract does not exist");
 		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
 		require(isOwner(propertyID),"Only the owner may review the contract");
-		require(isOwnerAcceptable(propertyID),"Lessee has not proposed any changes to the existing contract");
 		propertyContract.Status = ContractStatus.Draft;
 		propertyContract.Amount = newAmount;
 		propertyContract.PenaltyPercentage = newPenaltyAmount;
@@ -258,11 +262,10 @@ contract YourContract {
 		propertyContract.Owner = msg.sender;
 	}
 
-	function rejectProposedChanges(uint256 propertyID) public {
+	function rejectProposedChanges(uint256 propertyID) public reviewCanBeAccepted(propertyID) {
 		require(contractExists(propertyID),"Lease contract does not exist");
 		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
 		require(isOwner(propertyID),"Only the owner may review the contract");
-		require(isOwnerAcceptable(propertyID),"Lessee has not proposed any changes to the existing contract");
 		propertyContract.Status = ContractStatus.Cancelled;
 	}
 
