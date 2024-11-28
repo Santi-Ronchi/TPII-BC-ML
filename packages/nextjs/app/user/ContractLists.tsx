@@ -36,7 +36,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
           await writeYourContractAsync({
             functionName: 'acceptContract',
             args: [contractId],
-            value: BigInt(amount),
+            value: BigInt(doubleAmount),
           });
         }
         const stringId = contractId.toString();
@@ -115,8 +115,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       {contract.state == "Draft" && (
                             <div className="mt-4 flex gap-4">
                                 <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                                    onClick={() => handleContractChange(BigInt(contract.id), "Active", BigInt(contract.amount + contract.amount))}
-                                  >
+                                    onClick={() => handleContractChange(BigInt(contract.id), "Active", BigInt(contract.amount))}>
                                     Aceptar
                                   </button>
                                 <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
