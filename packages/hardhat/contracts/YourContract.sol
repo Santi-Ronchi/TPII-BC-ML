@@ -94,6 +94,11 @@ contract YourContract {
 		require(contratosAlquiler[_ID].Status == ContractStatus.Draft,'The specified contract cannot be accepted');
 		_;
 	}
+
+	modifier reviewCanBeAccepted(uint256 _ID){
+		require(contratosAlquiler[_ID].Status == ContractStatus.DraftReview,'The specified contract cannot be accepted');
+		_;
+	}
 	
 	modifier validLessee(uint256 _ID, address _Lessee){
 		require(contratosAlquiler[_ID].Owner != _Lessee, 'The specified lessee is not valid for the current contract');
@@ -233,12 +238,32 @@ contract YourContract {
 		propertyContract.Lessee = msg.sender;
 	}
 
-	function reviewProposedChanges(uint256 propertyID, uint256 newAmount) public {
+	function acceptProposedChanges(uint256 propertyID) public {
 		require(contractExists(propertyID),"Lease contract does not exist");
+		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
 		require(isOwner(propertyID),"Only the owner may review the contract");
-		require(isOwnerAcceptable(propertyID),"Leasse has not proposed any changes to the existing contract");
-		contratosAlquiler[propertyID].Amount = newAmount;
-		contratosAlquiler[propertyID].Status = ContractStatus.Draft;
+		require(isOwnerAcceptable(propertyID),"Lessee has not proposed any changes to the existing contract");
+		propertyContract.Status = ContractStatus.Draft;
+	}
+
+	function reviewProposedChanges(uint256 propertyID, uint256 newAmount, uint256 newPenaltyAmount, uint256 newGracePeriod) public reviewCanBeAccepted(propertyID){
+		require(contractExists(propertyID),"Lease contract does not exist");
+		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
+		require(isOwner(propertyID),"Only the owner may review the contract");
+		require(isOwnerAcceptable(propertyID),"Lessee has not proposed any changes to the existing contract");
+		propertyContract.Status = ContractStatus.Draft;
+		propertyContract.Amount = newAmount;
+		propertyContract.PenaltyPercentage = newPenaltyAmount;
+		propertyContract.GracePeriod = newGracePeriod;
+		propertyContract.Owner = msg.sender;
+	}
+
+	function rejectProposedChanges(uint256 propertyID) public {
+		require(contractExists(propertyID),"Lease contract does not exist");
+		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
+		require(isOwner(propertyID),"Only the owner may review the contract");
+		require(isOwnerAcceptable(propertyID),"Lessee has not proposed any changes to the existing contract");
+		propertyContract.Status = ContractStatus.Cancelled;
 	}
 
 

@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
       abi: [
         {
           inputs: [
@@ -85,6 +85,19 @@ const deployedContracts = {
           name: "acceptContract",
           outputs: [],
           stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "propertyID",
+              type: "uint256",
+            },
+          ],
+          name: "acceptProposedChanges",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -654,6 +667,19 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
+              name: "propertyID",
+              type: "uint256",
+            },
+          ],
+          name: "rejectProposedChanges",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
               name: "_ID",
               type: "uint256",
             },
@@ -679,6 +705,16 @@ const deployedContracts = {
             {
               internalType: "uint256",
               name: "newAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "newPenaltyAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "newGracePeriod",
               type: "uint256",
             },
           ],

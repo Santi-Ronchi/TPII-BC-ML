@@ -7,7 +7,6 @@ import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import Servicios from "../servicios/Servicios";
 import { useRouter } from "next/navigation";
-import { NestedMiddlewareError } from "next/dist/build/utils";
 
 interface ContractListsProps {
     contracts: Contract[];
@@ -37,7 +36,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
           await writeYourContractAsync({
             functionName: 'acceptContract',
             args: [contractId],
-            value: BigInt(doubleAmount),
+            value: BigInt(amount),
           });
         }
         const stringId = contractId.toString();
@@ -49,6 +48,30 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
           console.error("Error accepting contract:", e);
       }
   }
+
+  const handleContractReview = async (contractId: bigint, newStatus: string) => {
+    try {
+      if (newStatus != "Draft"){
+      await writeYourContractAsync({
+        functionName: 'rejectProposedChanges',
+        args: [contractId],
+      });
+      }
+      else{
+        await writeYourContractAsync({
+          functionName: 'acceptProposedChanges',
+          args: [contractId],
+        });
+      }
+      const stringId = contractId.toString();
+      const contractRef = doc(db, "Contratos", stringId);
+      await updateDoc(contractRef, { state: newStatus });
+      console.log(`Contract ${contractId} state updated to ${newStatus}.`);
+    }
+    catch (e){
+        console.error("Error accepting contract:", e);
+    }
+}
 
     return(
         <div className="w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md">
@@ -75,6 +98,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       </strong>
                       <p className="text-gray-700 dark:text-gray-300">Estado: {contract.state}</p>
                       <p className="text-gray-700 dark:text-gray-300">Monto a pagar: {contract.amount}</p>
+                      <p className="text-gray-700 dark:text-gray-300">Dias de gracia: {contract.daysToPay}</p>
                       <p className="text-gray-700 dark:text-gray-300">
                         Duración: {contract.duration} meses
                       </p>
@@ -90,19 +114,19 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
 
                       {contract.state == "Draft" && (
                             <div className="mt-4 flex gap-4">
-                            <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                                onClick={() => handleContractChange(contract.id, "Active", contract.amount)}
-                              >
-                                Aceptar
-                              </button>
-                            <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
-                                onClick={() => router.push(`/proposeNewOffer?contractId=${contract.id}`)}>
-                                Negociar
-                            </button>
-                            <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                                onClick={() => handleContractChange(contract.id, "Cancelled", contract.amount)}>
-                                Rechazar
-                            </button>
+                                <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                    onClick={() => handleContractChange(BigInt(contract.id), "Active", BigInt(contract.amount + contract.amount))}
+                                  >
+                                    Aceptar
+                                  </button>
+                                <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                                    onClick={() => router.push(`/proposeNewOffer?contractId=${contract.id}`)}>
+                                    Negociar
+                                </button>
+                                <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                    onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount))}>
+                                    Rechazar
+                                </button>
                             </div>
                         )}
 
@@ -140,6 +164,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       </strong>
                       <p className="text-gray-700 dark:text-gray-300">Estado: {contract.state}</p>
                       <p className="text-gray-700 dark:text-gray-300">Monto a pagar: {contract.amount}</p>
+                      <p className="text-gray-700 dark:text-gray-300">Dias de gracia: {contract.daysToPay}</p>
                       <p className="text-gray-700 dark:text-gray-300">
                         Duración: {contract.duration} meses
                       </p>
@@ -152,6 +177,23 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                         Dirección del inquilino:{" "}
                         <span className="font-semibold">{contract.lesseAddress}</span>
                       </p>
+
+                      {contract.state == "DraftReview" && (
+                          <div className="mt-4 flex gap-4">
+                              <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                  onClick={() => handleContractReview(BigInt(contract.id), "Draft")}>
+                                  Aceptar Cambios
+                              </button>
+                              <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                                  onClick={() => router.push(`/reviewNewOffer?contractId=${contract.id}`)}>
+                                  Negociar
+                              </button>
+                              <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                  onClick={() => handleContractReview(BigInt(contract.id), "Cancelled")}>
+                                  Cerrar Contrato
+                              </button>
+                          </div>
+                        )}
 
                       <button
                             onClick={() => handleButtonClick(contract.id)}
