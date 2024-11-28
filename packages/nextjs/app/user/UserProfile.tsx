@@ -3,9 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { User, Contract } from "../../types/utils";
 import { db } from "./firebase";
-import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection, query, where, updateDoc } from "firebase/firestore";
 import ContractLists from './ContractLists';
 import { useAccount } from "wagmi";
+import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 
 interface UserProfileProps {
@@ -68,12 +70,24 @@ const fetchWalletsAndContracts = async (userEmail: string): Promise<{
 };
 
 const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
-  const { address: connectedAddress } = useAccount();
   const [user, setUser] = useState<User | null>(null);
   const [contracts, setContracts] = useState<Contract | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingWallets, setLoadingWallets] = useState<boolean>(true);
   const [userWallets, setUserWallets] = useState<String | null>(null);
+  const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
+
+  const refreshData = async () => {
+    const userData = await fetchUserData(userId);
+    if (!userData) {
+      setLoading(false);
+      return;
+    }
+    setUser(userData);
+    const { wallets, contracts } = await fetchWalletsAndContracts(userData.userEmail);
+    setUser((prev) => (prev ? { ...prev, walletAddr: wallets } : null));
+    setContracts(contracts);
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -157,17 +171,48 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   }, [contracts, loading]);
 
 
+  const handleContractChange = async (contractId: bigint, newStatus: string, amount: bigint, functionToCall: string) => {
+      let doubleAmount = (BigInt(amount) + BigInt(amount));
+      try {
+        if (functionToCall == "acceptContract"){
+          await writeYourContractAsync({
+            functionName: 'acceptContract',
+            args: [contractId],
+            value: BigInt(doubleAmount),
+          });
+        }else{
+          await writeYourContractAsync({
+            functionName: functionToCall,
+            args: [contractId],
+          });
+        }
+        const stringId = contractId.toString();
+        const contractRef = doc(db, "Contratos", stringId);
+        await updateDoc(contractRef, { state: newStatus });
+        console.log(`Contract ${contractId} state updated to ${newStatus}.`);
+      }catch (e){
+        console.error("Error accepting contract:", e);
+      }
+
+      try{
+        await refreshData();
+      }catch (e){
+        console.error("Error reloading page:", e);
+      }
+  }
+
   if (loading) return <p>Cargando...</p>;
   if (!user) return <p>No se encontraron datos de usuario.</p>;
 
 
   return (
-    <div
-      className="p-8 shadow-xl rounded-lg max-w-7xl mx-auto min-h-screen flex flex-col items-center"
-      style={{
-        background: "linear-gradient(to right, #e5a073, #cc6164, #d4789b, #ae7ca3)",
-      }}
-    >
+      <div
+        className="p-8 shadow-xl rounded-lg max-w-7xl mx-auto min-h-screen flex flex-col items-center"
+        style={{
+          background: "linear-gradient(to right, #e5a073, #cc6164, #d4789b, #ae7ca3)",
+        }}
+      >
+      
       {/* User Email */}
       <div className="text-center mb-10">
         <p className="text-2xl font-semibold text-white">
@@ -199,8 +244,16 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
         )}
       </div>
 
+      {/* Refresh Button */}
+      <button
+        onClick={refreshData}
+        className="mb-4 top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-md transition-transform transform hover:scale-105"
+        title="Refresh Data"
+      >
+        <ArrowPathIcon className="h-6 w-6" />
+      </button>
       {/* Contracts Section */}
-      <ContractLists contracts={contracts || []} />
+      <ContractLists contracts={contracts || []} handleContractChange={handleContractChange} />
     </div>
   );
 };
