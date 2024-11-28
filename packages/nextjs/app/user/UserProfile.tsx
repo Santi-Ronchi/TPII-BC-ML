@@ -247,7 +247,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
       {/* Refresh Button */}
       <button
         onClick={refreshData}
-        className="mb-4 top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-md transition-transform transform hover:scale-105"
+        className="mb-3 top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-md transition-transform transform hover:scale-105"
         title="Refresh Data"
       >
         <ArrowPathIcon className="h-6 w-6" />
