@@ -24,6 +24,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
   const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
 
   const handleContractChange = async (contractId: bigint, newStatus: string, amount: bigint) => {
+      let doubleAmount = (BigInt(amount) + BigInt(amount));
       try {
         if (newStatus != "Active"){
         await writeYourContractAsync({
