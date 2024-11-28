@@ -63,7 +63,7 @@ export const ProposeNewOfferPage = () => {
         onClick={async () => {
           try {
             await writeYourContractAsync({
-              functionName: "proposeChanges",
+              functionName: "reviewProposedChanges",
               args: [contractId,ethAmount,interestRate,paymentPeriod]
             })
             if (auth.currentUser){
