@@ -119,7 +119,15 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
                               <Servicios propiedadId={contract.id} />
                             </div>
                           )}
+                        
+                        <button
+                              onClick={() => router.push(`/movimientos?propertyId=${contract.id}`)}
+                              className="px-4 py-2 mt-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-300 transition ease-in-out duration-300"
+                          >
+                              Ver Movimientos
+                            </button>
                         </>
+                        
                       )}
                     </li>
                   ))}
@@ -214,7 +222,15 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
                                 <Servicios propiedadId={contract.id} />
                               </div>
                             )}
-                          </>
+
+                            <button
+                              onClick={() => router.push(`/movimientos?propertyId=${contract.id}`)}
+                              className="px-4 py-2 mt-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-300 transition ease-in-out duration-300"
+                            >
+                              Ver Movimientos
+                            </button>
+                        </>
+
                         )}
                     </li>
                   ))}
