@@ -33,11 +33,6 @@ export const menuLinks: HeaderMenuLink[] = [
     icon: <BriefcaseIcon className="h-5 w-5" />,
   },
   {
-    label: "Debug Contract",
-    href: "/debug",
-    icon: <BugAntIcon className="h-5 w-5" />,
-  },
-  {
     label: "Perfil de usuario",
     href: "/user",
     icon: <UserCircleIcon className="h-5 w-5" />,

@@ -39,13 +39,25 @@ const TransactionComp = ({ txHash }: { txHash: Hash }) => {
 
   return (
     <div className="container mx-auto mt-10 mb-20 px-10 md:px-0">
-      <button className="btn btn-sm btn-primary" onClick={() => router.back()}>
-        Back
+      <button 
+                                className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
+                                type="button"
+                                style={{ backgroundColor: '#8c376c' }}
+       onClick={() => router.back()}>
+        Volver
       </button>
       {transaction ? (
         <div className="overflow-x-auto">
-          <h2 className="text-3xl font-bold mb-4 text-center text-primary-content">Transaction Details</h2>{" "}
-          <table className="table rounded-lg bg-base-100 w-full shadow-lg md:table-lg table-md">
+                <br />
+                <div
+                  className="mb-3 inline-block w-full rounded px-6 pb-8 pt-8 text-center text-lg font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
+                  style={{ backgroundColor: '#370921' }}
+                >
+                  DETALLES DE TRANSACCION
+                </div>
+                <br />
+                <br />
+            <table className="table rounded-lg bg-blue-500 text-white w-full shadow-lg md:table-lg table-md">
             <tbody>
               <tr>
                 <td>

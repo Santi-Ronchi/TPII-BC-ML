@@ -36,6 +36,7 @@ export const PredecirPrecio = () => {
   const [selectedProvincia, setSelectedProvincia] = useState<string>("");
   const [localidades, setLocalidades] = useState<any[]>([]);
   const [selectedLocalidad, setSelectedLocalidad] = useState<string>("");
+  const [selectedDolar, setSelectedDolar] = useState<number>(1000);
 
   const handleSuperficieTotalChange = (value: string | bigint) => {
     setSuperficie_total(String(value));
@@ -96,7 +97,20 @@ export const PredecirPrecio = () => {
       });
   };
 
+  const fetchDolar = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/dolar');
+      const data = await response.json();
+      setSelectedDolar(data.venta);
+    } catch (error) {
+      console.error('Error fetching dolar:', error);
+    }
+  };
 
+
+  useEffect(() => {
+    console.log("selectedDolar cambió:", selectedDolar);
+  }, [selectedDolar]);
 
   const fetchProvincias = async () => {
     try {
@@ -110,6 +124,10 @@ export const PredecirPrecio = () => {
 
   useEffect(() => {
     fetchProvincias();
+  }, []);
+
+  useEffect(() => {
+    fetchDolar();
   }, []);
 
   const handleProvinciaChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -140,9 +158,9 @@ export const PredecirPrecio = () => {
       style={{
         backgroundColor: 'rgba(203, 207, 211, 0.5)',
         backgroundImage: 'url(cuarto.jpg)',
-        backgroundSize: 'cover', // Ajusta el tamaño de la imagen para que cubra todo el elemento
-        backgroundRepeat: 'no-repeat', // Evita que la imagen se repita
-        backgroundPosition: 'center' // Centra la imagen
+        backgroundSize: 'cover', 
+        backgroundRepeat: 'no-repeat', 
+        backgroundPosition: 'center' 
       }}>
       <img src="ARPA-WIDE.png" alt="logo de ARPA" className="mx-auto imgRounder" />
       <br />
@@ -218,7 +236,7 @@ export const PredecirPrecio = () => {
       {prediction && (
         <div >
           <h2 className="text-2xl font-bold text-blue-600 mb-4" style={{ fontSize: '30px', color: '#8c376c' }}>
-            Precio recomendado de publicacion de su propiedad: <span className="text-gray-800" style={{ fontSize: '30px', color: '#370921' }}>USD {(prediction.prediction * 0.9).toFixed(0)} - {(prediction.prediction * 1.1).toFixed(0)} </span>
+            Precio recomendado de publicacion de su propiedad: <span className="text-gray-800" style={{ fontSize: '30px', color: '#370921' }}>ARS {(prediction.prediction * 0.9).toFixed(0)*selectedDolar} - {(prediction.prediction * 1.1).toFixed(0)*selectedDolar} </span>
           </h2>
 
           <div className="mb-4">
@@ -232,62 +250,62 @@ export const PredecirPrecio = () => {
               </p>
             ) : (
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Propiedades similares:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.propiedadesSimilares}</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Precio promedio:</p>
-                  <p className="text-gray-800 text-xl font-semibold">USD {prediction.caracteristicas.precioPromedio}</p>
+                  <p className="text-gray-800 text-xl font-semibold">ARS {prediction.caracteristicas.precioPromedio * selectedDolar}</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Precio mínimo:</p>
-                  <p className="text-gray-800 text-xl font-semibold">USD {prediction.caracteristicas.precioMinimo}</p>
+                  <p className="text-gray-800 text-xl font-semibold">ARS {prediction.caracteristicas.precioMinimo * selectedDolar}</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Precio máximo:</p>
-                  <p className="text-gray-800 text-xl font-semibold">USD {prediction.caracteristicas.precioMaximo}</p>
+                  <p className="text-gray-800 text-xl font-semibold">ARS {prediction.caracteristicas.precioMaximo * selectedDolar}</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}> 
                   <p className="font-medium text-gray-600">Promedio de metros totales:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.metrosTotalesPromedio}</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Promedio de metros cubiertos:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.metrosCubiertosPromedio}</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Porcentaje con cochera:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.cocheraPorcentaje}%</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Porcentaje con seguridad:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.seguridadPorcentaje}%</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Porcentaje con patio, terraza o balcón:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.aireLibrePorcentaje}%</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Porcentaje con parrilla:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.parrillaPorcentaje}%</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Porcentaje que aceptan mascotas:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.aptoMascotaPorcentaje}%</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <p className="font-medium text-gray-600">Porcentaje con pileta:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.piletaPorcentaje}%</p>
                 </div>
