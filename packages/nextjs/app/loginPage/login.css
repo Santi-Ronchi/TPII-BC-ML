@@ -1,0 +1,11 @@
+
+.container {
+    position: relative;
+    height: 300px; /* Ajusta la altura según sea necesario */
+  }
+  
+.logo {
+    position: absolute;
+    top: 10%;
+    left: 60%;
+  }

@@ -27,9 +27,9 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
   const { address: connectedAddress } = useAccount();
 
     return(
-        <div className="w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md">
+        <div className="w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md" style={{ backgroundColor: 'rgba(203, 207, 211, 0.5)' }}>
         <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 border-b-2 border-gray-300 dark:border-gray-700 pb-3 mb-4">
-          Contratos asociados a {connectedAddress}
+          Mis contratos asociados a {connectedAddress}
         </h2>
         {contracts.length > 0 ? (
           <div className="flex flex-wrap justify-center gap-6 mt-6">
@@ -47,21 +47,21 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
                       className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-md shadow-sm transition-transform transform hover:scale-105 duration-300"
                     >
                       <strong className="block text-lg text-gray-800 dark:text-gray-200">
-                        ID: {contract.id}
+                        ID de la propiedad: {contract.id}
                       </strong>
-                      <p className="text-gray-700 dark:text-gray-300">Estado: {contract.state}</p>
+                      <p className="text-gray-700 dark:text-gray-300">Estado del contrato: {contract.state}</p>
                       <p className="text-gray-700 dark:text-gray-300">Monto a pagar: {contract.amount}</p>
                       <p className="text-gray-700 dark:text-gray-300">Dias de gracia: {contract.daysToPay}</p>
                       <p className="text-gray-700 dark:text-gray-300">
-                        Duración: {contract.duration} meses
+                        Duración del contrato: {contract.duration} meses
                       </p>
                       <p className="text-gray-700 dark:text-gray-300">Interés: {contract.interest}%</p>
                       <p className="text-gray-700 dark:text-gray-300">
-                        Dirección del dueño:{" "}
+                        Billetera del dueño:{" "}
                         <span className="font-semibold">{contract.ownerAddress}</span>
                       </p>
                       <p className="text-gray-700 dark:text-gray-300">
-                        Dirección del inquilino:{" "}
+                        Billetera del inquilino:{" "}
                         <span className="font-semibold">{contract.lesseAddress}</span>
                       </p>
 
@@ -148,21 +148,21 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
                       className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-md shadow-sm transition-transform transform hover:scale-105 duration-300"
                     >
                       <strong className="block text-lg text-gray-800 dark:text-gray-200">
-                        ID: {contract.id}
+                        ID de la propiedad: {contract.id}
                       </strong>
-                      <p className="text-gray-700 dark:text-gray-300">Estado: {contract.state}</p>
+                      <p className="text-gray-700 dark:text-gray-300">Estado del contrato: {contract.state}</p>
                       <p className="text-gray-700 dark:text-gray-300">Monto a pagar: {contract.amount}</p>
                       <p className="text-gray-700 dark:text-gray-300">Dias de gracia: {contract.daysToPay}</p>
                       <p className="text-gray-700 dark:text-gray-300">
-                        Duración: {contract.duration} meses
+                        Duración del contrato: {contract.duration} meses
                       </p>
                       <p className="text-gray-700 dark:text-gray-300">Interés: {contract.interest}%</p>
                       <p className="text-gray-700 dark:text-gray-300">
-                        Dirección del dueño:{" "}
+                        Billetera del dueño:{" "}
                         <span className="font-semibold">{contract.ownerAddress}</span>
                       </p>
                       <p className="text-gray-700 dark:text-gray-300">
-                        Dirección del inquilino:{" "}
+                        Billetera del inquilino:{" "}
                         <span className="font-semibold">{contract.lesseAddress}</span>
                       </p>
 
