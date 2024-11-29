@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       abi: [
         {
           inputs: [
@@ -37,13 +37,13 @@ const deployedContracts = {
             {
               indexed: false,
               internalType: "address",
-              name: "Lesse",
+              name: "Lessee",
               type: "address",
             },
             {
               indexed: false,
               internalType: "uint256",
-              name: "Monto",
+              name: "Amount",
               type: "uint256",
             },
             {
@@ -78,62 +78,11 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "ID_Propiedad",
+              name: "propertyID",
               type: "uint256",
             },
           ],
-          name: "AceptarContrato",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "Monto",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "allowedWallet",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "_GracePeriod",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_Penalty_Percentage",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_Duration",
-              type: "uint256",
-            },
-          ],
-          name: "CrearContrato",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "ID_propiedad",
-              type: "uint256",
-            },
-          ],
-          name: "PagarAlquiler",
+          name: "acceptContract",
           outputs: [],
           stateMutability: "payable",
           type: "function",
@@ -145,13 +94,8 @@ const deployedContracts = {
               name: "_ID",
               type: "uint256",
             },
-            {
-              internalType: "bool",
-              name: "accept",
-              type: "bool",
-            },
           ],
-          name: "answerContractCancelationPropopsitionLease",
+          name: "acceptContractCancelationPropopsitionLessee",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -163,13 +107,8 @@ const deployedContracts = {
               name: "_ID",
               type: "uint256",
             },
-            {
-              internalType: "bool",
-              name: "accept",
-              type: "bool",
-            },
           ],
-          name: "answerContractCancelationPropopsitionOwner",
+          name: "acceptContractCancelationPropopsitionOwner",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -178,19 +117,13 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "ID_Propiedad",
+              name: "propertyID",
               type: "uint256",
             },
           ],
-          name: "calcularMontoAPagar",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
+          name: "acceptProposedChanges",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -252,17 +185,17 @@ const deployedContracts = {
             },
             {
               internalType: "address",
-              name: "Lesse",
+              name: "Lessee",
               type: "address",
             },
             {
               internalType: "uint256",
-              name: "Monto",
+              name: "Amount",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "ID_propiedad",
+              name: "PropertyID",
               type: "uint256",
             },
             {
@@ -303,7 +236,45 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "Monto",
+              name: "Amount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_ID",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "allowedWallet",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "_GracePeriod",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_Penalty_Percentage",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_Duration",
+              type: "uint256",
+            },
+          ],
+          name: "createContract",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "Amount",
               type: "uint256",
             },
             {
@@ -343,25 +314,6 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "ID_Propiedad",
-              type: "uint256",
-            },
-          ],
-          name: "cuantosMesesAdeudo",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [],
           name: "deployer",
           outputs: [
@@ -378,7 +330,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "ID_propiedad",
+              name: "propertyID",
               type: "uint256",
             },
           ],
@@ -397,7 +349,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "ID_propiedad",
+              name: "propertyID",
               type: "uint256",
             },
           ],
@@ -416,7 +368,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "ID_propiedad",
+              name: "propertyID",
               type: "uint256",
             },
           ],
@@ -426,6 +378,44 @@ const deployedContracts = {
               internalType: "enum ContractStatus",
               name: "",
               type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "propertyID",
+              type: "uint256",
+            },
+          ],
+          name: "getNumberOfOwedMonths",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "propertyID",
+              type: "uint256",
+            },
+          ],
+          name: "getTotalAmountToBePaid",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
             },
           ],
           stateMutability: "view",
@@ -473,26 +463,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-          ],
-          name: "isLesseAcceptable",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "ID_Propiedad",
+              name: "propertyID",
               type: "uint256",
             },
           ],
@@ -511,30 +482,11 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "ID_Propiedad",
+              name: "propertyID",
               type: "uint256",
             },
           ],
           name: "isOwner",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-          ],
-          name: "isOwnerAcceptable",
           outputs: [
             {
               internalType: "bool",
@@ -568,6 +520,19 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
+              name: "propertyID",
+              type: "uint256",
+            },
+          ],
+          name: "payRent",
+          outputs: [],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
               name: "",
               type: "uint256",
             },
@@ -587,16 +552,26 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "ID_Propiedad",
+              name: "propertyID",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "newMonto",
+              name: "newAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "newPenaltyAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "newGracePeriod",
               type: "uint256",
             },
           ],
-          name: "proponerCambios",
+          name: "proposeChanges",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -631,11 +606,50 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "ID_propiedad",
+              name: "_ID",
               type: "uint256",
             },
           ],
-          name: "rejectContract",
+          name: "rejectContractCancelationPropopsitionLessee",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_ID",
+              type: "uint256",
+            },
+          ],
+          name: "rejectContractCancelationPropopsitionOwner",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "propertyID",
+              type: "uint256",
+            },
+          ],
+          name: "rejectLeaseOffer",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "propertyID",
+              type: "uint256",
+            },
+          ],
+          name: "rejectProposedChanges",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -663,12 +677,22 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "ID_propiedad",
+              name: "propertyID",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "newMonto",
+              name: "newAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "newPenaltyAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "newGracePeriod",
               type: "uint256",
             },
           ],
@@ -699,7 +723,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "ID_propiedad",
+              name: "propertyID",
               type: "uint256",
             },
           ],

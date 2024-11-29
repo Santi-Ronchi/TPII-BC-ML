@@ -1,27 +1,30 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
-import { User, Contract } from "../../types/utils";
-import { db } from "./firebase";
-import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
+import React, { useState } from "react";
+import { Contract } from "../../types/utils";
 import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { usePayRent } from "~~/hooks/darpaHooks";
 import Servicios from "../servicios/Servicios";
+import { useRouter } from "next/navigation";
+import AmountToPay from "./AmountToPay";
 
 interface ContractListsProps {
     contracts: Contract[];
+    handleContractChange: (contractId: bigint, newStatus: string, amount: bigint, functionToCall: string) => Promise<void>;
   }
 
-const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
+const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContractChange }) => {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  const router = useRouter();
+  const { payRent } = usePayRent();
 
   const handleButtonClick = (propertyId: string) => {
     setSelectedPropertyId(selectedPropertyId === propertyId ? null : propertyId);
   };
 
+  
+
   const { address: connectedAddress } = useAccount();
-    
-  const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
 
     return(
         <div className="w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md" style={{ backgroundColor: 'rgba(203, 207, 211, 0.5)' }}>
@@ -48,6 +51,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       </strong>
                       <p className="text-gray-700 dark:text-gray-300">Estado del contrato: {contract.state}</p>
                       <p className="text-gray-700 dark:text-gray-300">Monto a pagar: {contract.amount}</p>
+                      <p className="text-gray-700 dark:text-gray-300">Dias de gracia: {contract.daysToPay}</p>
                       <p className="text-gray-700 dark:text-gray-300">
                         Duración del contrato: {contract.duration} meses
                       </p>
@@ -63,47 +67,68 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
 
                       {contract.state == "Draft" && (
                             <div className="mt-4 flex gap-4">
-                            <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                                onClick={async () => {
-                                    try {
-                                    await writeYourContractAsync({
-                                        functionName: "AceptarContrato",
-                                        args: [contract.id]
-                                    });
-                                } catch (e) {
-                            console.error("Error setting greeting:", e);
-                            }
-                            } }>
-                                Aceptar
-                            </button>
-                            <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors">
-                                Negociar
-                            </button>
-                            <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
-                                Rechazar
-                            </button>
+                                <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                    onClick={() => handleContractChange(BigInt(contract.id), "Active", BigInt(contract.amount), "acceptContract")}>
+                                    Aceptar
+                                  </button>
+                                <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                                    onClick={() => router.push(`/proposeNewOffer?contractId=${contract.id}`)}>
+                                    Negociar
+                                </button>
+                                <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                    onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount), "rejectLeaseOffer")}>
+                                    Rechazar
+                                </button>
                             </div>
                         )}
 
-                        <button
+                      {contract.state == "Active" && (
+                        <div className="mt-4 flex gap-4">
+                            <AmountToPay contractId={BigInt(contract.id)}></AmountToPay>
+                            
+                            <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                              onClick={() => handleContractChange(BigInt(contract.id), "CancelationPropopsedByLessee", BigInt(contract.amount), "proposeContractCancelationMutualAgreementLessee")}>
+                              Rescindir Contrato
+                            </button>
+                        </div>
+                      )}
+
+                      {contract.state == "CancelationProposedByOwner" && (
+                        <div className="mt-4 flex gap-4">
+                            <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                              onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount), "acceptContractCancelationPropopsitionLessee")}>
+                              Aceptar Rescisión
+                            </button>
+                            <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                              onClick={() => handleContractChange(BigInt(contract.id), "Active", BigInt(contract.amount), "rejectContractCancelationPropopsitionLessee")}>
+                              Rechazar Rescisión
+                            </button>
+                        </div>
+                      )}
+
+                      {contract.state != "Cancelled" && (
+                        <>
+                          <button
                             onClick={() => handleButtonClick(contract.id)}
-                            style={{
-                              padding: '8px 16px',
-                              marginTop: '10px',
-                              backgroundColor: '#007BFF',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                            }}
+                            className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 transition ease-in-out duration-300"
                           >
-                          {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
+                            {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
                           </button>
                           {selectedPropertyId === contract.id && (
                             <div style={{ marginTop: '20px' }}>
                               <Servicios propiedadId={contract.id} />
                             </div>
                           )}
+                        
+                        <button
+                              onClick={() => router.push(`/movimientos?propertyId=${contract.id}`)}
+                              className="px-4 py-2 mt-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-300 transition ease-in-out duration-300"
+                          >
+                              Ver Movimientos
+                            </button>
+                        </>
+                        
+                      )}
                     </li>
                   ))}
               </ul>
@@ -127,6 +152,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                       </strong>
                       <p className="text-gray-700 dark:text-gray-300">Estado del contrato: {contract.state}</p>
                       <p className="text-gray-700 dark:text-gray-300">Monto a pagar: {contract.amount}</p>
+                      <p className="text-gray-700 dark:text-gray-300">Dias de gracia: {contract.daysToPay}</p>
                       <p className="text-gray-700 dark:text-gray-300">
                         Duración del contrato: {contract.duration} meses
                       </p>
@@ -140,25 +166,72 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts }) => {
                         <span className="font-semibold">{contract.lesseAddress}</span>
                       </p>
 
-                      <button
-                            onClick={() => handleButtonClick(contract.id)}
-                            style={{
-                              padding: '8px 16px',
-                              marginTop: '10px',
-                              backgroundColor: '#007BFF',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                            }}
-                          >
-                          {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
-                          </button>
-                          {selectedPropertyId === contract.id && (
-                            <div style={{ marginTop: '20px' }}>
-                              <Servicios propiedadId={contract.id} />
-                            </div>
-                          )}
+                      {contract.state == "DraftReview" && (
+                        <div className="mt-4 flex gap-4">
+                            <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                onClick={() => handleContractChange(BigInt(contract.id), "Draft", BigInt(contract.amount), "acceptContract")}>
+                                Aceptar Cambios
+                            </button>
+                            <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                                onClick={() => router.push(`/reviewNewOffer?contractId=${contract.id}`)}>
+                                Negociar
+                            </button>
+                            <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount), "rejectLeaseOffer")}>
+                                Cerrar Contrato
+                            </button>
+                        </div>
+                      )}
+
+                        {contract.state == "Active" && (
+                          <div className="mt-4 flex gap-4">
+                              <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                                onClick={() => handleContractChange(BigInt(contract.id), "CancelationProposedByOwner", BigInt(contract.amount), "proposeContractCancelationMutualAgreementOwner")}>
+                                Rescindir Contrato
+                              </button>
+                              <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                    onClick={() => handleContractChange(BigInt(contract.id), "Active", 0n, "withdraw")}>
+                                    Withdraw
+                              </button>
+                          </div>
+                        )}
+
+                        {contract.state == "CancelationPropopsedByLessee" && (
+                          <div className="mt-4 flex gap-4">
+                              <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                onClick={() => handleContractChange(BigInt(contract.id), "Cancelled", BigInt(contract.amount), "acceptContractCancelationPropopsitionOwner")}>
+                                Aceptar Rescisión
+                              </button>
+                              <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                onClick={() => handleContractChange(BigInt(contract.id), "Active", BigInt(contract.amount), "rejectContractCancelationPropopsitionOwner")}>
+                                Rechazar Rescisión
+                              </button>
+                          </div>
+                        )}
+
+                        {contract.state != "Cancelled" && (
+                          <>
+                            <button
+                              onClick={() => handleButtonClick(contract.id)}
+                              className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 transition ease-in-out duration-300"
+                            >
+                              {selectedPropertyId === contract.id ? 'Cerrar Servicios' : 'Ver Servicios'}
+                            </button>
+                            {selectedPropertyId === contract.id && (
+                              <div style={{ marginTop: '20px' }}>
+                                <Servicios propiedadId={contract.id} />
+                              </div>
+                            )}
+
+                            <button
+                              onClick={() => router.push(`/movimientos?propertyId=${contract.id}`)}
+                              className="px-4 py-2 mt-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-300 transition ease-in-out duration-300"
+                            >
+                              Ver Movimientos
+                            </button>
+                        </>
+
+                        )}
                     </li>
                   ))}
               </ul>

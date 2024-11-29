@@ -104,7 +104,7 @@ describe("YourContract", function () {
 		expect(await yourContract.getContractBaseMonthlyAmountToBePaid(778)).to.equal(100);
 	  });
 	  it("Once a counter-proposal is made, the owner must answer by setting the new base amount for the contract", async function () {
-		await expect(yourContract.connect(owner).reviewProposedChanges(778,100)).to.not.be.reverted;
+		await expect(yourContract.connect(owner).reviewProposedChanges(778,100,10,10)).to.not.be.reverted;
 	  });
 	  it("After the owner reviews the propsal, the contract can be once again accepted", async function () {
 		expect(await yourContract.getContractCurrentState(778)).to.equal(0);

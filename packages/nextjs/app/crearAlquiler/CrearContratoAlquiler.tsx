@@ -14,8 +14,8 @@ import { auth, db } from "../loginPage/firebase";
 
 
 export const CrearContratoAlquiler = () => {
-  //const router = useRouter();
   const userAccount = useAccount();
+
 
   const { address: connectedAddress } = useAccount();
   const [lesseAddress, setLesseAddress] = useState("");
@@ -26,12 +26,9 @@ export const CrearContratoAlquiler = () => {
   const [ethAmount, setEthAmount] = useState("");
   const [txValue, setTxValue] = useState<string | bigint>("");
 
+    const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
 
-
-
-  const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
-  return (
-
+    return(
 
     <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10" 
       style={{ 
@@ -92,14 +89,10 @@ export const CrearContratoAlquiler = () => {
           try {
             await writeYourContractAsync({
               functionName: "CrearContrato",
-              //args: [connectedAddress,connectedAddress,1,777]
               args: [ethAmount, txValue, lesseAddress, paymentPeriod, interestRate, contractDuration]
-              //args: [ownerAddress,lesseAddress,ethAmount,txValue]
             }).then(async () => {
-              console.log("TODO Creamos el contrato correctamente");
               if (auth.currentUser) {
                 try {
-                  console.log("Entramos al try para agregar el contrato a firebase");
                   const txValue_str = typeof txValue === 'bigint' ? txValue.toString() : txValue;
                   const docRef = doc(db, "Contratos", txValue_str);
                   setDoc(docRef, {

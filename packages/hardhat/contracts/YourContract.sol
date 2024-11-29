@@ -94,6 +94,11 @@ contract YourContract {
 		require(contratosAlquiler[_ID].Status == ContractStatus.Draft,'The specified contract cannot be accepted');
 		_;
 	}
+
+	modifier reviewCanBeAccepted(uint256 _ID){
+		require(contratosAlquiler[_ID].Status == ContractStatus.DraftReview,'The specified contract cannot be accepted');
+		_;
+	}
 	
 	modifier validLessee(uint256 _ID, address _Lessee){
 		require(contratosAlquiler[_ID].Owner != _Lessee, 'The specified lessee is not valid for the current contract');
@@ -139,26 +144,32 @@ contract YourContract {
 		contratosAlquiler[_Id].Status = ContractStatus.CancelationPropopsedByLessee;
 	}
 
-	function answerContractCancelationPropopsitionLessee(uint256 _ID, bool accept) public {
+	function acceptContractCancelationPropopsitionLessee(uint256 _ID) public {
 		require(contractExists(_ID),"Contract must exist to be cancelled");
 		require(isLessee(_ID),'Only the current leassee may answer a cancelation propoistion');
 		require (ownerProposedCancelation(_ID),'Owner did not propose a contract cancelation');
-		if (accept){
-			contratosAlquiler[_ID].Status = ContractStatus.Cancelled;
-		} else {
-			contratosAlquiler[_ID].Status = ContractStatus.Active;
-		}
+		contratosAlquiler[_ID].Status = ContractStatus.Cancelled;
 	}
 
-	function answerContractCancelationPropopsitionOwner(uint256 _ID, bool accept) public {
-		//Es la respuesta que el owner le responde a quien alquila
+	function rejectContractCancelationPropopsitionLessee(uint256 _ID) public {
+		require(contractExists(_ID),"Contract must exist to be cancelled");
+		require(isLessee(_ID),'Only the current leassee may answer a cancelation propoistion');
+		require (ownerProposedCancelation(_ID),'Owner did not propose a contract cancelation');
+		contratosAlquiler[_ID].Status = ContractStatus.Active;
+	}
+
+	function acceptContractCancelationPropopsitionOwner(uint256 _ID) public {
+		require(contractExists(_ID),"Contract must exist to be cancelled");
 		require(isOwner(_ID),'Only the current owner may answer a cancelation propoistion');
 		require (contratosAlquiler[_ID].Status == ContractStatus.CancelationPropopsedByLessee,'Tenant did not propose a contract cancelation');
-		if (accept){
-			contratosAlquiler[_ID].Status = ContractStatus.Cancelled;
-		} else {
-			contratosAlquiler[_ID].Status = ContractStatus.Active;
-		}
+		contratosAlquiler[_ID].Status = ContractStatus.Cancelled;
+	}
+
+	function rejectContractCancelationPropopsitionOwner(uint256 _ID) public {
+		require(contractExists(_ID),"Contract must exist to be cancelled");
+		require(isOwner(_ID),'Only the current owner may answer a cancelation propoistion');
+		require (contratosAlquiler[_ID].Status == ContractStatus.CancelationPropopsedByLessee,'Tenant did not propose a contract cancelation');
+		contratosAlquiler[_ID].Status = ContractStatus.Active;
 	}
 
 	//only usable by owner. Unilateral cancelation of contract
@@ -198,14 +209,21 @@ contract YourContract {
 		require(contractExists(propertyID),"Property is not leasable");
 		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
 		require(isAllowedWallet(propertyContract.AllowedWallet),'Only the address specified by the owner can accept the contract');
-		require(msg.value == propertyContract.Amount * 2);
+		require(msg.value == propertyContract.Amount * 2,"Tenes que pagar 2 meses por adelantado como deposito");
 		propertyContract.Status = ContractStatus.Active;
 		propertyContract.Lessee = msg.sender;
 		propertyContract.TimestampLastPayment = block.timestamp;
+		propertyContract.CollectedAmount = msg.value;
 	}
 	
+	function rejectLeaseOffer(uint256 propertyID) public {
+		require(contractExists(propertyID) == true, "The specified contract does not exist");
+		ContratoAlquiler storage contrato = contratosAlquiler[propertyID];
+		require(isAllowedWallet(contrato.AllowedWallet),"Only the client may reject the contract offer");
+		contrato.Status = ContractStatus.Cancelled;
+	}
 
-	function isLesseeAcceptable(uint256 _ID)public view returns (bool){
+	/*function isLesseeAcceptable(uint256 _ID)public view returns (bool){
 		require(contractExists(_ID),"Property is not leasable");
 		return contratosAlquiler[_ID].Status == ContractStatus.Draft;
 	}
@@ -213,7 +231,7 @@ contract YourContract {
 	function isOwnerAcceptable(uint256 _ID)public view returns (bool){
 		require(contractExists(_ID),"Property is not leasable");
 		return contratosAlquiler[_ID].Status == ContractStatus.DraftReview;
-	}
+	}*/
 
 	function proposeChanges(uint256 propertyID, uint256 newAmount, uint256 newPenaltyAmount, uint256 newGracePeriod) public contractCanBeAccepted(propertyID){
 		require(contractExists(propertyID),"Property is not leasable");
@@ -226,12 +244,29 @@ contract YourContract {
 		propertyContract.Lessee = msg.sender;
 	}
 
-	function reviewProposedChanges(uint256 propertyID, uint256 newAmount) public {
+	function acceptProposedChanges(uint256 propertyID) public reviewCanBeAccepted(propertyID) {
 		require(contractExists(propertyID),"Lease contract does not exist");
+		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
 		require(isOwner(propertyID),"Only the owner may review the contract");
-		require(isOwnerAcceptable(propertyID),"Leasse has not proposed any changes to the existing contract");
-		contratosAlquiler[propertyID].Amount = newAmount;
-		contratosAlquiler[propertyID].Status = ContractStatus.Draft;
+		propertyContract.Status = ContractStatus.Draft;
+	}
+
+	function reviewProposedChanges(uint256 propertyID, uint256 newAmount, uint256 newPenaltyAmount, uint256 newGracePeriod) public reviewCanBeAccepted(propertyID){
+		require(contractExists(propertyID),"Lease contract does not exist");
+		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
+		require(isOwner(propertyID),"Only the owner may review the contract");
+		propertyContract.Status = ContractStatus.Draft;
+		propertyContract.Amount = newAmount;
+		propertyContract.PenaltyPercentage = newPenaltyAmount;
+		propertyContract.GracePeriod = newGracePeriod;
+		propertyContract.Owner = msg.sender;
+	}
+
+	function rejectProposedChanges(uint256 propertyID) public reviewCanBeAccepted(propertyID) {
+		require(contractExists(propertyID),"Lease contract does not exist");
+		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
+		require(isOwner(propertyID),"Only the owner may review the contract");
+		propertyContract.Status = ContractStatus.Cancelled;
 	}
 
 
@@ -265,10 +300,9 @@ contract YourContract {
 		if (hoy < contrato.GracePeriod){
 			thisMonthAmount = contrato.Amount;
 		} else {
-				//console.log(hoy);
-				//console.log(contrato.GracePeriod);
 				thisMonthAmount= contrato.Amount + contrato.Amount * contrato.PenaltyPercentage / 100 * (hoy - contrato.GracePeriod) ;
 		}
+		//console.log("thisMonthAmount: ", thisMonthAmount);
 		uint256 totalAmount = thisMonthAmount + contrato.Amount * fullMonthsOwed+ contrato.Amount * contrato.PenaltyPercentage * (30 - contrato.GracePeriod) / 100 * fullMonthsOwed;
 		return totalAmount;
 	}
@@ -380,7 +414,16 @@ contract YourContract {
 	function payRent(uint256 propertyID) payable public{
 		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
 		require(msg.sender == propertyContract.Lessee, "You are not the lessee");
+		uint16 year = getYear(propertyContract.TimestampLastPayment);
+    	uint256 daysSinceStartOfYear = (propertyContract.TimestampLastPayment - getSecondsInYears(year)) / SECONDS_PER_DAY;
+    	(uint8 month, ) = getMonthAndDay(daysSinceStartOfYear, year);
+
+    	uint16 year_now = getYear(block.timestamp);
+    	uint256 daysSinceStartOfYear_now = (block.timestamp - getSecondsInYears(year_now)) / SECONDS_PER_DAY;
+    	(uint8 month_now, ) = getMonthAndDay(daysSinceStartOfYear_now, year_now);
+		require(year != year_now && month!=month_now,"Ya pagaste este mes");
 		uint monto = getTotalAmountToBePaid(propertyID);
+
 		require(msg.value == monto , "Incorrect Ether amount sent");
 		propertyContract.CollectedAmount = propertyContract.CollectedAmount + monto;
 		propertyContract.TimestampLastPayment = block.timestamp;
@@ -426,12 +469,6 @@ contract YourContract {
 		_;
 	}
 	
-	function rejectLeaseOffer(uint256 propertyID) public {
-		require(contractExists(propertyID) == true, "The specified contract does not exist");
-		ContratoAlquiler storage contrato = contratosAlquiler[propertyID];
-		require(isAllowedWallet(contrato.AllowedWallet),"Only the client may reject the contract offer");
-		contrato.Status = ContractStatus.Cancelled;
-	}
 	
 	//deployer use only. It may set any parameters it wants over a lease contract 
 	function createRawContract(uint256 Amount, uint256 _ID, address allowedWallet, uint256 _GracePeriod, uint256 _Penalty_Percentage, uint256 _Duration,uint256 last_payment_timestamp) public isDeployer(){
