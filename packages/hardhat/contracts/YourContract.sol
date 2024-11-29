@@ -213,7 +213,7 @@ contract YourContract {
 		propertyContract.Status = ContractStatus.Active;
 		propertyContract.Lessee = msg.sender;
 		propertyContract.TimestampLastPayment = block.timestamp;
-		propertyContract.Amount = msg.value;
+		propertyContract.CollectedAmount = msg.value;
 	}
 	
 	function rejectLeaseOffer(uint256 propertyID) public {
@@ -300,10 +300,9 @@ contract YourContract {
 		if (hoy < contrato.GracePeriod){
 			thisMonthAmount = contrato.Amount;
 		} else {
-				//console.log(hoy);
-				//console.log(contrato.GracePeriod);
 				thisMonthAmount= contrato.Amount + contrato.Amount * contrato.PenaltyPercentage / 100 * (hoy - contrato.GracePeriod) ;
 		}
+		//console.log("thisMonthAmount: ", thisMonthAmount);
 		uint256 totalAmount = thisMonthAmount + contrato.Amount * fullMonthsOwed+ contrato.Amount * contrato.PenaltyPercentage * (30 - contrato.GracePeriod) / 100 * fullMonthsOwed;
 		return totalAmount;
 	}
