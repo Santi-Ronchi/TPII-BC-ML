@@ -1,15 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
-import Link from "next/link";
-//import { useRouter } from "next/router";
-//import { IntegerVariant, isValidInteger } from "../scaffold-eth";
-import { formatEther, isAddress, parseEther } from "viem";
-import { useAccount, useClient } from "wagmi";
-//import { useScaffoldContractWrite, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth";
+import { useState } from "react";
+import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { AddressInput, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
-import { addDoc, collection, setDoc, doc } from "firebase/firestore";
+import { addDoc, collection, setDoc, doc, query, where, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../loginPage/firebase";
 
 
@@ -26,7 +20,8 @@ export const CrearContratoAlquiler = () => {
   const [ethAmount, setEthAmount] = useState("");
   const [txValue, setTxValue] = useState<string | bigint>("");
 
-    const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
+  const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
+  const refId = collection(db, "Siguiente-ID");
 
     return(
 
@@ -54,15 +49,6 @@ export const CrearContratoAlquiler = () => {
       <label className="text-md font-bold text-white">Rentador</label>
       <AddressInput onChange={setLesseAddress} value={lesseAddress} placeholder="Ingrese billetera del inquilino" />
       <br />
-      <label className="text-md font-bold text-white">ID de la propiedad</label>
-      <IntegerInput
-        value={txValue}
-        onChange={updatedTxValue => {
-          setTxValue(updatedTxValue);
-        }}
-        placeholder="ID de la propiedad"
-      />
-      <br />
       <label className="text-lg font-bold text-white">Precio</label>
       <EtherInput value={ethAmount} onChange={amount => setEthAmount(amount)} placeholder="Ingrese precio del contrato" />
       <br />
@@ -87,14 +73,20 @@ export const CrearContratoAlquiler = () => {
         style={{ backgroundColor: '#8c376c' }}
         onClick={async () => {
           try {
+            const maxIdRef = doc(db, "Siguiente-ID", 'siguiente-id');
+            let idSnapshot = await getDoc(maxIdRef);
+            let maxID = idSnapshot.data().id;
+            const nextId = maxID +1 ;
+            updateDoc(maxIdRef,{id: nextId});
+
             await writeYourContractAsync({
-              functionName: "CrearContrato",
-              args: [ethAmount, txValue, lesseAddress, paymentPeriod, interestRate, contractDuration]
+              functionName: "createContract",
+              args: [ethAmount, BigInt(maxID), lesseAddress, paymentPeriod, interestRate, contractDuration]
             }).then(async () => {
               if (auth.currentUser) {
                 try {
-                  const txValue_str = typeof txValue === 'bigint' ? txValue.toString() : txValue;
-                  const docRef = doc(db, "Contratos", txValue_str);
+                  //const txValue_str = typeof txValue === 'bigint' ? txValue.toString() : txValue;
+                  const docRef = doc(db, "Contratos", maxID.toString());
                   setDoc(docRef, {
                     ownerAddress: connectedAddress,//ownerAddress,
                     lesseAddress: lesseAddress,
@@ -104,6 +96,8 @@ export const CrearContratoAlquiler = () => {
                     duration: contractDuration,
                     state: "Draft"
                   });
+
+                  
                 }
                 catch (e_1) {
                   console.error("Error setting greeting:", e_1);
