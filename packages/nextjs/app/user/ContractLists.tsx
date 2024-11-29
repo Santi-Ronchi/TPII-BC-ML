@@ -6,6 +6,7 @@ import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { usePayRent } from "~~/hooks/darpaHooks";
 import Servicios from "../servicios/Servicios";
 import { useRouter } from "next/navigation";
+import AmountToPay from "./AmountToPay";
 
 interface ContractListsProps {
     contracts: Contract[];
@@ -21,10 +22,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
     setSelectedPropertyId(selectedPropertyId === propertyId ? null : propertyId);
   };
 
-  const handlePayRent = (propertyId: string) => {
-    const bigIntPropId = BigInt(propertyId);
-    payRent(bigIntPropId);
-  }
+  
 
   const { address: connectedAddress } = useAccount();
 
@@ -86,10 +84,8 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
 
                       {contract.state == "Active" && (
                         <div className="mt-4 flex gap-4">
-                            <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                              onClick={() => handlePayRent(contract.id)}>
-                              Pagar Renta
-                            </button>
+                            <AmountToPay contractId={BigInt(contract.id)}></AmountToPay>
+                            
                             <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
                               onClick={() => handleContractChange(BigInt(contract.id), "CancelationPropopsedByLessee", BigInt(contract.amount), "proposeContractCancelationMutualAgreementLessee")}>
                               Rescindir Contrato
