@@ -5,10 +5,8 @@ import { User, Contract } from "../../types/utils";
 import { db } from "./firebase";
 import { doc, getDoc, getDocs, collection, query, where, updateDoc } from "firebase/firestore";
 import ContractLists from './ContractLists';
-import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
-
 
 interface UserProfileProps {
   userId: string;
@@ -189,7 +187,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
         const stringId = contractId.toString();
         const contractRef = doc(db, "Contratos", stringId);
         await updateDoc(contractRef, { state: newStatus });
-        console.log(`Contract ${contractId} state updated to ${newStatus}.`);
+
       }catch (e){
         console.error("Error accepting contract:", e);
       }
