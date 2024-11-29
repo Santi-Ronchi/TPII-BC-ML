@@ -1,9 +1,11 @@
 import os
+from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 import numpy as np
 import pandas as pd
+import requests
 
 app = Flask(__name__)
 CORS(app) 
@@ -207,6 +209,28 @@ def promedio_propiedades_con_patio_o_terraza(df_propiedades):
         promedio_propiedad_con_patio_o_terraza = (len(promedio_propiedad_con_patio_o_terraza) / len(df_propiedades)) * 100
         return round(promedio_propiedad_con_patio_o_terraza,2)
     return 0 
+
+def get_val():
+    url = "https://dolarhoy.com" 
+    response = requests.get(url)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        val_div = soup.select_one('.venta .val')
+        if val_div:
+            val_text = val_div.text.strip() 
+            val_int = int(val_text.replace('$', '').replace(',', '')) 
+            print(val_int)
+            return val_int
+    return None
+
+@app.route('/api/dolar', methods=['GET'])
+def get_venta():
+    val = get_val()
+    if val is not None:
+        return jsonify({'venta': val}), 200
+    else:
+        return jsonify({'error': 'No se pudo obtener el dato'}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

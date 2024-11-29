@@ -78,6 +78,7 @@ const LoginPage: NextPage = () => {
       }
 
       alert("Login exitoso");
+      router.push("./")
     } catch (error) {
       console.error("Error en el login:", error);
 

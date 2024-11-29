@@ -88,7 +88,7 @@ export const CrearContratoAlquiler = () => {
         onClick={async () => {
           try {
             await writeYourContractAsync({
-              functionName: "CrearContrato",
+              functionName: "createContract",
               args: [ethAmount, txValue, lesseAddress, paymentPeriod, interestRate, contractDuration]
             }).then(async () => {
               if (auth.currentUser) {
