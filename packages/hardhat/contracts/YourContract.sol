@@ -421,9 +421,9 @@ contract YourContract {
     	uint16 year_now = getYear(block.timestamp);
     	uint256 daysSinceStartOfYear_now = (block.timestamp - getSecondsInYears(year_now)) / SECONDS_PER_DAY;
     	(uint8 month_now, ) = getMonthAndDay(daysSinceStartOfYear_now, year_now);
+		require(year != year_now && month!=month_now,"Ya pagaste este mes");
 		uint monto = getTotalAmountToBePaid(propertyID);
 
-		require(year != year_now && month!=month_now,"Ya pagaste este mes");
 		require(msg.value == monto , "Incorrect Ether amount sent");
 		propertyContract.CollectedAmount = propertyContract.CollectedAmount + monto;
 		propertyContract.TimestampLastPayment = block.timestamp;

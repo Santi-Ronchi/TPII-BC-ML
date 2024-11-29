@@ -181,6 +181,10 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
                                 onClick={() => handleContractChange(BigInt(contract.id), "CancelationProposedByOwner", BigInt(contract.amount), "proposeContractCancelationMutualAgreementOwner")}>
                                 Rescindir Contrato
                               </button>
+                              <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                    onClick={() => handleContractChange(BigInt(contract.id), "Active", 0n, "withdraw")}>
+                                    Withdraw
+                              </button>
                           </div>
                         )}
 
