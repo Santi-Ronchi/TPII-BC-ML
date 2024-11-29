@@ -414,7 +414,16 @@ contract YourContract {
 	function payRent(uint256 propertyID) payable public{
 		ContratoAlquiler storage propertyContract = contratosAlquiler[propertyID];
 		require(msg.sender == propertyContract.Lessee, "You are not the lessee");
+		uint16 year = getYear(propertyContract.TimestampLastPayment);
+    	uint256 daysSinceStartOfYear = (propertyContract.TimestampLastPayment - getSecondsInYears(year)) / SECONDS_PER_DAY;
+    	(uint8 month, ) = getMonthAndDay(daysSinceStartOfYear, year);
+
+    	uint16 year_now = getYear(block.timestamp);
+    	uint256 daysSinceStartOfYear_now = (block.timestamp - getSecondsInYears(year_now)) / SECONDS_PER_DAY;
+    	(uint8 month_now, ) = getMonthAndDay(daysSinceStartOfYear_now, year_now);
 		uint monto = getTotalAmountToBePaid(propertyID);
+
+		require(year != year_now && month!=month_now,"Ya pagaste este mes");
 		require(msg.value == monto , "Incorrect Ether amount sent");
 		propertyContract.CollectedAmount = propertyContract.CollectedAmount + monto;
 		propertyContract.TimestampLastPayment = block.timestamp;
