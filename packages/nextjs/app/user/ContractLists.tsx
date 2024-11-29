@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import { Contract } from "../../types/utils";
-import { db } from "./firebase";
-import { doc, updateDoc } from "firebase/firestore";
 import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { usePayRent } from "~~/hooks/darpaHooks";
 import Servicios from "../servicios/Servicios";
 import { useRouter } from "next/navigation";
+import AmountToPay from "./AmountToPay";
 
 interface ContractListsProps {
     contracts: Contract[];
@@ -16,13 +16,15 @@ interface ContractListsProps {
 const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContractChange }) => {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const router = useRouter();
+  const { payRent } = usePayRent();
 
   const handleButtonClick = (propertyId: string) => {
     setSelectedPropertyId(selectedPropertyId === propertyId ? null : propertyId);
   };
 
+  
+
   const { address: connectedAddress } = useAccount();
-  const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
 
     return(
         <div className="w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md">
@@ -82,10 +84,12 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
 
                       {contract.state == "Active" && (
                         <div className="mt-4 flex gap-4">
+                            <AmountToPay contractId={BigInt(contract.id)}></AmountToPay>
+                            
                             <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
-                                onClick={() => handleContractChange(BigInt(contract.id), "CancelationPropopsedByLessee", BigInt(contract.amount), "proposeContractCancelationMutualAgreementLessee")}>
-                                Rescindir Contrato
-                              </button>
+                              onClick={() => handleContractChange(BigInt(contract.id), "CancelationPropopsedByLessee", BigInt(contract.amount), "proposeContractCancelationMutualAgreementLessee")}>
+                              Rescindir Contrato
+                            </button>
                         </div>
                       )}
 

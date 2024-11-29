@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           inputs: [
@@ -91,47 +91,37 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
+              name: "_ID",
+              type: "uint256",
+            },
+          ],
+          name: "acceptContractCancelationPropopsitionLessee",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_ID",
+              type: "uint256",
+            },
+          ],
+          name: "acceptContractCancelationPropopsitionOwner",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
               name: "propertyID",
               type: "uint256",
             },
           ],
           name: "acceptProposedChanges",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-            {
-              internalType: "bool",
-              name: "accept",
-              type: "bool",
-            },
-          ],
-          name: "answerContractCancelationPropopsitionLessee",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-            {
-              internalType: "bool",
-              name: "accept",
-              type: "bool",
-            },
-          ],
-          name: "answerContractCancelationPropopsitionOwner",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -492,49 +482,11 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-          ],
-          name: "isLesseeAcceptable",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
               name: "propertyID",
               type: "uint256",
             },
           ],
           name: "isOwner",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_ID",
-              type: "uint256",
-            },
-          ],
-          name: "isOwnerAcceptable",
           outputs: [
             {
               internalType: "bool",
@@ -646,6 +598,32 @@ const deployedContracts = {
             },
           ],
           name: "proposeContractCancelationMutualAgreementOwner",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_ID",
+              type: "uint256",
+            },
+          ],
+          name: "rejectContractCancelationPropopsitionLessee",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_ID",
+              type: "uint256",
+            },
+          ],
+          name: "rejectContractCancelationPropopsitionOwner",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
