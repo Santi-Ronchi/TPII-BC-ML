@@ -18,13 +18,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-<div className="flex flex-col min-h-screen" style={{
-  backgroundImage: 'url(./llaves.jpg), linear-gradient(rgba(203, 207, 211, 0.5), rgba(203, 207, 211, 0.5))',
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  backgroundRepeat: 'no-repeat',
-  backgroundBlendMode: 'overlay'
-}}>
+<div className="flex flex-col min-h-screen">
           <Header />
         <main className="relative flex flex-col flex-1">{children}</main>
         <Footer />

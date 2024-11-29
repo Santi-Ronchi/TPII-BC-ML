@@ -30,7 +30,7 @@ const fetchWalletsAndContracts = async (userEmail: string): Promise<{
 }> => {
   let walletArray: string[] = [];
   let contractArray: Contract[] = [];
-  
+
   try {
     // Fetch wallets
     const walletRef = collection(db, "Email-Wallets");
@@ -167,24 +167,31 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
     <div
       className="p-8 shadow-xl rounded-lg max-w-7xl mx-auto min-h-screen flex flex-col items-center"
       style={{
-        background: "linear-gradient(to right, #e5a073, #cc6164, #d4789b, #ae7ca3)",
+        backgroundColor: 'rgba(203, 207, 211, 0.5)',
+        backgroundImage: 'url(cuarto_3.jpg)',
+        backgroundSize: 'cover', // Ajusta el tamaño de la imagen para que cubra todo el elemento
+        backgroundRepeat: 'no-repeat', // Evita que la imagen se repita
+        backgroundPosition: 'center' // Centra la imagen
       }}
     >
       {/* User Email */}
-      <div className="text-center mb-10">
-        <p className="text-2xl font-semibold text-white">
-          Email del usuario:{" "}
-          <span className="text-yellow-300">{user.userEmail}</span>
+      <div className="text-center mb-10 px-6">
+        <p className="text-xl font-medium text-gray-700 md:text-4xl lg:text-4xl">
+          <span className="block text-gray-500">Apreciamos su confianza</span>
+          <span className="text-gray-800 font-semibold">
+            {user.userEmail}
+          </span>
         </p>
       </div>
-  
+
+
       {/* Wallets Section */}
-      <div className="mb-12 w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md">
+      <div className="mb-12 w-full bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 p-6 rounded-lg shadow-md" style={{ backgroundColor: 'rgba(203, 207, 211, 0.5)' }}>
         <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 border-b-2 border-gray-300 dark:border-gray-700 pb-3 mb-4">
-          Wallets
+          Mis billeteras
         </h3>
         {Array.isArray(user.walletAddr) && user.walletAddr.length > 0 ? (
-          <ul className="space-y-4">
+          <ul className="space-y-4" style={{ backgroundColor: 'rgba(203, 207, 211, 0.5)' }}>
             {user.walletAddr.map((wallet, index) => (
               <li
                 key={index}

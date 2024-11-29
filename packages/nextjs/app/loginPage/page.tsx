@@ -180,30 +180,16 @@ const LoginPage: NextPage = () => {
 
                 <div
                   className="flex items-center rounded-b-lg lg:w-6/12 lg:rounded-r-lg lg:rounded-bl-none"
-                  style={{
-                    backgroundImage: 'url(./llaves.jpg)',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                  }}
                 >
-                  <div className="px-4 py-6 text-white md:mx-6 md:p-12" style={{ marginTop: '-400px', marginLeft: '200px', position: 'absolute', backgroundColor: 'rgba(203, 207, 211, 0.5)', borderRadius: '10px' }}>
-                    {/*<div className="container">
-                          <img src="./ARPA-LOGIN-noback.png" alt="logo" className="logo" />
-                        </div>
-                        */}
-                    <h4 className="mb-6 font-semibold" style={{ fontSize: '30px', color: '#8c376c' }}>
-                      Es más que solo un alquiler
-                    </h4>
-                    {/*<p className="text-sm font-bold">
-                          En ARPA nos ocupamos de darte la mejor experiencia a la hora de alquilar,
-                          tanto si sos inquilino como si sos propietario, queremos facilitar el proceso
-                          para que nadie se quede con bronca, completa transparencia en los contratos
-                          gracias al poder de la blockchain y las mejores recomendaciones de precios con
-                          MaLe, nuestro asesor virtual inteligente.
-                        </p>*/
-                    }
-                  </div>
+                  <video
+                    autoPlay
+                    muted
+                    loop
+                    className="w-full max-h-[800px] object-cover rounded-b-lg lg:rounded-r-lg lg:rounded-bl-none"
+                  >
+                    <source src="./video1.mp4" type="video/mp4" />
+                    Tu navegador no soporta el elemento de video.
+                  </video>
                 </div>
 
               </div>
@@ -215,13 +201,5 @@ const LoginPage: NextPage = () => {
       </p>
     </section>
   );
-  //  }
-  /*  else {
-      return (
-        <section className="h-screen flex items-center justify-center">
-          <p>Por favor, completa el formulario para iniciar sesión.</p>
-        </section>
-      );
-    }*/
 };
 export default LoginPage;

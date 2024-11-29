@@ -3,12 +3,13 @@ import React from 'react';
 import UserProfile from './UserProfile';
 import { NextPage } from 'next';
 import { UserProvider, useUser } from './UserContext';
+import UserSinConexion from './UserSinConexion';
 
 
 const UserPage: NextPage = () => {
   const { email } = useUser();
   
-  if (!email) return <p>Debe iniciar sesion para ver la informacion de usuario.</p>;
+  if (!email) return <div> <UserSinConexion></UserSinConexion></div>;
 
   return (
     <><div> 

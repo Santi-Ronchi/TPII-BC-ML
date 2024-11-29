@@ -6,7 +6,6 @@
   
 .logo {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(100%, -200%);
+    top: 10%;
+    left: 60%;
   }

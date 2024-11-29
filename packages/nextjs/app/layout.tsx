@@ -6,7 +6,7 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 import { UserProvider } from "./user/UserContext";
 
 export const metadata = getMetadata({
-  title: "DARPA | Un hogar con tu identidad",
+  title: "ARPA | Un hogar con tu identidad",
   description: "Built with 🏗 Scaffold-ETH 2",
 });
 

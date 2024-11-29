@@ -1,0 +1,21 @@
+.text-darpa {
+    font-family: 'Poppins', sans-serif; 
+    font-size: 24px;                   
+    color: #7A7A7A;                 
+    text-align: center;              
+    margin-top: 20px;                
+    line-height: 1.6;                
+  }
+
+.text-modern {
+    font-family: 'Poppins', sans-serif;
+    font-size: 64px;                   /* Letras grandes */
+    font-weight: bold;                 /* Peso de la letra */
+    text-align: center;                /* Centrar el texto */
+    background: linear-gradient(90deg, #FFB6C1, #ADD8E6, #E6E6FA); /* Degradado pastel */
+    -webkit-background-clip: text;     /* Clip de fondo para texto */
+    -webkit-text-fill-color: transparent; /* Relleno transparente para el degradado */
+    margin: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+  }
+  
