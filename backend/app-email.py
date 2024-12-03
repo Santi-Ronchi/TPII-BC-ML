@@ -127,7 +127,7 @@ def send_email(transaction_details, emails):
             {
                 "From": {
                     "Email": email,
-                    "Name": "ARPA"
+                    "Name": "DARPA"
                 },
                 "To": to_emails,
                 "Subject": "Detalles del contrato de alquiler",

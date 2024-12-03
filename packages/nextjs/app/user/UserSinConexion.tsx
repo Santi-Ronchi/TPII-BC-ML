@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import "./user.css"
+import "./User.css"
 
 const UserSinConexion = () => {
     const router = useRouter();

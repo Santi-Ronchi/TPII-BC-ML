@@ -23,7 +23,7 @@ const SobreNosotros = () => {
                                                 A través del uso de la tecnología blockchain, garantizamos contratos de alquiler seguros, transparentes y a prueba de manipulaciones, brindando confianza tanto a propietarios como a inquilinos. Además, contamos con un avanzado servicio de tasación de alquileres, que utiliza datos precisos y análisis inteligentes para determinar valores justos y competitivos en el mercado.
                                             </p>
                                             <p className="text-lg leading-relaxed text-gray-700 max-w-4xl text-center mt-4">
-                                                En <span className="font-bold text-purple-600">Arpa</span>, combinamos tecnología y experiencia para redefinir la manera en que gestionas tus inmuebles.
+                                                En <span className="font-bold text-purple-600">Darpa</span>, combinamos tecnología y experiencia para redefinir la manera en que gestionas tus inmuebles.
                                             </p>
                                         </section>
 

@@ -24,7 +24,7 @@ const CrearAlquiler: NextPage = () => {
             Podrás retirar el dinero del contrato a tu billetera conectada cuando un inquilino lo deposite.
             <br /> Con amor,{" "}
             <code className="italic bg-base-300 text-base font-bold [word-spacing:-0.5rem] px-1">
-                El equipo de ARPA
+                El equipo de DARPA
             </code>{" "}
             </p>
         </div>
