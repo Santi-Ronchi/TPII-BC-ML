@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { NextPage } from 'next';
-import { db } from './firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { dataServicios } from '~~/types/utils';
+import React, { useEffect, useState } from "react";
+import { db } from "./firebase";
+import axios from "axios";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { NextPage } from "next";
+import { dataServicios } from "~~/types/utils";
 
 const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
-  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-  const [numeroCuenta, setNumeroCuenta] = useState<string>(''); 
-  const [servicio, setServicio] = useState<keyof dataServicios>('AYSA'); 
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const [numeroCuenta, setNumeroCuenta] = useState<string>("");
+  const [servicio, setServicio] = useState<keyof dataServicios>("AYSA");
   const [postResponse, setPostResponse] = useState<string | null>(null);
   const [_getResponse, setGetResponse] = useState<string | null>(null);
   const [parsedGetResponse, setParsedGetResponse] = useState<{
@@ -19,12 +19,12 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
   const [error, setError] = useState<string | null>(null);
   const [leerServicio, setLeerServicio] = useState<dataServicios | null>(null);
 
-  const postUrl = '/api/update-balance';
-  const getUrl = '/api/get-balance';
+  const postUrl = "/api/update-balance";
+  const getUrl = "/api/get-balance";
 
   const handleRequest = async () => {
-    console.log('Servicio seleccionado:', servicio);
-    console.log('Número de cuenta:', numeroCuenta);
+    console.log("Servicio seleccionado:", servicio);
+    console.log("Número de cuenta:", numeroCuenta);
 
     const requestBody = {
       servicio,
@@ -32,7 +32,7 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
     };
 
     try {
-      const tableName = 'Servicios';
+      const tableName = "Servicios";
       const userDoc = doc(db, tableName, propiedadId);
       const userSnapshot = await getDoc(userDoc);
 
@@ -51,7 +51,7 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
       }
 
       const postResult = await axios.post(postUrl, requestBody, {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
       setPostResponse(JSON.stringify(postResult.data, null, 2));
 
@@ -59,7 +59,7 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
 
       const getResult = await axios.get(getUrl, {
         params: requestBody,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
       const getResponseData = getResult.data;
 
@@ -77,12 +77,12 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
 
   const fetchUserData = async (propiedadId: string): Promise<dataServicios | null> => {
     try {
-      const tableName = 'Servicios';
+      const tableName = "Servicios";
       const userDoc = doc(db, tableName, propiedadId);
       const userSnapshot = await getDoc(userDoc);
       return userSnapshot.exists() ? (userSnapshot.data() as dataServicios) : null;
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
       return null;
     }
   };
@@ -98,9 +98,9 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
 
   useEffect(() => {
     if (leerServicio && servicio) {
-      setNumeroCuenta(leerServicio[servicio] || '');
+      setNumeroCuenta(leerServicio[servicio] || "");
     } else {
-      setNumeroCuenta('');
+      setNumeroCuenta("");
     }
   }, [servicio, leerServicio]);
 
@@ -109,11 +109,7 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
       <h1>Consulte el estado de cuenta de los servicios asociados a su propiedad</h1>
       <div>
         <label htmlFor="servicio">Seleccione el servicio: </label>
-        <select 
-          id="servicio" 
-          value={servicio} 
-          onChange={(e) => setServicio(e.target.value as keyof dataServicios)} 
-        >
+        <select id="servicio" value={servicio} onChange={e => setServicio(e.target.value as keyof dataServicios)}>
           <option value="AYSA">AYSA</option>
           <option value="EDESUR">EDESUR</option>
         </select>
@@ -121,42 +117,39 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
 
       <div>
         <label htmlFor="numeroCuenta">Número de cuenta: </label>
-        <input
-          id="numeroCuenta"
-          type="text"
-          value={numeroCuenta}
-          onChange={(e) => setNumeroCuenta(e.target.value)} 
-        />
+        <input id="numeroCuenta" type="text" value={numeroCuenta} onChange={e => setNumeroCuenta(e.target.value)} />
       </div>
-      
-      <button onClick={() => handleRequest()}
-                        style={{
-                          padding: '8px 16px',
-                          marginTop: '10px',
-                          backgroundColor: '#007BFF',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                        }}
-                        >Realizar consulta</button>
 
-      <pre>{postResponse!= null ? 'Consulta enviada. Por favor aguarde unos segundos.' : ''}</pre>
+      <button
+        onClick={() => handleRequest()}
+        style={{
+          padding: "8px 16px",
+          marginTop: "10px",
+          backgroundColor: "#007BFF",
+          color: "#fff",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        Realizar consulta
+      </button>
+
+      <pre>{postResponse != null ? "Consulta enviada. Por favor aguarde unos segundos." : ""}</pre>
 
       {error && <div>No fue posible obtener la infomacion solicitada</div>}
 
       {parsedGetResponse && (
         <div>
-          {Number(parsedGetResponse.saldo?.replace('.', '').replace(',', '.')) > 0 ? (
+          {Number(parsedGetResponse.saldo?.replace(".", "").replace(",", ".")) > 0 ? (
             <p>
-              El cliente de <strong>{parsedGetResponse.servicio}</strong> número{' '}
-              <strong>{parsedGetResponse.numeroCuenta}</strong> tiene un saldo pendiente de{' '}
-              <strong>{parsedGetResponse.saldo?.replace('.', '').replace(',', '.')}</strong>.
+              El cliente de <strong>{parsedGetResponse.servicio}</strong> número{" "}
+              <strong>{parsedGetResponse.numeroCuenta}</strong> tiene un saldo pendiente de{" "}
+              <strong>{parsedGetResponse.saldo?.replace(".", "").replace(",", ".")}</strong>.
             </p>
           ) : (
             <p>
-              No se adeuda saldo pendiente para el cliente número{' '}
-              <strong>{parsedGetResponse.numeroCuenta}</strong>.
+              No se adeuda saldo pendiente para el cliente número <strong>{parsedGetResponse.numeroCuenta}</strong>.
             </p>
           )}
         </div>
