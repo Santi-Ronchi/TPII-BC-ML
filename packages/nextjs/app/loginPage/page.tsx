@@ -19,21 +19,13 @@ const LoginPage: NextPage = () => {
   const { address: connectedAddress } = useAccount();
   const router = useRouter();
 
-  function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setUserName(event.target.value);
-  }
-
-  function handlePasswordChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setPassword(event.target.value);
-  }
-
 
 
   async function login(email: string, password: string): Promise<void> {
     try {
       // Iniciar sesión con Firebase Authentication
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      /* const userCredential =*/ await signInWithEmailAndPassword(auth, email, password);
+      //const user = userCredential.user;
       setEmail(email);
 
       if (!connectedAddress) {

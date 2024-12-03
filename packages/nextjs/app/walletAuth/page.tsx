@@ -13,16 +13,12 @@ import { useAccount } from "wagmi";
 
 const WalletAuth: NextPage = () => {
   const { address: connectedAddress } = useAccount();
-  const { data: signMessageData, error, signMessage, variables } = useSignMessage();
+  const { data: signMessageData, signMessage } = useSignMessage();
   const [userName, setUserName] = useState("");
   const [emailSet, setEmailInput] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
   const router = useRouter();
   const { setEmail } = useUser();
-
-  function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setUserName(event.target.value);
-  }
 
   async function requestLogin(signedMsg: string, walletAddr: string, msg: string) {
     const url = "https://darpabackofficeservice.onrender.com/login/walletLogin";
@@ -48,13 +44,12 @@ const WalletAuth: NextPage = () => {
           localStorage.setItem("DarpaToken", token);
           localStorage.setItem("DarpaConnectedWallet", walletAddr);
           alert("Signed in");
-          console.log("signed in");
+          console.log("signed in as:", user);
         })
         .catch(error => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          console.log("error de autenticacion");
-          // ...
+          console.log("error de autenticacion codigo:", errorCode, "mensaje de error:", errorMessage);
         });
       //Tras conectarse, revisar que el mail este en la base de datos
       const ref = collection(db, "Wallet-email");

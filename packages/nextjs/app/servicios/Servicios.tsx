@@ -10,7 +10,7 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
   const [numeroCuenta, setNumeroCuenta] = useState<string>("");
   const [servicio, setServicio] = useState<keyof dataServicios>("AYSA");
   const [postResponse, setPostResponse] = useState<string | null>(null);
-  const [_getResponse, setGetResponse] = useState<string | null>(null);
+  const [, setGetResponse] = useState<string | null>(null);
   const [parsedGetResponse, setParsedGetResponse] = useState<{
     servicio?: string;
     numeroCuenta?: string;

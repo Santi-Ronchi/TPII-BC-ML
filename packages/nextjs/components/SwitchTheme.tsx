@@ -2,21 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
+//import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 export const SwitchTheme = ({ className }: { className?: string }) => {
-  const { setTheme, resolvedTheme } = useTheme();
+  const { /*setTheme,*/ resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   const isDarkMode = resolvedTheme === "dark";
 
-  const handleToggle = () => {
+  /*const handleToggle = () => {
     if (isDarkMode) {
       setTheme("light");
       return;
     }
     setTheme("dark");
-  };
+  };*/
 
   useEffect(() => {
     setMounted(true);

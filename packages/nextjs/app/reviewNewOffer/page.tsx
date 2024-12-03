@@ -53,7 +53,7 @@ export const ProposeNewOfferPage = () => {
       <AddressInput
         value={contractIdString}
         placeholder="Ingrese el ID del contrato"
-        onChange={function (newValue: string): void {
+        onChange={function (): void {
           throw new Error("Function not implemented.");
         }}
       />

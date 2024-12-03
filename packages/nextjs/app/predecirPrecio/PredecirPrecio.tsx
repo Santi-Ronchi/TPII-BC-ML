@@ -23,7 +23,7 @@ export const PredecirPrecio = () => {
       aptoMascotaPorcentaje: number;
       piletaPorcentaje: number;
     };
-  };
+  }
 
 
   const [superficie_total, setSuperficie_total] = useState<string>("");

@@ -29,14 +29,12 @@ async function requestLogin(walletAddr: string, signatureMessage: string) {
       .then(userCredential => {
         // Signed in
         const user = userCredential.user;
-        console.log("signed in");
-        // ...
+        console.log("signed in as:", user);
       })
       .catch(error => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log("error de login");
-        // ...
+        console.log("error de login codigo:", errorCode, "mensaje de error:", errorMessage);
       });
   } catch (error) {
     console.log("error.message");
