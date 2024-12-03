@@ -29,7 +29,7 @@ const fetchWalletsAndContracts = async (userEmail: string): Promise<{
   contracts: Contract[];
 }> => {
   let walletArray: string[] = [];
-  let contractArray: Contract[] = [];
+  const contractArray: Contract[] = [];
 
   try {
     // Fetch wallets
@@ -72,7 +72,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   const [contracts, setContracts] = useState<Contract | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingWallets, setLoadingWallets] = useState<boolean>(true);
-  const [userWallets, setUserWallets] = useState<String | null>(null);
+  const [, setUserWallets] = useState<string | null>(null);
   const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
 
   const refreshData = async () => {
@@ -135,7 +135,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
 
           //Recuperacion de contratos
           const ref = collection(db, 'Contratos');
-          let contractArray = [];
+          const contractArray = [];
           for (const aWallet of walletArray) {
             //console.log(aWallet);
             const queryContracts = query(ref, where("ownerAddress", "==", aWallet));
@@ -153,7 +153,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
               };
               contractArray.push(contractData);
             });
-          };
+          }
           setContracts(contractArray);
         }
         catch (error) {
@@ -169,7 +169,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
 
 
   const handleContractChange = async (contractId: bigint, newStatus: string, amount: bigint, functionToCall: string) => {
-      let doubleAmount = (BigInt(amount) + BigInt(amount));
+      const doubleAmount = (BigInt(amount) + BigInt(amount));
       try {
         if (functionToCall == "acceptContract"){
           await writeYourContractAsync({
