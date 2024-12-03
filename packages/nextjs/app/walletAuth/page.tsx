@@ -1,14 +1,12 @@
 'use client';
 import type { NextPage } from "next";
-import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 import React from "react";
 import { useState } from 'react';
-import { set } from "nprogress";
 import { useSignMessage } from 'wagmi'
 import { useAccount } from "wagmi";
 import { auth, db } from "../loginPage/firebase";
 import { signInWithCustomToken } from "firebase/auth";
-import { addDoc, collection, setDoc, doc, query, where, getDocs, getCountFromServer } from "firebase/firestore";
+import { collection, setDoc, doc, query, where, getDocs } from "firebase/firestore";
 import { useUser } from "../user/UserContext";
 import { useRouter } from "next/navigation";
 

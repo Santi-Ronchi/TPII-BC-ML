@@ -3,13 +3,11 @@ import { useState } from "react";
 import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { AddressInput, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
-import { addDoc, collection, setDoc, doc, query, where, getDoc, updateDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../loginPage/firebase";
 
 
 export const CrearContratoAlquiler = () => {
-  const userAccount = useAccount();
-
 
   const { address: connectedAddress } = useAccount();
   const [lesseAddress, setLesseAddress] = useState("");
@@ -18,13 +16,10 @@ export const CrearContratoAlquiler = () => {
   const [contractDuration, setContractDuration] = useState<string | bigint>("");
 
   const [ethAmount, setEthAmount] = useState("");
-  const [txValue, setTxValue] = useState<string | bigint>("");
 
   const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("YourContract");
-  const refId = collection(db, "Siguiente-ID");
 
-    return(
-
+  return(
     <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10" 
       style={{ 
         backgroundColor: 'rgba(203, 207, 211, 0.5)',
@@ -81,7 +76,7 @@ export const CrearContratoAlquiler = () => {
 
             await writeYourContractAsync({
               functionName: "createContract",
-              args: [ethAmount, BigInt(maxID), lesseAddress, paymentPeriod, interestRate, contractDuration]
+              args: [BigInt(ethAmount), BigInt(maxID), lesseAddress, BigInt(paymentPeriod), BigInt(interestRate), BigInt(contractDuration)]
             }).then(async () => {
               if (auth.currentUser) {
                 try {

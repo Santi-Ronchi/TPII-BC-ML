@@ -83,7 +83,7 @@ export const ProposeNewOfferPage = () => {
           try {
             await writeYourContractAsync({
               functionName: "proposeChanges",
-              args: [contractId,ethAmount,interestRate,paymentPeriod]
+              args: [BigInt(contractIdString),BigInt(ethAmount),BigInt(interestRate),BigInt(paymentPeriod)]
             })
             if (auth.currentUser){
               try{

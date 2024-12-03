@@ -2,8 +2,6 @@
 import React, { useState } from "react";
 import { Contract } from "../../types/utils";
 import { useAccount } from "wagmi";
-import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { usePayRent } from "~~/hooks/darpaHooks";
 import Servicios from "../servicios/Servicios";
 import { useRouter } from "next/navigation";
 import AmountToPay from "./AmountToPay";
@@ -16,7 +14,6 @@ interface ContractListsProps {
 const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContractChange }) => {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const router = useRouter();
-  const { payRent } = usePayRent();
 
   const handleButtonClick = (propertyId: string) => {
     setSelectedPropertyId(selectedPropertyId === propertyId ? null : propertyId);

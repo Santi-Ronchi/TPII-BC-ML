@@ -34,7 +34,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
   // Get the deployed contract to interact with it after deploying.
   const yourContract = await hre.ethers.getContract<Contract>("YourContract", deployer);
-  console.log("El contrado de alquiler fue deployado");
+  console.log("El contrato de alquiler fue desplegado");
   //console.log("👋 Initial greeting:", await yourContract.greeting());
 };
 

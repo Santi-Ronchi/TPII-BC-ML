@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { NextPage } from 'next';
-import { useUser } from '../user/UserContext';
 import { db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { dataServicios } from '~~/types/utils';
@@ -11,7 +10,7 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
   const [numeroCuenta, setNumeroCuenta] = useState<string>(''); 
   const [servicio, setServicio] = useState<keyof dataServicios>('AYSA'); 
   const [postResponse, setPostResponse] = useState<string | null>(null);
-  const [getResponse, setGetResponse] = useState<string | null>(null);
+  const [_getResponse, setGetResponse] = useState<string | null>(null);
   const [parsedGetResponse, setParsedGetResponse] = useState<{
     servicio?: string;
     numeroCuenta?: string;
@@ -148,11 +147,11 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
 
       {parsedGetResponse && (
         <div>
-          {Number(parsedGetResponse.saldo.replace('.', '').replace(',', '.')) > 0 ? (
+          {Number(parsedGetResponse.saldo?.replace('.', '').replace(',', '.')) > 0 ? (
             <p>
               El cliente de <strong>{parsedGetResponse.servicio}</strong> número{' '}
               <strong>{parsedGetResponse.numeroCuenta}</strong> tiene un saldo pendiente de{' '}
-              <strong>{parsedGetResponse.saldo.replace('.', '').replace(',', '.')}</strong>.
+              <strong>{parsedGetResponse.saldo?.replace('.', '').replace(',', '.')}</strong>.
             </p>
           ) : (
             <p>

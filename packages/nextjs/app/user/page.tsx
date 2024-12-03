@@ -2,7 +2,7 @@
 import React from 'react';
 import UserProfile from './UserProfile';
 import { NextPage } from 'next';
-import { UserProvider, useUser } from './UserContext';
+import { useUser } from './UserContext';
 import UserSinConexion from './UserSinConexion';
 
 

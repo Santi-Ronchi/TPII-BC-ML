@@ -118,7 +118,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
           let walletArray = [];
           try {
             const ref = collection(db, "Email-Wallets");
-            const queryWallets = query(ref, where("userEmail", "==", user.userEmail));
+            const queryWallets = query(ref, where("userEmail", "==", user?.userEmail));
             const walletSnapshot = await getDocs(queryWallets);
             walletSnapshot.forEach((doc) => {
               walletArray = doc.data().walletAddr;

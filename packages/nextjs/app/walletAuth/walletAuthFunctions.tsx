@@ -1,6 +1,4 @@
 'use client';
-import { useSignMessage } from 'wagmi'
-import { useAccount } from "wagmi";
 import { auth } from "../loginPage/firebase";
 import { signInWithCustomToken } from "firebase/auth";
 
