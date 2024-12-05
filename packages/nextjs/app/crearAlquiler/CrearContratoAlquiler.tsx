@@ -40,7 +40,13 @@ export const CrearContratoAlquiler = () => {
       <br />
       <br />
       <label className="text-md font-bold text-white">Tu Billetera</label>
-      <AddressInput value={connectedAddress} placeholder="Input your owner address" />
+      <AddressInput
+        value={connectedAddress || "NO CONNECTED WALLET"}
+        placeholder="Input your owner address"
+        onChange={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
       <br />
       <label className="text-md font-bold text-white">Rentador</label>
       <AddressInput onChange={setLesseAddress} value={lesseAddress} placeholder="Ingrese billetera del inquilino" />
@@ -87,7 +93,7 @@ export const CrearContratoAlquiler = () => {
           try {
             const maxIdRef = doc(db, "Siguiente-ID", "siguiente-id");
             const idSnapshot = await getDoc(maxIdRef);
-            const maxID = idSnapshot.data().id;
+            const maxID = idSnapshot.data()?.id ?? "NO DATA";
             const nextId = maxID + 1;
             updateDoc(maxIdRef, { id: nextId });
 
@@ -96,7 +102,7 @@ export const CrearContratoAlquiler = () => {
               args: [
                 BigInt(ethAmount),
                 BigInt(maxID),
-                lesseAddress,
+                lesseAddress as `0x${string}`,
                 BigInt(paymentPeriod),
                 BigInt(interestRate),
                 BigInt(contractDuration),

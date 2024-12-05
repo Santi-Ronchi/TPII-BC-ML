@@ -60,7 +60,13 @@ const ProposeNewOfferPage = () => {
       <br />
       <br />
       <label className="text-lg font-bold text-white">TU Billetera:</label>
-      <AddressInput value={connectedAddress} placeholder="x_x"  />
+      <AddressInput
+        value={connectedAddress as string}
+        placeholder="x_x"
+        onChange={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
       <br />
       <br />
       <label className="text-lg font-bold text-white">Nuevo Precio:</label>
@@ -77,7 +83,7 @@ const ProposeNewOfferPage = () => {
         onChange={updatedInterestRate => {
           setInterestRate(updatedInterestRate);
         }}
-        placeholder="Ingrese la nueva penalidad sugerida"
+        placeholder="Ingrese la nueva penalidad sugerida sin el simbolo '%'"
       ></IntegerInput>
       <br />
       <br />

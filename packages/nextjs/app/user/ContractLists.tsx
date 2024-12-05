@@ -8,12 +8,26 @@ import AmountToPay from "./AmountToPay";
 import { useAccount } from "wagmi";
 
 interface ContractListsProps {
-  contracts: Contract[];
+  contracts: Contract[] | never[];
   handleContractChange: (
     contractId: bigint,
     newStatus: string,
     amount: bigint,
-    functionToCall: string,
+    functionToCall:
+      | "acceptContract"
+      | "rejectLeaseOffer"
+      | "acceptContractCancelationPropopsitionLessee"
+      | "acceptContractCancelationPropopsitionOwner"
+      | "proposeContractCancelationMutualAgreementLessee"
+      | "acceptContractCancelationPropopsitionLessee"
+      | "rejectContractCancelationPropopsitionLessee"
+      | "proposeContractCancelationMutualAgreementOwner"
+      | "rejectContractCancelationPropopsitionOwner"
+      | "acceptContractCancelationPropopsitionOwner"
+      | "acceptProposedChanges"
+      | "cancelContractOwner"
+      | "createContract"
+      | "withdraw",
   ) => Promise<void>;
 }
 
@@ -217,7 +231,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
                               BigInt(contract.id),
                               "Draft",
                               BigInt(contract.amount),
-                              "acceptContract",
+                              "acceptProposedChanges",
                             )
                           }
                         >
@@ -264,7 +278,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
                           className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
                           onClick={() => handleContractChange(BigInt(contract.id), "Active", 0n, "withdraw")}
                         >
-                          Withdraw
+                          Extraer fondos
                         </button>
                       </div>
                     )}

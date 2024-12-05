@@ -73,13 +73,22 @@ const WalletAuth: NextPage = () => {
     if (auth.currentUser) {
       //console.log(auth.currentUser);
       console.log("Estoy logeado actualmente");
+      const walletAddr = localStorage.getItem("DarpaConnectedWallet");
+      if (!walletAddr) {
+        throw new Error("No wallet address found in localStorage");
+      }
       try {
-        const docRef = doc(db, "Wallet-email", localStorage.getItem("DarpaConnectedWallet"));
-        await setDoc(docRef, {
-          userEmail: userName,
-          walletAddr: localStorage.getItem("DarpaConnectedWallet"),
-        });
-        console.log("Document added with ID: ", localStorage.getItem("DarpaConnectedWallet"));
+        if (walletAddr) {
+          const docRef = doc(db, "Wallet-email", walletAddr);
+          await setDoc(docRef, {
+            userEmail: userName,
+            walletAddr,
+          });
+          console.log("Document added with ID: ", walletAddr);
+        } else {
+          console.error("No wallet address found in localStorage");
+          alert("No connected wallet address found in localStorage");
+        }
       } catch (e) {
         console.error("Error adding document: ", e);
       }
@@ -140,7 +149,9 @@ const WalletAuth: NextPage = () => {
                         type="button"
                         className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
                         onClick={() => {
-                          requestLogin(signMessageData.toString(), connectedAddress.toString(), "hello world");
+                          const messageData = signMessageData ?? "defaultMessageData";
+                          const address = connectedAddress ?? "0x0000000000000000000000000000000000000000";
+                          requestLogin(messageData.toString(), address.toString(), "hello world");
                         }}
                         style={{ backgroundColor: "#8c376c" }}
                       >
@@ -213,7 +224,9 @@ const WalletAuth: NextPage = () => {
                         type="button"
                         className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
                         onClick={() => {
-                          requestLogin(signMessageData.toString(), connectedAddress.toString(), "hello world");
+                          const messageData = signMessageData ?? "defaultMessageData";
+                          const address = connectedAddress ?? "0x0000000000000000000000000000000000000000";
+                          requestLogin(messageData.toString(), address.toString(), "hello world");
                         }}
                         style={{ backgroundColor: "#8c376c" }}
                       >

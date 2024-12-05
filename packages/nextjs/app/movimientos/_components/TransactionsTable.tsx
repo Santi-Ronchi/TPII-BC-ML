@@ -1,19 +1,19 @@
+import { useSearchParams } from "next/navigation";
 import { TransactionHash } from "./TransactionHash";
 import { formatEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { TransactionWithFunction } from "~~/utils/scaffold-eth";
 import { TransactionsTableProps } from "~~/utils/scaffold-eth";
-import { useSearchParams } from "next/navigation";
 
 export const TransactionsTable = ({ blocks, transactionReceipts }: TransactionsTableProps) => {
   const { targetNetwork } = useTargetNetwork();
-//  const { propertyID: userPropertyID } = useUser(); 
+  //  const { propertyID: userPropertyID } = useUser();
   const searchParams = useSearchParams();
   const contractId = searchParams.get("propertyId");
   const contractIdString: string = contractId ?? "0";
 
-  console.log("propertyid: ",contractIdString);
+  console.log("propertyid: ", contractIdString);
 
   const functionNameMapping: { [key: string]: string } = {
     payRent: "Pago mensual de renta",
@@ -43,15 +43,12 @@ export const TransactionsTable = ({ blocks, transactionReceipts }: TransactionsT
                   if (!tx.functionName || !tx.functionArgs) return false;
                   const allowedFunctions = ["payRent", "withdraw", "acceptContract"];
                   const propertyID = tx.functionArgs[0]?.toString(); // propertyID
-                  return (
-                    allowedFunctions.includes(tx.functionName) &&
-                    propertyID === contractIdString 
-                  );
+                  return allowedFunctions.includes(tx.functionName) && propertyID === contractIdString;
                 })
                 .map(tx => {
                   const receipt = transactionReceipts[tx.hash];
                   const timeMined = new Date(Number(block.timestamp) * 1000).toLocaleString();
-                  const functionDisplayName = functionNameMapping[tx.functionName] || tx.functionName;
+                  const functionDisplayName = functionNameMapping[tx.functionName || "ERROR"] || tx.functionName;
                   return (
                     <tr key={tx.hash} className="hover text-sm">
                       <td className="w-1/12 md:py-4">

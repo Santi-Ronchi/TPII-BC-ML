@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import axios from 'axios';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import axios from "axios";
 import { IntegerInput } from "~~/components/scaffold-eth";
 
 export const PredecirPrecio = () => {
-
   interface PredictionData {
     prediction: number;
     caracteristicas: {
@@ -24,7 +23,6 @@ export const PredecirPrecio = () => {
       piletaPorcentaje: number;
     };
   }
-
 
   const [superficie_total, setSuperficie_total] = useState<string>("");
   const [superficie_cubierta, setSuperficie_cubierta] = useState<string>("");
@@ -62,51 +60,51 @@ export const PredecirPrecio = () => {
     e.preventDefault();
 
     if (!selectedProvincia || !selectedLocalidad || !superficie_total || !superficie_cubierta || !cantidad_ambientes) {
-      console.error('Faltan campos obligatorios');
+      console.error("Faltan campos obligatorios");
       setPrediction(null);
-      alert('Por favor, completa todos los campos.');
+      alert("Por favor, completa todos los campos.");
       return;
     }
 
-    console.log('Provincia seleccionada:', selectedProvincia);
-    console.log('Localidad seleccionada:', selectedLocalidad);
-    console.log('Superficie Total:', superficie_total);
-    console.log('Superficie Cubierta:', superficie_cubierta);
-    console.log('Cantidad de dormitorios:', cantidad_dormitorios);
-    console.log('Cantidad de baños:', cantidad_baños);
-    console.log('Cantidad de ambientes:', cantidad_ambientes);
+    console.log("Provincia seleccionada:", selectedProvincia);
+    console.log("Localidad seleccionada:", selectedLocalidad);
+    console.log("Superficie Total:", superficie_total);
+    console.log("Superficie Cubierta:", superficie_cubierta);
+    console.log("Cantidad de dormitorios:", cantidad_dormitorios);
+    console.log("Cantidad de baños:", cantidad_baños);
+    console.log("Cantidad de ambientes:", cantidad_ambientes);
 
-    axios.post('http://localhost:5000/predict', {
-      superficie_total: parseFloat(superficie_total),
-      superficie_cubierta: parseFloat(superficie_cubierta),
-      cantidad_dormitorios: parseFloat(cantidad_dormitorios),
-      cantidad_baños: parseFloat(cantidad_baños),
-      cantidad_ambientes: parseFloat(cantidad_ambientes),
-      provincia: selectedProvincia,
-      localidad: selectedLocalidad
-    })
+    axios
+      .post("http://localhost:5000/predict", {
+        superficie_total: parseFloat(superficie_total),
+        superficie_cubierta: parseFloat(superficie_cubierta),
+        cantidad_dormitorios: parseFloat(cantidad_dormitorios),
+        cantidad_baños: parseFloat(cantidad_baños),
+        cantidad_ambientes: parseFloat(cantidad_ambientes),
+        provincia: selectedProvincia,
+        localidad: selectedLocalidad,
+      })
       .then(response => {
         const { prediction, caracteristicas } = response.data;
         setPrediction({
           prediction,
-          caracteristicas
+          caracteristicas,
         });
       })
       .catch(error => {
-        console.error('There was an error!', error);
+        console.error("There was an error!", error);
       });
   };
 
   const fetchDolar = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/dolar');
+      const response = await fetch("http://localhost:5000/api/dolar");
       const data = await response.json();
       setSelectedDolar(data.venta);
     } catch (error) {
-      console.error('Error fetching dolar:', error);
+      console.error("Error fetching dolar:", error);
     }
   };
-
 
   useEffect(() => {
     console.log("selectedDolar cambió:", selectedDolar);
@@ -114,11 +112,11 @@ export const PredecirPrecio = () => {
 
   const fetchProvincias = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/provincias');
+      const response = await fetch("http://localhost:5000/api/provincias");
       const data = await response.json();
       setProvincias(data);
     } catch (error) {
-      console.error('Error fetching provincias:', error);
+      console.error("Error fetching provincias:", error);
     }
   };
 
@@ -133,7 +131,7 @@ export const PredecirPrecio = () => {
   const handleProvinciaChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedProvincia = e.target.value;
     setSelectedProvincia(selectedProvincia);
-    setSelectedLocalidad('');
+    setSelectedLocalidad("");
     if (selectedProvincia) {
       fetchLocalidades(selectedProvincia);
     }
@@ -145,7 +143,7 @@ export const PredecirPrecio = () => {
       const data = await response.json();
       setLocalidades(data);
     } catch (error) {
-      console.error('Error fetching localidades:', error);
+      console.error("Error fetching localidades:", error);
     }
   };
 
@@ -154,19 +152,21 @@ export const PredecirPrecio = () => {
   };
 
   return (
-    <div className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10"
+    <div
+      className="px-6 pt-10 pb-8 shadow-xl sm:my-auto bg-secondary sm:mx-auto sm:max-w-11/12 md:w-9/12 sm:w-11/12 sm:rounded-lg sm:px-10"
       style={{
-        backgroundColor: 'rgba(203, 207, 211, 0.5)',
-        backgroundImage: 'url(cuarto.jpg)',
-        backgroundSize: 'cover', 
-        backgroundRepeat: 'no-repeat', 
-        backgroundPosition: 'center' 
-      }}>
+        backgroundColor: "rgba(203, 207, 211, 0.5)",
+        backgroundImage: "url(cuarto.jpg)",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+      }}
+    >
       <img src="ARPA-WIDE.png" alt="logo de ARPA" className="mx-auto imgRounder" />
       <br />
       <div
         className="mb-3 inline-block w-full rounded px-6 pb-8 pt-8 text-center text-lg font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
-        style={{ backgroundColor: '#370921' }}
+        style={{ backgroundColor: "#370921" }}
       >
         CALCULADORA INTELIGENTE
       </div>
@@ -178,7 +178,8 @@ export const PredecirPrecio = () => {
         <select
           value={selectedProvincia}
           onChange={handleProvinciaChange}
-          className="text-md font-bold form-select rounded-full w-full h-8">
+          className="text-md font-bold form-select rounded-full w-full h-8"
+        >
           <option value="">Seleccionar provincia</option>
           {provincias.map((provincia, index) => (
             <option key={index} value={provincia}>
@@ -191,7 +192,11 @@ export const PredecirPrecio = () => {
         <div>
           <label className="text-lg font-bold text-white">Localidad *</label>
           <br />
-          <select value={selectedLocalidad} onChange={handleLocalidadChange} className="text-md font-bold form-select rounded-full w-full h-8">
+          <select
+            value={selectedLocalidad}
+            onChange={handleLocalidadChange}
+            className="text-md font-bold form-select rounded-full w-full h-8"
+          >
             <option value="">Seleccionar localidad</option>
             {localidades.map((localidad, index) => (
               <option key={index} value={localidad}>
@@ -203,109 +208,194 @@ export const PredecirPrecio = () => {
         <br />
         <div>
           <label className="text-lg font-bold text-white">Superficie Total *</label>
-          <IntegerInput value={superficie_total} onChange={handleSuperficieTotalChange} placeholder="Ingresar superficie total" />
+          <IntegerInput
+            value={superficie_total}
+            onChange={handleSuperficieTotalChange}
+            placeholder="Ingresar superficie total"
+          />
         </div>
         <br />
         <div>
           <label className="text-lg font-bold text-white">Superficie cubierta *</label>
-          <IntegerInput value={superficie_cubierta} onChange={handleSuperficieCubiertaChange} placeholder="Ingresar superficie cubierta" />
+          <IntegerInput
+            value={superficie_cubierta}
+            onChange={handleSuperficieCubiertaChange}
+            placeholder="Ingresar superficie cubierta"
+          />
         </div>
         <br />
         <div>
           <label className="text-lg font-bold text-white">Cantidad de Ambientes *</label>
-          <IntegerInput value={cantidad_ambientes} onChange={handleCantidadAmbientesChange} placeholder="Ingresar la cantidad de ambientes" />
+          <IntegerInput
+            value={cantidad_ambientes}
+            onChange={handleCantidadAmbientesChange}
+            placeholder="Ingresar la cantidad de ambientes"
+          />
         </div>
         <br />
         <div>
           <label className="text-lg font-bold text-white">Cantidad de dormitorios</label>
-          <IntegerInput value={cantidad_dormitorios} onChange={handleCantidadDormitoriosChange} placeholder="Ingresar la cantidad de dormitorios" />
+          <IntegerInput
+            value={cantidad_dormitorios}
+            onChange={handleCantidadDormitoriosChange}
+            placeholder="Ingresar la cantidad de dormitorios"
+          />
         </div>
         <br />
         <div>
           <label className="text-lg font-bold text-white">Cantidad de baños</label>
-          <IntegerInput value={cantidad_baños} onChange={handleCantidadBañosChange} placeholder="Ingresar cantidad de baños" />
+          <IntegerInput
+            value={cantidad_baños}
+            onChange={handleCantidadBañosChange}
+            placeholder="Ingresar cantidad de baños"
+          />
         </div>
         <br />
         <button
           className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
-          style={{ backgroundColor: '#8c376c' }}
-          type="submit">Predecir precio de alquiler</button>
+          style={{ backgroundColor: "#8c376c" }}
+          type="submit"
+        >
+          Predecir precio de alquiler
+        </button>
       </form>
       <br />
       <br />
       {prediction && (
-        <div >
-          <h2 className="text-2xl font-bold text-blue-600 mb-4" style={{ fontSize: '30px', color: '#8c376c' }}>
-            Precio recomendado de publicacion de su propiedad: <span className="text-gray-800" style={{ fontSize: '30px', color: '#370921' }}>ARS {(prediction.prediction * 0.9).toFixed(0)*selectedDolar} - {(prediction.prediction * 1.1).toFixed(0)*selectedDolar} </span>
+        <div>
+          <h2 className="text-2xl font-bold text-blue-600 mb-4" style={{ fontSize: "30px", color: "#8c376c" }}>
+            Precio recomendado de publicacion de su propiedad:{" "}
+            <span className="text-gray-800" style={{ fontSize: "30px", color: "#370921" }}>
+              ARS {parseFloat((prediction.prediction * 0.9).toFixed(0)) * selectedDolar} -{" "}
+              {parseFloat((prediction.prediction * 1.1).toFixed(0)) * selectedDolar}{" "}
+            </span>
           </h2>
 
           <div className="mb-4">
             <p className="text-gray-700">
-              <span className="font-medium">Propiedades publicadas en la localidad: </span>{prediction.caracteristicas.propiedadesPublicadas}
+              <span className="font-medium">Propiedades publicadas en la localidad: </span>
+              {prediction.caracteristicas.propiedadesPublicadas}
             </p>
             {Number(prediction.caracteristicas.propiedadesSimilares) === 0 ? (
               <p className="text-red-500 mt-2">
-                Sea el primero en mostrar esta exclusiva propiedad a nuestros clientes más exigentes.<br />
+                Sea el primero en mostrar esta exclusiva propiedad a nuestros clientes más exigentes.
+                <br />
                 No existen propiedades publicadas con las características descriptas en la zona.
               </p>
             ) : (
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Propiedades similares:</p>
-                  <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.propiedadesSimilares}</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    {prediction.caracteristicas.propiedadesSimilares}
+                  </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Precio promedio:</p>
-                  <p className="text-gray-800 text-xl font-semibold">ARS {prediction.caracteristicas.precioPromedio * selectedDolar}</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    ARS {prediction.caracteristicas.precioPromedio * selectedDolar}
+                  </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Precio mínimo:</p>
-                  <p className="text-gray-800 text-xl font-semibold">ARS {prediction.caracteristicas.precioMinimo * selectedDolar}</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    ARS {prediction.caracteristicas.precioMinimo * selectedDolar}
+                  </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Precio máximo:</p>
-                  <p className="text-gray-800 text-xl font-semibold">ARS {prediction.caracteristicas.precioMaximo * selectedDolar}</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    ARS {prediction.caracteristicas.precioMaximo * selectedDolar}
+                  </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}> 
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Promedio de metros totales:</p>
-                  <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.metrosTotalesPromedio}</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    {prediction.caracteristicas.metrosTotalesPromedio}
+                  </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Promedio de metros cubiertos:</p>
-                  <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.metrosCubiertosPromedio}</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    {prediction.caracteristicas.metrosCubiertosPromedio}
+                  </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Porcentaje con cochera:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.cocheraPorcentaje}%</p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Porcentaje con seguridad:</p>
-                  <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.seguridadPorcentaje}%</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    {prediction.caracteristicas.seguridadPorcentaje}%
+                  </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Porcentaje con patio, terraza o balcón:</p>
-                  <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.aireLibrePorcentaje}%</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    {prediction.caracteristicas.aireLibrePorcentaje}%
+                  </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Porcentaje con parrilla:</p>
-                  <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.parrillaPorcentaje}%</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    {prediction.caracteristicas.parrillaPorcentaje}%
+                  </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Porcentaje que aceptan mascotas:</p>
-                  <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.aptoMascotaPorcentaje}%</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    {prediction.caracteristicas.aptoMascotaPorcentaje}%
+                  </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  className="bg-blue-50 p-4 rounded-lg"
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
                   <p className="font-medium text-gray-600">Porcentaje con pileta:</p>
                   <p className="text-gray-800 text-xl font-semibold">{prediction.caracteristicas.piletaPorcentaje}%</p>
                 </div>

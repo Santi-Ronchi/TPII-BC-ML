@@ -60,7 +60,12 @@ const ProposeNewOfferPage = () => {
       <br />
       <br />
       <label className="text-lg font-bold text-white">Tu billetera:</label>
-      <AddressInput value={connectedAddress} />
+      <AddressInput
+        value={connectedAddress as string}
+        onChange={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
       <br />
       <br />
       <label className="text-lg font-bold text-white">Nuevo Precio:</label>
