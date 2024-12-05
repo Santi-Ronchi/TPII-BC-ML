@@ -8,7 +8,7 @@ import { useAccount } from "wagmi";
 import { AddressInput, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
-export const ProposeNewOfferPage = () => {
+const ProposeNewOfferPage = () => {
   const searchParams = useSearchParams();
   const contractId = searchParams.get("contractId");
   const contractIdString: string = contractId ?? "0";
