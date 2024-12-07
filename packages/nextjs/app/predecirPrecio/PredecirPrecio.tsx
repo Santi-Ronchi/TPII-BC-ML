@@ -75,7 +75,7 @@ export const PredecirPrecio = () => {
     console.log("Cantidad de ambientes:", cantidad_ambientes);
 
     axios
-      .post("http://localhost:5000/predict", {
+      .post("https://darpamlservice.onrender.com/predict", {
         superficie_total: parseFloat(superficie_total),
         superficie_cubierta: parseFloat(superficie_cubierta),
         cantidad_dormitorios: parseFloat(cantidad_dormitorios),
