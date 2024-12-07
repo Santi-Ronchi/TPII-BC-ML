@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase";
+import "./servicios.css";
 import axios from "axios";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { NextPage } from "next";
@@ -18,6 +19,7 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [leerServicio, setLeerServicio] = useState<dataServicios | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const postUrl = "/api/update-balance";
   const getUrl = "/api/get-balance";
@@ -32,6 +34,9 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
     };
 
     try {
+      setIsLoading(true);
+      setError(null);
+
       const tableName = "Servicios";
       const userDoc = doc(db, tableName, propiedadId);
       const userSnapshot = await getDoc(userDoc);
@@ -72,6 +77,8 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
       });
     } catch (err: any) {
       setError(err.response?.data || err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -135,16 +142,24 @@ const Servicios: NextPage<{ propiedadId: string }> = ({ propiedadId }) => {
         Realizar consulta
       </button>
 
-      <pre>{postResponse != null ? "Consulta enviada. Por favor aguarde unos segundos." : ""}</pre>
+      <br></br>
+      <br></br>
+      {isLoading && (
+        <div className="loading-container">
+          <pre>{postResponse != null ? "Consulta enviada. Por favor aguarde unos segundos." : ""}</pre>
+          <br></br>
+          <div className="loader"></div>
+        </div>
+      )}
 
-      {error && <div>No fue posible obtener la infomacion solicitada</div>}
+      {error && <div>No fue posible obtener la información solicitada</div>}
 
-      {parsedGetResponse && (
+      {!isLoading && parsedGetResponse && (
         <div>
           {Number(parsedGetResponse.saldo?.replace(".", "").replace(",", ".")) > 0 ? (
             <p>
               El cliente de <strong>{parsedGetResponse.servicio}</strong> número{" "}
-              <strong>{parsedGetResponse.numeroCuenta}</strong> tiene un saldo pendiente de{" "}
+              <strong>{parsedGetResponse.numeroCuenta}</strong> tiene un saldo pendiente de ${" "}
               <strong>{parsedGetResponse.saldo?.replace(".", "").replace(",", ".")}</strong>.
             </p>
           ) : (

@@ -116,15 +116,18 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
         try {
           //tengo el email, tengo que extraer la totalidad de las wallets
           let walletArray: string[] = [];
+          if (!user || !user.userEmail) {
+            throw new Error("El usuario no está autenticado o no tiene un correo electrónico.");
+          }
           try {
             const ref = collection(db, "Email-Wallets");
-            const queryWallets = query(ref, where("userEmail", "==", user?.userEmail ?? "NO SUCH USER"));
+            const queryWallets = query(ref, where("userEmail", "==", user.userEmail));
             const walletSnapshot = await getDocs(queryWallets);
             walletSnapshot.forEach(doc => {
               walletArray = doc.data().walletAddr;
             });
             const newUserData: User = {
-              userEmail: user?.userEmail ?? "NO SUCH USER",
+              userEmail: user.userEmail,
               walletAddr: walletArray,
             };
             setUser(newUserData);
