@@ -98,7 +98,7 @@ export const PredecirPrecio = () => {
 
   const fetchDolar = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/dolar");
+      const response = await fetch("https://darpamlservice.onrender.com/api/dolar");
       const data = await response.json();
       setSelectedDolar(data.venta);
     } catch (error) {
@@ -112,7 +112,7 @@ export const PredecirPrecio = () => {
 
   const fetchProvincias = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/provincias");
+      const response = await fetch("https://darpamlservice.onrender.com/api/provincias");
       const data = await response.json();
       setProvincias(data);
     } catch (error) {
@@ -139,7 +139,7 @@ export const PredecirPrecio = () => {
 
   const fetchLocalidades = async (provincia: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/localidades?provincia=${provincia}`);
+      const response = await fetch(`https://darpamlservice.onrender.com/api/localidades?provincia=${provincia}`);
       const data = await response.json();
       setLocalidades(data);
     } catch (error) {
