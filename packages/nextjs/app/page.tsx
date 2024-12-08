@@ -1,8 +1,42 @@
-import React from 'react';
-import './Home.css';
-import SobreNosotros from './SobreNosotros';
+"use client";
+
+import React, { useState } from "react";
+import "./Home.css";
+import SobreNosotros from "./SobreNosotros";
 
 const Home: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:5000/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert("¡Correo enviado exitosamente!");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        alert("Error al enviar el correo");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un problema al enviar el correo");
+    }
+  };
+
   return (
     <div className="home">
       {/* Hero Section */}
@@ -18,13 +52,12 @@ const Home: React.FC = () => {
             Tu navegador no soporta el elemento de video.
           </video>
         </div>
-
       </section>
-      <br></br>
-      <br></br>
+      <br />
+      <br />
       {/* About Us Section */}
-      <section className="">
-        <SobreNosotros></SobreNosotros>
+      <section>
+        <SobreNosotros />
       </section>
 
       {/* Contact Section */}
@@ -32,39 +65,49 @@ const Home: React.FC = () => {
         <div className="container">
           <h2 className="contact-title">Contáctanos</h2>
           <p className="contact-description">
-            ¿Tenes alguna pregunta o necesitas más información? Completa el formulario y nos pondremos en contacto contigo a la brevedad.
+            ¿Tenés alguna pregunta o necesitas más información? Completá el formulario y nos pondremos en contacto
+            contigo a la brevedad.
           </p>
-          <form className="contact-form">
+          <form className="contact-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="name" className="form-label">Nombre completo</label>
+              <label htmlFor="name" className="form-label">
+                Nombre completo
+              </label>
               <input
                 type="text"
                 id="name"
                 className="form-input"
                 placeholder="Tu nombre"
+                value={formData.name}
+                onChange={handleChange}
                 required
-                aria-label="Nombre completo"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="email" className="form-label">Correo electrónico</label>
+              <label htmlFor="email" className="form-label">
+                Correo electrónico
+              </label>
               <input
                 type="email"
                 id="email"
                 className="form-input"
                 placeholder="Tu correo electrónico"
+                value={formData.email}
+                onChange={handleChange}
                 required
-                aria-label="Correo electrónico"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="message" className="form-label">Mensaje</label>
+              <label htmlFor="message" className="form-label">
+                Mensaje
+              </label>
               <textarea
                 id="message"
                 className="form-textarea"
                 placeholder="Tu mensaje"
+                value={formData.message}
+                onChange={handleChange}
                 required
-                aria-label="Escribe tu mensaje"
               ></textarea>
             </div>
             <button type="submit" className="contact-button">
@@ -73,7 +116,6 @@ const Home: React.FC = () => {
           </form>
         </div>
       </section>
-
     </div>
   );
 };
