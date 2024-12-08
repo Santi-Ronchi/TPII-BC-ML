@@ -17,7 +17,7 @@ const Home: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log("apretaste submit");
     try {
       const response = await fetch("https://darpamailusservice.onrender.com/send-email", {
         method: "POST",
