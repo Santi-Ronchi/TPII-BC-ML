@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { auth, db } from "../loginPage/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { parseEther } from "viem/_types/utils/unit/parseEther";
 import { useAccount } from "wagmi";
 import { AddressInput, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -100,7 +101,7 @@ export const CrearContratoAlquiler = () => {
             await writeYourContractAsync({
               functionName: "createContract",
               args: [
-                BigInt(ethAmount),
+                parseEther(ethAmount),
                 BigInt(maxID),
                 lesseAddress as `0x${string}`,
                 BigInt(paymentPeriod),
