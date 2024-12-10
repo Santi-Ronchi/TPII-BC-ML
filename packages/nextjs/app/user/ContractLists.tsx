@@ -16,6 +16,7 @@ interface ContractListsProps {
     functionToCall:
       | "acceptContract"
       | "rejectLeaseOffer"
+      | "rejectProposedChanges"
       | "acceptContractCancelationPropopsitionLessee"
       | "acceptContractCancelationPropopsitionOwner"
       | "proposeContractCancelationMutualAgreementLessee"
@@ -250,7 +251,7 @@ const ContractLists: React.FC<ContractListsProps> = ({ contracts, handleContract
                               BigInt(contract.id),
                               "Cancelled",
                               BigInt(contract.amount),
-                              "rejectLeaseOffer",
+                              "rejectProposedChanges",
                             )
                           }
                         >

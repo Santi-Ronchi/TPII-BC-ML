@@ -175,6 +175,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
     functionToCall:
       | "acceptContract"
       | "rejectLeaseOffer"
+      | "rejectProposedChanges"
       | "acceptContractCancelationPropopsitionLessee"
       | "acceptContractCancelationPropopsitionOwner"
       | "proposeContractCancelationMutualAgreementLessee"
