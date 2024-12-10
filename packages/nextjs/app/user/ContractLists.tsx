@@ -25,6 +25,7 @@ interface ContractListsProps {
       | "rejectContractCancelationPropopsitionOwner"
       | "acceptContractCancelationPropopsitionOwner"
       | "acceptProposedChanges"
+      | "rejectProposedChanges"
       | "cancelContractOwner"
       | "createContract"
       | "withdraw",
