@@ -101,7 +101,7 @@ export const CrearContratoAlquiler = () => {
             await writeYourContractAsync({
               functionName: "createContract",
               args: [
-                parseEther(ethAmount),
+                BigInt(ethAmount),
                 BigInt(maxID),
                 lesseAddress as `0x${string}`,
                 BigInt(paymentPeriod),
