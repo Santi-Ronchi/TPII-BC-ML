@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { auth, db } from "../loginPage/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { parseEther } from "viem/_types/utils/unit/parseEther";
+import { parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { AddressInput, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
